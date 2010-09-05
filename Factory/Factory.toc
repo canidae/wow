@@ -1,0 +1,9 @@
+## Interface: 30300
+## Title: Factory
+## Notes: Simplifies production
+## Version: 300
+## Author: canidae
+## SavedVariables: factory_items
+## SavedVariablesPerCharacter: factory_products, factory_resources, factory_workbench
+## Dependencies: Blizzard_TradeSkillUI, Blizzard_GuildBankUI
+Factory.xml

@@ -1,0 +1,214 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="Factory.lua"/>
+	<Button name="FactoryButton" inherits="UIPanelButtonTemplate" text="F" parent="TradeSkillFrame" hidden="false">
+		<Size>
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="TradeSkillFrameCloseButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="2" y="-4" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				if FactoryFrame:IsVisible() then
+					FactoryFrame:Hide()
+				else
+					FactoryFrame:Show()
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="FactoryReagentButton" inherits="UIPanelButtonTemplate" text="R" parent="TradeSkillFrame" hidden="false">
+		<Size>
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="FactoryButton" relativePoint="TOPLEFT" />
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				if FactoryReagentFrame:IsVisible() then
+					FactoryReagentFrame:Hide()
+				else
+					FactoryReagentFrame:Show()
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="FactoryFrame" parent="TradeSkillFrame" hidden="false">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackGroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5" />
+			</BackGroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Size>
+			<AbsDimension x="250" y="427" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="TradeSkillFrameCloseButton" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-4" y="-4" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="FactoryFrameTitleText" inherits="GameFontNormal" text="Factory">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="FactoryFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-4" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FactoryFrameInfoText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension x="240" y="380" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="FactoryFrameAddButton" inherits="UIPanelButtonTemplate" text="Add" parent="FactoryFrame" hidden="false">
+				<Size>
+					<AbsDimension x="68" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="FactoryFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="4" y="4" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local index = GetTradeSkillSelectionIndex()
+						local tmpproductname, difficulty, _, _, _ = GetTradeSkillInfo(index)
+						if tmpproductname and difficulty ~= "header" then
+							local productitemlink = GetTradeSkillItemLink(index)
+							local _, productname, _ = strsplit("[]", productitemlink)
+							local count = tonumber(TradeSkillInputBox:GetText())
+							if factory_workbench[productname] then
+								factory_workbench[productname] = factory_workbench[productname] + count
+							else
+								factory_workbench[productname] = count
+							end
+						end
+						Factory:UpdateFactoryFrame()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="FactoryFrameProduceButton" inherits="UIPanelButtonTemplate" text="Produce" parent="FactoryFrame" hidden="false">
+				<Size>
+					<AbsDimension x="98" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="FactoryFrameAddButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Factory:StartProduction()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="FactoryFrameClearButton" inherits="UIPanelButtonTemplate" text="Clear" parent="FactoryFrame" hidden="false">
+				<Size>
+					<AbsDimension x="68" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="FactoryFrameProduceButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						factory_workbench = {}
+						Factory:UpdateFactoryFrame()
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="FactoryReagentFrame" hidden="true" movable="true">
+		<Size>
+			<AbsDimension x="250" y="420" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="FactoryReagentFrameInfoText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension x="240" y="410" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="FactoryReagentMoveFrame" parent="FactoryReagentFrame" hidden="false">
+				<Size>
+					<AbsDimension x="60" y="12" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="FactoryReagentFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="2" y="-4" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="FactoryReagentMoveFrameInfoText" inherits="GameFontHighlightSmall" text="|cff25de36Reagents:|r">
+							<Size>
+								<AbsDimension x="60" y="12" />
+							</Size>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown>
+						if arg1 == "LeftButton" and IsAltKeyDown() then
+							FactoryReagentFrame:StartMoving()
+							FactoryReagentFrame.isMoving = true
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						if FactoryReagentFrame.isMoving then
+							FactoryReagentFrame:StopMovingOrSizing()
+							FactoryReagentFrame.isMoving = false
+						end
+					</OnMouseUp>
+					<OnHide>
+						if FactoryReagentFrame.isMoving then
+							FactoryReagentFrame:StopMovingOrSizing()
+							FactoryReagentFrame.isMoving = false
+						end
+					</OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

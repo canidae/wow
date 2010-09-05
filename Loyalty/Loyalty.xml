@@ -1,0 +1,93 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="Loyalty.lua"/>
+
+	<StatusBar name="LoyaltyStatusBarTemplate" virtual="true" parent="LoyaltyFrame" alpha="0.8" minValue="0.0" maxValue="1.0" defaultValue="0.0">
+		<Size>
+			<AbsDimension x="100" y="12" />
+		</Size>
+		<!--
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" />
+		-->
+		<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-StatusBar" />
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontDarkGraySmall" text="">
+					<Size>
+						<AbsDimension x="150" y="12" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="1" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" />
+				</FontString>
+			</Layer>
+		</Layers>
+	</StatusBar>
+
+	<Frame name="LoyaltyFrame" hidden="false">
+		<!--
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" />
+		-->
+		<Size>  
+			<AbsDimension x="214" y="100" />
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="UIParent" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="200" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<StatusBar name="LoyaltyMendPetBar" inherits="LoyaltyStatusBarTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="LoyaltyFrame" relativePoint="BOTTOM" />
+				</Anchors>
+				<BarColor r="1.0" g="1.0" b="1.0" />
+				<Scripts>
+					<OnLoad>LoyaltyMendPetBarText:SetText("Mend Pet")</OnLoad>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="LoyaltyHealthBar" inherits="LoyaltyStatusBarTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="LoyaltyMendPetBar" relativePoint="TOP" />
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="24" />
+				</Size>
+				<BarColor r="0.0" g="1.0" b="0.0" />
+			</StatusBar>
+			<StatusBar name="LoyaltyBestialWrathBar" inherits="LoyaltyStatusBarTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="LoyaltyHealthBar" relativePoint="TOP" />
+				</Anchors>
+				<BarColor r="1.0" g="1.0" b="1.0" />
+				<Scripts>
+					<OnLoad>LoyaltyBestialWrathBarText:SetText("Bestial Wrath")</OnLoad>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="LoyaltyIntimidationBar" inherits="LoyaltyStatusBarTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="LoyaltyBestialWrathBar" relativePoint="TOP" />
+				</Anchors>
+				<BarColor r="1.0" g="1.0" b="1.0" />
+				<Scripts>
+					<OnLoad>LoyaltyIntimidationBarText:SetText("Intimidation")</OnLoad>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="LoyaltyMastersCallBar" inherits="LoyaltyStatusBarTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="LoyaltyIntimidationBar" relativePoint="TOP" />
+				</Anchors>
+				<BarColor r="1.0" g="1.0" b="1.0" />
+				<Scripts>
+					<OnLoad>LoyaltyMastersCallBarText:SetText("Master's Call")</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+	</Frame>
+</Ui>

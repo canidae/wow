@@ -1,0 +1,281 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="Profit.lua"/>
+	<Frame name="ProfitAuctionFrame" parent="AuctionFrame" hidden="false">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" />
+		<Size>  
+			<AbsDimension x="42" y="422" />
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="AuctionFrame" relativePoint="RIGHT" />
+		</Anchors>
+		<Frames>
+			<Button name="ProfitScanButton" inherits="UIPanelButtonTemplate" text="Scan" parent="ProfitAuctionFrame" hidden="false">
+				<Size>
+					<AbsDimension x="42" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfitAuctionFrame" relativePoint="TOPLEFT" />
+				</Anchors>
+				<Scripts>
+					<OnClick>Profit:StartScan("")</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+						GameTooltip:SetText("Scan all items at the Auction House", nil, nil, nil, nil, 1)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="ProfitSellButton" inherits="UIPanelButtonTemplate" text="Sell" parent="ProfitAuctionFrame" hidden="false">
+				<Size>
+					<AbsDimension x="42" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfitScanButton" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						if profit_db.autoauctionitems then
+							Profit:AuctionItems()
+						end
+					</OnShow>
+					<OnClick>
+						Profit.lockeditem = nil
+						Profit:AuctionItems()
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+						GameTooltip:SetText("Sell all items in inventory added for auctioning/vendoring", nil, nil, nil, nil, 1)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="ProfitAddButton" inherits="UIPanelButtonTemplate" text="Add" parent="ProfitAuctionFrame" hidden="false">
+				<Size>
+					<AbsDimension x="42" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfitSellButton" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local itemname = GetAuctionSellItemInfo()
+						if itemname then
+							local amount = tonumber(AuctionsStackSizeEntry:GetText())
+							if not amount or 1 > amount then
+								amount = 1
+							end
+							print("Will auction " .. itemname .. " in stacks of " .. amount)
+							profit_db.sellitems[itemname] = amount
+						end
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+						GameTooltip:SetText("Add item currently marked for auctioning to list of items to auction/vendor, set preferred stack size in field \"Stack Size\"", nil, nil, nil, nil, 1)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="ProfitDelButton" inherits="UIPanelButtonTemplate" text="Del" parent="ProfitAuctionFrame" hidden="false">
+				<Size>
+					<AbsDimension x="42" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfitAddButton" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local itemname = GetAuctionSellItemInfo()
+						if itemname then
+							print("Will no longer auction " .. itemname)
+							profit_db.sellitems[itemname] = nil
+						end
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+						GameTooltip:SetText("Remove item currently marked for auctioning from list of items to auction/vendor", nil, nil, nil, nil, 1)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<StatusBar name="ProfitScanStatusBar" parent="ProfitAuctionFrame" orientation="VERTICAL">
+				<Size>
+					<AbsDimension x="42" y="338" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfitDelButton" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" />
+				<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-StatusBar" />
+				<BarColor r="0.0" g="1.0" b="0.0" />
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentText" inherits="GameFontDarkGraySmall" text="">
+							<Size>  
+								<AbsDimension x="42" y="380" />
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" />
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0" />
+						</FontString>
+					</Layer>
+				</Layers>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				Profit.scan = nil
+				ProfitScanButton:Enable()
+				ProfitSellButton:Enable()
+				ProfitScanStatusBar:SetMinMaxValues(0, 1)
+				ProfitScanStatusBar:SetValue(0)
+				ProfitScanStatusBarText:SetText("")
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<CheckButton name="ProfitAutoAuctionItemsCheckButton" inherits="ChatConfigCheckButtonTemplate" parent="AuctionFrame" hidden="false">
+		<Size>  
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="AuctionFrameCloseButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="4" y="-5" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				this:SetChecked(profit_db.autoauctionitems)
+			</OnShow>
+			<OnClick>
+				profit_db.autoauctionitems = this:GetChecked()
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				if profit_db.autoauctionitems then
+					GameTooltip:SetText("Uncheck to stop automatically auctioning items when Auction Frame is shown", nil, nil, nil, nil, 1)
+				else
+					GameTooltip:SetText("Check to automatically auction items when Auction Frame is shown", nil, nil, nil, nil, 1)
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	<Button name="ProfitMerchantSellButton" inherits="UIPanelButtonTemplate" text="P" parent="MerchantFrame" hidden="false">
+		<Size>  
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MerchantFrameCloseButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="2" y="-4" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				if profit_db.autovendoritems then
+					Profit:SellItems()
+				end
+			</OnShow>
+			<OnClick>
+				Profit:SellItems()
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				if profit_db.vendorauctionitems then
+					GameTooltip:SetText("Sell gray items and items that won't sell good enough at the Auction House", nil, nil, nil, nil, 1)
+				else
+					GameTooltip:SetText("Sell gray items", nil, nil, nil, nil, 1)
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<CheckButton name="ProfitMerchantAutoVendorAuctionItemsCheckButton" inherits="ChatConfigCheckButtonTemplate" parent="MerchantFrame" hidden="false">
+		<Size>  
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="ProfitMerchantSellButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="2" y="-1" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				this:SetChecked(profit_db.autovendoritems)
+			</OnShow>
+			<OnClick>
+				profit_db.autovendoritems = this:GetChecked()
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				local itemstovendor = "gray items"
+				if profit_db.vendorauctionitems then
+					itemstovendor = itemstovendor .. " and items that won't sell good enough at the Auction House"
+				end
+				if profit_db.autovendoritems then
+					GameTooltip:SetText("Uncheck to stop automatically vendoring " .. itemstovendor .. " when Merchant Frame is shown", nil, nil, nil, nil, 1)
+				else
+					GameTooltip:SetText("Check to automatically vendor " .. itemstovendor .. " when Merchant Frame is shown", nil, nil, nil, nil, 1)
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="ProfitMerchantVendorAuctionItemsCheckButton" inherits="ChatConfigCheckButtonTemplate" parent="MerchantFrame" hidden="false">
+		<Size>  
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="ProfitMerchantAutoVendorAuctionItemsCheckButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="4" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				this:SetChecked(profit_db.vendorauctionitems)
+			</OnShow>
+			<OnClick>
+				profit_db.vendorauctionitems = this:GetChecked()
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				if profit_db.vendorauctionitems then
+					GameTooltip:SetText("Uncheck to only vendor gray items", nil, nil, nil, nil, 1)
+				else
+					GameTooltip:SetText("Check to vendor items that won't sell good enough at the Auction House", nil, nil, nil, nil, 1)
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	<Frame name="ProfitTooltipFrame" parent="GameTooltip" hidden="false">
+		<Scripts>
+			<OnShow>
+				Profit:UpdateTooltip()
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>
