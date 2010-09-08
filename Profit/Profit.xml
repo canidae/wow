@@ -141,7 +141,7 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
-	<CheckButton name="ProfitAutoAuctionItemsCheckButton" inherits="ChatConfigCheckButtonTemplate" parent="AuctionFrame" hidden="false">
+	<CheckButton name="ProfitAutoAuctionItemsCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="AuctionFrame" hidden="false">
 		<Size>  
 			<AbsDimension x="18" y="23" />
 		</Size>
@@ -205,7 +205,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<CheckButton name="ProfitMerchantAutoVendorAuctionItemsCheckButton" inherits="ChatConfigCheckButtonTemplate" parent="MerchantFrame" hidden="false">
+	<CheckButton name="ProfitMerchantAutoVendorAuctionItemsCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="MerchantFrame" hidden="false">
 		<Size>  
 			<AbsDimension x="18" y="23" />
 		</Size>
@@ -240,7 +240,7 @@
 			</OnLeave>
 		</Scripts>
 	</CheckButton>
-	<CheckButton name="ProfitMerchantVendorAuctionItemsCheckButton" inherits="ChatConfigCheckButtonTemplate" parent="MerchantFrame" hidden="false">
+	<CheckButton name="ProfitMerchantVendorAuctionItemsCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="MerchantFrame" hidden="false">
 		<Size>  
 			<AbsDimension x="18" y="23" />
 		</Size>

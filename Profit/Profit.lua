@@ -111,12 +111,6 @@ function Profit.OnUpdate()
 			totalprice = totalprice + value
 			values = values + 1
 		end
-		if values == 0 then
-			-- most likely only the player got this item on auction
-			-- to prevent divide-by-zero we set values to 1
-			-- since totalprice and stddev both will be 0 it doesn't matter
-			values = 1
-		end
 		local average = math.ceil(totalprice / values)
 		local stddev = 0
 		for index, value in ipairs(data.prices) do
@@ -164,6 +158,19 @@ function Profit:SetItemData(itemname, minprice, average, stddev, myprice, auctio
 	-- add item to database
 	local hour, minute = GetGameTime()
 	local _, month, day, year = CalendarGetDate()
+	local item = profit_db.items[itemname]
+	if item then
+		-- keep minprice/average/stddev if we got no new data for these
+		if not minprice then
+			minprice = item.minprice
+		end
+		if not average then
+			average = item.average
+		end
+		if not stddev then
+			stddev = item.stddev
+		end
+	end
 	profit_db.items[itemname] = {
 		minprice = minprice,
 		average = average,
@@ -324,14 +331,14 @@ end
 
 function Profit:GetBuyoutPricePerItem(itemname)
 	local item = profit_db.items[itemname]
-	if item and item.average and item.stddev and item.minprice then
-		if item.auctions > 0 then
+	if item then
+		if item.average and item.stddev and item.minprice and item.auctions > 0 then
 			-- auctions of this item already out, find optimal price
 			return math.max(item.minprice, item.average - item.stddev) * (1.0 - profit_db.sellundercutpercent)
 		elseif item.myprice then
 			-- we seem to be the only one with an auction of this item at the moment
 			return item.myprice
-		else
+		elseif item.average then
 			-- no auctions of this item seen at ah, can boost price
 			return item.average * profit_db.sellboostpercent
 		end
@@ -388,14 +395,19 @@ function Profit:UpdateTooltip()
 			count = 1
 		end
 		if profit_db.detailed then
-			SetTooltipMoney(GameTooltip, math.floor(item.average * count), nil, "Average:", nil)
-			SetTooltipMoney(GameTooltip, math.floor(item.minprice * count), nil, "Minimum:", nil)
-			if item.stddev > 0 then
+			if item.average then
+				SetTooltipMoney(GameTooltip, math.floor(item.average * count), nil, "Average:", nil)
+			end
+			if item.minprice then
+				SetTooltipMoney(GameTooltip, math.floor(item.minprice * count), nil, "Minimum:", nil)
+			end
+			if item.stddev and item.stddev > 0 then
 				SetTooltipMoney(GameTooltip, math.floor(item.stddev * count), nil, "Deviation:", nil)
 			end
 			if item.myprice then
 				SetTooltipMoney(GameTooltip, math.floor(item.myprice * count), nil, "My price:", nil)
 			end
+			GameTooltip:AddLine("Rivaling auctions: " .. item.auctions)
 		end
 		if count > 1 then
 			SetTooltipMoney(GameTooltip, math.floor(buyoutprice * count), nil, count .. "x@AH:", nil)
