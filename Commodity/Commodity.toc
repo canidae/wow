@@ -1,0 +1,8 @@
+## Interface: 30300
+## Title: Commodity
+## Notes: Guild bank organizer
+## Version: 100
+## Author: canidae
+## SavedVariablesPerCharacter: commodity_db
+## Dependencies: Blizzard_GuildBankUI
+Commodity.xml

@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="Commodity.lua" />
+	<CheckButton name="CommodityShowBackgroundCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
+		<Size> 
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-27" y="-13" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				this:SetChecked(commodity_db.backgroundvisible)
+			</OnShow>
+			<OnClick>
+				commodity_db.backgroundvisible = this:GetChecked()
+				Commodity:SetGuildBankSlotBackground()
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText("Show background icon for item that should be placed in slot", nil, nil, nil, nil, 1)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="CommoditySortGuildBankTabCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
+		<Size> 
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="CommodityShowBackgroundCheckButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="4" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				this:SetChecked(commodity_db.sortguildbanktab)
+			</OnShow>
+			<OnClick>
+				commodity_db.sortguildbanktab = this:GetChecked()
+				Commodity:SortGuildBankTab()
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText("Automatically sort items", nil, nil, nil, nil, 1)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="CommodityWithdrawItemsCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
+		<Size> 
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="CommoditySortGuildBankTabCheckButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="4" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				this:SetChecked(commodity_db.withdrawitems)
+			</OnShow>
+			<OnClick>
+				commodity_db.withdrawitems = this:GetChecked()
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText("Automatically withdraw items that aren't wanted in the currently open guild bank tab (TODO: Make this only withdraw items in slots that are reserved for something else, this also means the sorting will have to move items in slots reserved for something else to slots that aren't reserved)", nil, nil, nil, nil, 1)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+</Ui>
