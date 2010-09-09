@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 	<Script file="Commodity.lua" />
-	<CheckButton name="CommodityShowBackgroundCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
+	<CheckButton name="CommodityShowOverlayCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
 		<Size> 
 			<AbsDimension x="18" y="23" />
 		</Size>
@@ -13,15 +13,15 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_db.backgroundvisible)
+				this:SetChecked(commodity_db.overlayvisible)
 			</OnShow>
 			<OnClick>
-				commodity_db.backgroundvisible = this:GetChecked()
-				Commodity:SetGuildBankSlotBackground()
+				commodity_db.overlayvisible = this:GetChecked()
+				Commodity:SetGuildBankSlotOverlay()
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText("Show background icon for item that should be placed in slot", nil, nil, nil, nil, 1)
+				GameTooltip:SetText("Show icon for item that should be placed in slot", nil, nil, nil, nil, 1)
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide()
@@ -33,7 +33,7 @@
 			<AbsDimension x="18" y="23" />
 		</Size>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="CommodityShowBackgroundCheckButton" relativePoint="TOPLEFT">
+			<Anchor point="TOPRIGHT" relativeTo="CommodityShowOverlayCheckButton" relativePoint="TOPLEFT">
 				<Offset>
 					<AbsDimension x="4" y="0" />
 				</Offset>
