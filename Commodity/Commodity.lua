@@ -129,10 +129,10 @@ function Commodity:OnEvent()
 			commodity_db = {}
 		end
 		if not commodity_db.overlayalpha then
-			commodity_db.overlayalpha = 0.3
+			commodity_db.overlayalpha = 0.2
 		end
 		if not commodity_db.sortguildbanktabdelay then
-			commodity_db.sortguildbanktabdelay = 0.3
+			commodity_db.sortguildbanktabdelay = 0.5
 		end
 		if not commodity_db.tabs then
 			commodity_db.tabs = {}
@@ -290,6 +290,7 @@ function Commodity:SortGuildBankTab()
 				end
 			end
 			if movefrom then
+				ClearCursor()
 				if partialmove then
 					SplitGuildBankItem(tabindex, movefrom, partialmove)
 				else
