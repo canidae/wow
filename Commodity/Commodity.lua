@@ -96,6 +96,7 @@ function SlashCmdList.Commodity(msg)
 		-- broadcast any updated tabs
 		if Commodity.tabsupdated then
 			for tabindex, one in pairs(Commodity.tabsupdated) do
+				Commodity:SetTabLastUpdated(tabindex)
 				Commodity:BroadcastTabLastUpdated(tabindex)
 			end
 		end
@@ -161,14 +162,83 @@ function Commodity:OnEvent()
 		-- broadcast queue, for sending data to other clients at a sane speed
 		Commodity.broadcastqueue = {}
 		Commodity.broadcastdelay = 0
+		-- and broadcast our status in case someone got updated data
+		for tabindex = 1, 6 do
+			Commodity:BroadcastTabLastUpdated(tabindex)
+		end
 	elseif event == "GUILDBANKBAGSLOTS_CHANGED" then
 		if Commodity:ScanGuildBankTab() then
 			-- only sort if tab is changed
 			Commodity:SortGuildBankTab()
 		end
 		Commodity:SetGuildBankSlotOverlay()
-	elseif event == "CHAT_MSG_ADDON" then
+	elseif event == "CHAT_MSG_ADDON" and arg1 == "Commodity" then --and arg4 ~= GetUnitName("player") then
+		-- Commodity message from someone else than me
 		print(arg1, arg2, arg3, arg4)
+		local _, _, messagetype, data = string.find(arg2, "^(.)(.*)$")
+		if messagetype == "U" then
+			-- when a tab was last updated
+			local _, _, tabindex, date = string.find(data, "^(%d)(%d+)$")
+			date = tonumber(date)
+			local ourdate = tonumber(Commodity:GetTabLastUpdated(tabindex))
+			if date > ourdate then
+				-- this person got more recent data than us, broadcast when our tab was last updated
+				Commodity:BroadcastTabLastUpdated(tabindex)
+			elseif date < ourdate then
+				-- this person got less recent data than us, we should share our data
+				Commodity:BroadcastTabCommodities(tabindex)
+			end
+		elseif messagetype == "B" then
+			-- beginning of item list
+			local _, _, tabindex, date = string.find(data, "^(%d)(%d+)$")
+			if not Commodity.updatetabdata then
+				Commodity.updatetabdata = {}
+			end
+			Commodity.updatetabdata[arg4] = {
+				date = date,
+				itemids = {}
+			}
+		elseif messagetype == "E" then
+			-- end of item list
+			local _, _, tabindex, count = string.find(data, "^(%d)(%d+)$")
+			local tabdata = Commodity.updatetabdata[arg4]
+			local commodities = {}
+			if tabdata then
+				local count2 = 0
+				for itemid, slots in pairs(tabdata.itemids) do
+					local _, itemlink = GetItemInfo(itemid)
+					if not itemlink then
+						itemlink = "nil"
+					end
+					local length = strlen(slots)
+					for start = 1, length, 2 do
+						local slot = strsub(slots, start, start + 1)
+						commodities[slot] = itemlink
+					end
+					count2 = count2 + 1
+				end
+				if count2 == tonumber(count) then
+					for slot, itemlink in pairs(commodities) do
+						if itemlink == "nil" then
+							itemlink = nil
+						end
+						Commodity:SetCommodityLink(tabindex, slot, itemlink)
+					end
+					Commodity:SetTabLastUpdated(tabindex, tabdata.date)
+					print(arg4 .. " sent us updated Commodity data for guild bank tab " .. tabindex .. "!")
+					Commodity:SetGuildBankSlotOverlay()
+				else
+					print(arg4 .. " sent Commodity data, but we seem to have missed some of the transmission")
+				end
+			end
+		elseif messagetype == "I" then
+			-- item
+			local _, _, itemid, slots = string.find(data, "^(%d+):(%d+)$")
+			local tabdata = Commodity.updatetabdata[arg4]
+			if tabdata then
+				tabdata.itemids[itemid] = slots
+			end
+		end
 	end
 end
 
@@ -342,10 +412,10 @@ function Commodity:BroadcastTabCommodities(tabindex)
 		local commodity = Commodity:GetCommodityLink(tabindex, slot)
 		local itemid
 		if commodity then
-			_, _, itemid = string.find(commodity, ".*item:(%d+):")
+			_, _, itemid = string.find(commodity, "item:(%d+):")
 		end
 		if not itemid then
-			itemid = "nil"
+			itemid = "0"
 		end
 		if not commodities[itemid] then
 			commodities[itemid] = {}
@@ -359,7 +429,7 @@ function Commodity:BroadcastTabCommodities(tabindex)
 	table.insert(Commodity.broadcastqueue, "B" .. tabindex .. Commodity:GetTabLastUpdated(tabindex))
 	local count = 0
 	for itemid, slots in pairs(commodities) do
-		local message = itemid .. ":"
+		local message = "I" .. itemid .. ":"
 		for index, slot in ipairs(slots) do
 			message = message .. slot
 		end
@@ -375,6 +445,7 @@ function Commodity:GetTabData(tabindex)
 		commodity_db.tabs = {}
 	end
 	local tabs = commodity_db.tabs
+	tabindex = tonumber(tabindex)
 	if not tabs[tabindex] then
 		tabs[tabindex] = {}
 	end
@@ -386,6 +457,7 @@ function Commodity:SetCommodityLink(tabindex, slot, link)
 	if not tab.commodities then
 		tab.commodities = {}
 	end
+	slot = tonumber(slot)
 	tab.commodities[slot] = link
 	-- need to know which tabs are updated when broadcasting
 	if Commodity.tabsupdated then
@@ -399,6 +471,7 @@ function Commodity:GetCommodityLink(tabindex, slot)
 	if not commodities then
 		return
 	end
+	slot = tonumber(slot)
 	return commodities[slot]
 end
 
@@ -407,6 +480,7 @@ function Commodity:SetSlotData(tabindex, slot, link, amount)
 	if not tab.slots then
 		tab.slots = {}
 	end
+	slot = tonumber(slot)
 	tab.slots[slot] = {
 		link = link,
 		amount = amount
@@ -419,11 +493,12 @@ function Commodity:GetSlotData(tabindex, slot)
 	if not slots then
 		return
 	end
-	local slot = slots[slot]
-	if not slot then
+	slot = tonumber(slot)
+	local slotdata = slots[slot]
+	if not slotdata then
 		return
 	end
-	return slot.link, slot.amount
+	return slotdata.link, slotdata.amount
 end
 
 function Commodity:SetItemAmount(tabindex, itemlink, amount)
@@ -431,6 +506,7 @@ function Commodity:SetItemAmount(tabindex, itemlink, amount)
 	if not tab.items then
 		tab.items = {}
 	end
+	amount = tonumber(amount)
 	tab.items[itemlink] = amount
 end
 
@@ -462,12 +538,15 @@ function Commodity:SetTabLastUpdated(tabindex, timestamp)
 		end
 		timestamp = year .. month .. day .. hour .. minute
 	end
-	tab.lastupdated = timestamp
+	tab.lastupdated = tonumber(timestamp)
 end
 
 function Commodity:GetTabLastUpdated(tabindex, itemlink)
 	local tab = Commodity:GetTabData(tabindex)
-	return tab.lastupdated
+	if tab.lastupdated then
+		return tab.lastupdated
+	end
+	return 0
 end
 
 Commodity.eventtimes = {}
