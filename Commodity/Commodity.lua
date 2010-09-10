@@ -174,7 +174,7 @@ function Commodity:OnEvent()
 		Commodity:SetGuildBankSlotOverlay()
 	elseif event == "CHAT_MSG_ADDON" and arg1 == "Commodity" then --and arg4 ~= GetUnitName("player") then
 		-- Commodity message from someone else than me
-		print(arg1, arg2, arg3, arg4)
+		--print(arg1, arg2, arg3, arg4)
 		local _, _, messagetype, data = string.find(arg2, "^(.)(.*)$")
 		if messagetype == "U" then
 			-- when a tab was last updated
