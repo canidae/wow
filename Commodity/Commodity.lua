@@ -69,6 +69,7 @@ function SlashCmdList.Commodity(msg)
 			Commodity.drawlink = itemlink
 			print("Drawing " .. Commodity.drawlink)
 		end
+		Commodity.tabsupdated = {}
 		Commodity.forceoverlay = 1
 		Commodity:SetGuildBankSlotOverlay()
 	elseif command == "done" then
@@ -92,6 +93,12 @@ function SlashCmdList.Commodity(msg)
 		Commodity.forceoverlay = nil
 		Commodity:SetGuildBankSlotOverlay()
 		SetCursor(nil)
+		-- broadcast any updated tabs
+		if Commodity.tabsupdated then
+			for tabindex, one in pairs(Commodity.tabsupdated) do
+				Commodity:BroadcastTabLastUpdated(tabindex)
+			end
+		end
 	else
 		print("Commodity usage:")
 		print("/commodity draw [item] - Reserve slots for item by drawing it in guild bank")
@@ -151,12 +158,31 @@ function Commodity:OnEvent()
 			local overlay = button:CreateTexture("CommodityOverlayTexture" .. slot, "BACKGROUND")
 			overlay:SetAllPoints(button)
 		end
+		-- broadcast queue, for sending data to other clients at a sane speed
+		Commodity.broadcastqueue = {}
+		Commodity.broadcastdelay = 0
 	elseif event == "GUILDBANKBAGSLOTS_CHANGED" then
 		if Commodity:ScanGuildBankTab() then
 			-- only sort if tab is changed
 			Commodity:SortGuildBankTab()
 		end
 		Commodity:SetGuildBankSlotOverlay()
+	elseif event == "CHAT_MSG_ADDON" then
+		print(arg1, arg2, arg3, arg4)
+	end
+end
+
+function Commodity:OnUpdate(elapsed)
+	Commodity.broadcastdelay = Commodity.broadcastdelay - elapsed
+	if Commodity.broadcastdelay <= 0 then
+		local message = table.remove(Commodity.broadcastqueue, 1)
+		if message then
+			SendAddonMessage("Commodity", message, "GUILD")
+		else
+			-- no more messages in queue
+			Commodity:SetScript("OnUpdate", nil)
+		end
+		Commodity.broadcastdelay = 0.2
 	end
 end
 
@@ -303,6 +329,47 @@ function Commodity:SortGuildBankTab()
 	end
 end
 
+function Commodity:BroadcastTabLastUpdated(tabindex)
+	-- used when logging on, tell people when you last saw the given tab updated
+	table.insert(Commodity.broadcastqueue, "U" .. tabindex .. Commodity:GetTabLastUpdated(tabindex))
+	Commodity:SetScript("OnUpdate", Commodity.OnUpdate)
+end
+
+function Commodity:BroadcastTabCommodities(tabindex)
+	-- broadcast reserved slots for items in given tab
+	local commodities = {}
+	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+		local commodity = Commodity:GetCommodityLink(tabindex, slot)
+		local itemid
+		if commodity then
+			_, _, itemid = string.find(commodity, ".*item:(%d+):")
+		end
+		if not itemid then
+			itemid = "nil"
+		end
+		if not commodities[itemid] then
+			commodities[itemid] = {}
+		end
+		local tmpslot = slot
+		if tmpslot < 10 then
+			tmpslot = "0" .. tmpslot
+		end
+		table.insert(commodities[itemid], tmpslot)
+	end
+	table.insert(Commodity.broadcastqueue, "B" .. tabindex .. Commodity:GetTabLastUpdated(tabindex))
+	local count = 0
+	for itemid, slots in pairs(commodities) do
+		local message = itemid .. ":"
+		for index, slot in ipairs(slots) do
+			message = message .. slot
+		end
+		table.insert(Commodity.broadcastqueue, message)
+		count = count + 1
+	end
+	table.insert(Commodity.broadcastqueue, "E" .. tabindex .. count)
+	Commodity:SetScript("OnUpdate", Commodity.OnUpdate)
+end
+
 function Commodity:GetTabData(tabindex)
 	if not commodity_db.tabs then
 		commodity_db.tabs = {}
@@ -320,6 +387,10 @@ function Commodity:SetCommodityLink(tabindex, slot, link)
 		tab.commodities = {}
 	end
 	tab.commodities[slot] = link
+	-- need to know which tabs are updated when broadcasting
+	if Commodity.tabsupdated then
+		Commodity.tabsupdated[tabindex] = 1
+	end
 end
 
 function Commodity:GetCommodityLink(tabindex, slot)
@@ -372,8 +443,36 @@ function Commodity:GetItemAmount(tabindex, itemlink)
 	return items[itemlink]
 end
 
+function Commodity:SetTabLastUpdated(tabindex, timestamp)
+	local tab = Commodity:GetTabData(tabindex)
+	if not timestamp then
+		local _, month, day, year = CalendarGetDate()
+		if month < 10 then
+			month = "0" .. month
+		end
+		if day < 10 then
+			day = "0" .. day
+		end
+		local hour, minute = GetGameTime()
+		if hour < 10 then
+			hour = "0" .. hour
+		end
+		if minute < 10 then
+			minute = "0" .. minute
+		end
+		timestamp = year .. month .. day .. hour .. minute
+	end
+	tab.lastupdated = timestamp
+end
+
+function Commodity:GetTabLastUpdated(tabindex, itemlink)
+	local tab = Commodity:GetTabData(tabindex)
+	return tab.lastupdated
+end
+
 Commodity.eventtimes = {}
 
 Commodity:SetScript("OnEvent", Commodity.OnEvent)
 Commodity:RegisterEvent("ADDON_LOADED")
 Commodity:RegisterEvent("GUILDBANKBAGSLOTS_CHANGED")
+Commodity:RegisterEvent("CHAT_MSG_ADDON")
