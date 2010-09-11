@@ -97,7 +97,8 @@ function SlashCmdList.Commodity(msg)
 		if Commodity.tabsupdated then
 			for tabindex, one in pairs(Commodity.tabsupdated) do
 				Commodity:SetTabLastUpdated(tabindex)
-				Commodity:BroadcastTabLastUpdated(tabindex)
+				Commodity:BroadcastTabCommodities(tabindex)
+				Commodity:ScanGuildBankTab(tabindex)
 			end
 		end
 	else
@@ -144,6 +145,8 @@ function Commodity:OnEvent()
 		this:UnregisterEvent("ADDON_LOADED")
 		if not commodity_db then
 			commodity_db = {}
+			commodity_db.showtooltip = 1
+			commodity_db.overlayvisible = 1
 		end
 		if not commodity_db.overlayalpha then
 			commodity_db.overlayalpha = 0.2
@@ -172,9 +175,9 @@ function Commodity:OnEvent()
 			Commodity:SortGuildBankTab()
 		end
 		Commodity:SetGuildBankSlotOverlay()
-	elseif event == "CHAT_MSG_ADDON" and arg1 == "Commodity" and arg4 ~= GetUnitName("player") then
+	elseif event == "CHAT_MSG_ADDON" and arg1 == "Commodity" and arg3 == "GUILD" then -- and arg4 ~= GetUnitName("player") then
 		-- Commodity message from someone else than me
-		--print(arg1, arg2, arg3, arg4)
+		print(arg1, arg2, arg3, arg4)
 		local _, _, messagetype, data = string.find(arg2, "^(.)(.*)$")
 		if messagetype == "U" then
 			-- when a tab was last updated
@@ -183,10 +186,28 @@ function Commodity:OnEvent()
 			local ourdate = tonumber(Commodity:GetTabLastUpdated(tabindex))
 			if date > ourdate then
 				-- this person got more recent data than us, broadcast when our tab was last updated
-				Commodity:BroadcastTabLastUpdated(tabindex)
+				Commodity:BroadcastRequest(tabindex, arg4)
 			elseif date < ourdate then
-				-- this person got less recent data than us, we should share our data
-				Commodity:BroadcastTabCommodities(tabindex)
+				-- this person got less recent data than us, broadcast when our tab was last updated so person can request data
+				Commodity:BroadcastTabLastUpdated(tabindex)
+			end
+		elseif messagetype == "R" then
+			-- person requesting tab data to be dumped
+			local _, _, tabindex, player = string.find(data, "^(%d)(.+)$")
+			if player == GetUnitName("player") then
+				-- they want us to dump our data
+				-- check that we're not already dumping data for this tab
+				dump = 1
+				for index, message in ipairs(Commodity.broadcastqueue) do
+					if string.find(mesage, "^[BE]" .. tabindex) then
+						-- we are dumping this tab, don't queue it again
+						dump = nil
+						break
+					end
+				end
+				if dump then
+					Commodity:BroadcastTabCommodities(tabindex)
+				end
 			end
 		elseif messagetype == "B" then
 			-- beginning of item list
@@ -198,12 +219,19 @@ function Commodity:OnEvent()
 				date = date,
 				itemids = {}
 			}
+		elseif messagetype == "I" then
+			-- item
+			local _, _, itemid, slots = string.find(data, "^(%d+):(%d+)$")
+			local tabdata = Commodity.updatetabdata[arg4]
+			if tabdata then
+				tabdata.itemids[itemid] = slots
+			end
 		elseif messagetype == "E" then
 			-- end of item list
 			local _, _, tabindex, count = string.find(data, "^(%d)(%d+)$")
 			local tabdata = Commodity.updatetabdata[arg4]
-			local commodities = {}
 			if tabdata then
+				local commodities = {}
 				local count2 = 0
 				for itemid, slots in pairs(tabdata.itemids) do
 					local _, itemlink = GetItemInfo(itemid)
@@ -218,25 +246,21 @@ function Commodity:OnEvent()
 					count2 = count2 + 1
 				end
 				if count2 == tonumber(count) then
-					for slot, itemlink in pairs(commodities) do
-						if itemlink == "nil" then
-							itemlink = nil
+					-- only update if the data is more recent that what we got
+					if tonumber(tabdata.date) > Commodity:GetTabLastUpdated(tabindex) then
+						for slot, itemlink in pairs(commodities) do
+							if itemlink == "nil" then
+								itemlink = nil
+							end
+							Commodity:SetCommodityLink(tabindex, slot, itemlink)
 						end
-						Commodity:SetCommodityLink(tabindex, slot, itemlink)
+						Commodity:SetTabLastUpdated(tabindex, tabdata.date)
+						print(arg4 .. " sent us updated Commodity data for guild bank tab " .. tabindex .. "!")
+						Commodity:SetGuildBankSlotOverlay()
 					end
-					Commodity:SetTabLastUpdated(tabindex, tabdata.date)
-					print(arg4 .. " sent us updated Commodity data for guild bank tab " .. tabindex .. "!")
-					Commodity:SetGuildBankSlotOverlay()
 				else
 					print(arg4 .. " sent Commodity data, but we seem to have missed some of the transmission")
 				end
-			end
-		elseif messagetype == "I" then
-			-- item
-			local _, _, itemid, slots = string.find(data, "^(%d+):(%d+)$")
-			local tabdata = Commodity.updatetabdata[arg4]
-			if tabdata then
-				tabdata.itemids[itemid] = slots
 			end
 		end
 	end
@@ -248,41 +272,54 @@ function Commodity:OnUpdate(elapsed)
 		local message = table.remove(Commodity.broadcastqueue, 1)
 		if message then
 			SendAddonMessage("Commodity", message, "GUILD")
+			Commodity.broadcastdelay = 0.2
 		else
 			-- no more messages in queue
 			Commodity:SetScript("OnUpdate", nil)
 		end
-		Commodity.broadcastdelay = 0.2
 	end
 end
 
-function Commodity:ScanGuildBankTab()
-	local tabindex = GetCurrentGuildBankTab()
+function Commodity:ScanGuildBankTab(tabindex)
 	if not tabindex then
-		return
+		tabindex = GetCurrentGuildBankTab()
+		if not tabindex then
+			return
+		end
 	end
 	local changed
-	if commodity_db.items then
-		-- clear cached items in this tab
-		commodity_db.items[tabindex] = {}
-	end
+	-- clear cached items in this tab
+	local tab = Commodity:GetTabData(tabindex)
+	tab.items = {}
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local _, newamount = GetGuildBankItemInfo(tabindex, slot)
 		local newlink = GetGuildBankItemLink(tabindex, slot)
-		if not newamount then
-			newamount = 0
-		end
+		-- set slot data
 		local oldlink, oldamount = Commodity:GetSlotData(tabindex, slot)
 		if oldlink ~= newlink or oldamount ~= newamount then
 			changed = 1
 			Commodity:SetSlotData(tabindex, slot, newlink, newamount)
 		end
+		-- set commodity/item data
+		local commoditylink = Commodity:GetCommodityLink(tabindex, slot)
+		if commoditylink then
+			local _, _, _, _, _, _, _, stacksize = GetItemInfo(commoditylink)
+			if stacksize then
+				local itemamount, commodityamount = Commodity:GetItemData(tabindex, commoditylink)
+				if not commodityamount then
+					commodityamount = 0
+				end
+				commodityamount = commodityamount + stacksize
+				Commodity:SetItemData(tabindex, commoditylink, itemamount, commodityamount)
+			end
+		end
 		if newlink then
-			local itemamount = Commodity:GetItemAmount(tabindex, newlink)
+			local itemamount, commodityamount = Commodity:GetItemData(tabindex, newlink)
 			if not itemamount then
 				itemamount = 0
 			end
-			Commodity:SetItemAmount(tabindex, newlink, itemamount + newamount)
+			itemamount = itemamount + newamount
+			Commodity:SetItemData(tabindex, newlink, itemamount, commodityamount)
 		end
 	end
 	return changed
@@ -304,7 +341,7 @@ function Commodity:SetGuildBankSlotOverlay()
 		local overlay = _G["CommodityOverlayTexture" .. slot]
 		if Commodity.forceoverlay then
 			overlay:SetDrawLayer("OVERLAY")
-			overlay:SetAlpha(0.6)
+			overlay:SetAlpha(0.7)
 			if not texture then
 				texture = "Interface\\PaperDoll\\UI-Backpack-EmptySlot"
 			end
@@ -325,24 +362,23 @@ function Commodity:SortGuildBankTab()
 		return
 	end
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-		local commodity = Commodity:GetCommodityLink(tabindex, slot)
-		if commodity then
+		local commoditylink = Commodity:GetCommodityLink(tabindex, slot)
+		if commoditylink then
 			-- we want a certain item in this slot
 			local moveto
 			local movefrom
 			local partialmove
-			local item, amount = Commodity:GetSlotData(tabindex, slot)
-			if item then
-				local _, _, _, _, _, _, _, maxstacksize = GetItemInfo(item)
-				local _, amount = GetGuildBankItemInfo(tabindex, slot)
+			local itemlink, amount = Commodity:GetSlotData(tabindex, slot)
+			if itemlink then
+				local _, _, _, _, _, _, _, maxstacksize = GetItemInfo(itemlink)
 				-- there already is an item occupying this slot
-				if item == commodity then
+				if itemlink == commoditylink then
 					-- correct item in slot, but is the stack filled?
 					if amount < maxstacksize then
 						-- it's not filled, should do something about that
 						for slot2 = slot + 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-							local item2, amount2 = Commodity:GetSlotData(tabindex, slot2)
-							if item2 == item then
+							local itemlink2, amount2 = Commodity:GetSlotData(tabindex, slot2)
+							if itemlink2 == itemlink then
 								-- found another stack of same item
 								partialmove = math.min(maxstacksize - amount, amount2)
 								moveto = slot
@@ -354,17 +390,17 @@ function Commodity:SortGuildBankTab()
 				else
 					-- oh dear, wrong item in slot
 					for slot2 = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-						local item2, amount2 = Commodity:GetSlotData(tabindex, slot2)
+						local itemlink2, amount2 = Commodity:GetSlotData(tabindex, slot2)
 						local freeslot
-						local commodity2 = Commodity:GetCommodityLink(tabindex, slot2)
-						if not commodity2 or commodity2 == item then
+						local commoditylink2 = Commodity:GetCommodityLink(tabindex, slot2)
+						if not commoditylink2 or commoditylink2 == itemlink then
 							-- slot not reserved or reserved for same item
-							if not item2 or ((item2 ~= item and item2 == commodity) or (item2 == item and amount + amount2 <= maxstacksize)) then
+							if not itemlink2 or ((itemlink2 ~= itemlink and itemlink2 == commoditylink) or (itemlink2 == itemlink and amount + amount2 <= maxstacksize)) then
 								-- either empty slot or slot with same item and room enough to stack all items here
 								-- or the item we're swapping against actually want to be in current slot
 								moveto = slot2
 								movefrom = slot
-								if item2 then
+								if itemlink2 then
 									-- we do this to prevent that the misplaced item is temporarily placed in an empty slot
 									-- if it's just going to be moved to a (correct) reserved slot later
 									break
@@ -376,8 +412,8 @@ function Commodity:SortGuildBankTab()
 			else
 				-- no item currently in this slot
 				for slot2 = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-					local item2 = Commodity:GetSlotData(tabindex, slot2)
-					if item2 and (Commodity:GetCommodityLink(tabindex, slot2) ~= commodity or slot2 > slot) and item2 == commodity then
+					local itemlink2 = Commodity:GetSlotData(tabindex, slot2)
+					if itemlink2 and (Commodity:GetCommodityLink(tabindex, slot2) ~= commoditylink or slot2 > slot) and itemlink2 == commoditylink then
 						-- found an item that match this commodity
 						moveto = slot
 						movefrom = slot2
@@ -397,6 +433,48 @@ function Commodity:SortGuildBankTab()
 			end
 		end
 	end
+end
+
+function Commodity:UpdateTooltip()
+	if not commodity_db.showtooltip then
+		return
+	end
+	local itemname, itemlink = GameTooltip:GetItem()
+	if not itemlink then
+		return
+	end
+	for tabindex, tab in ipairs(commodity_db.tabs) do
+		local itemamount, commodityamount = Commodity:GetItemData(tabindex, itemlink)
+		if commodityamount and commodityamount > 0 then
+			if not itemamount then
+				itemamount = 0
+			end
+			local percent = itemamount / commodityamount
+			if percent > 1.0 then
+				percent = 1.0
+			end
+			local r
+			local g
+			local b = 0.0
+			if percent > 0.75 then
+				r = 1.0 - (percent - 0.75) * 4
+				g = 1.0
+			elseif percent > 0.25 then
+				r = 1.0
+				g = (percent - 0.25) * 2
+			else
+				r = 1.0
+				g = 0.0
+			end
+			GameTooltip:AddDoubleLine("Guild bank tab " .. tabindex, itemamount .. "/" .. commodityamount, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, r, g, b)
+		end
+	end
+end
+
+function Commodity:BroadcastRequest(tabindex, player)
+	-- used when logging on, tell people when you last saw the given tab updated
+	table.insert(Commodity.broadcastqueue, "R" .. tabindex .. player)
+	Commodity:SetScript("OnUpdate", Commodity.OnUpdate)
 end
 
 function Commodity:BroadcastTabLastUpdated(tabindex)
@@ -501,22 +579,30 @@ function Commodity:GetSlotData(tabindex, slot)
 	return slotdata.link, slotdata.amount
 end
 
-function Commodity:SetItemAmount(tabindex, itemlink, amount)
+function Commodity:SetItemData(tabindex, itemlink, itemamount, commodityamount)
 	local tab = Commodity:GetTabData(tabindex)
 	if not tab.items then
 		tab.items = {}
 	end
-	amount = tonumber(amount)
-	tab.items[itemlink] = amount
+	itemamount = tonumber(itemamount)
+	commodityamount = tonumber(commodityamount)
+	tab.items[itemlink] = {
+		itemamount = itemamount,
+		commodityamount = commodityamount
+	}
 end
 
-function Commodity:GetItemAmount(tabindex, itemlink)
+function Commodity:GetItemData(tabindex, itemlink)
 	local tab = Commodity:GetTabData(tabindex)
 	local items = tab.items
 	if not items then
 		return
 	end
-	return items[itemlink]
+	local item = items[itemlink]
+	if not item then
+		return
+	end
+	return item.itemamount, item.commodityamount
 end
 
 function Commodity:SetTabLastUpdated(tabindex, timestamp)

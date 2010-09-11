@@ -83,4 +83,38 @@
 			</OnLeave>
 		</Scripts>
 	</CheckButton>
+	<CheckButton name="CommodityShowTooltipCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
+		<Size> 
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="CommodityWithdrawItemsCheckButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="4" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				this:SetChecked(commodity_db.showtooltip)
+			</OnShow>
+			<OnClick>
+				commodity_db.showtooltip = this:GetChecked()
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText("Show guild bank status in tooltip for items that got reserved slots", nil, nil, nil, nil, 1)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	<Frame name="CommodityTooltipFrame" parent="GameTooltip" hidden="false">
+		<Scripts>
+			<OnShow>
+				Commodity:UpdateTooltip()
+			</OnShow>
+		</Scripts>
+	</Frame>
 </Ui>
