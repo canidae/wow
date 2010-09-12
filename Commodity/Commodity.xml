@@ -73,6 +73,9 @@
 			</OnShow>
 			<OnClick>
 				commodity_db.showtooltip = this:GetChecked()
+				if commodity_db.showtooltip then
+					CommodityTooltipFrame:SetScript("OnShow", Commodity.UpdateTooltip)
+				end
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -112,11 +115,5 @@
 		</Scripts>
 	</CheckButton>
 	-->
-	<Frame name="CommodityTooltipFrame" parent="GameTooltip" hidden="false">
-		<Scripts>
-			<OnShow>
-				Commodity:UpdateTooltip()
-			</OnShow>
-		</Scripts>
-	</Frame>
+	<Frame name="CommodityTooltipFrame" parent="GameTooltip" hidden="false" />
 </Ui>
