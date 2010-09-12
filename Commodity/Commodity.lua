@@ -15,10 +15,10 @@ function SlashCmdList.Commodity(msg)
 			if not itemlink then
 				itemname, itemlink, _, _, _, _, _, _, _, itemtexture = GetItemInfo(tonumber(rest))
 			end
-		end
-		if not itemlink then
-			print("I'm not familiar with item \"" .. rest .. "\"")
-			return
+			if not itemlink then
+				print("I'm not familiar with item \"" .. rest .. "\"")
+				return
+			end
 		end
 		-- hook functions preventing us from picking up items in guildbank
 		for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
@@ -77,8 +77,8 @@ function SlashCmdList.Commodity(msg)
 			Commodity.drawmode = 1
 			Commodity:SetGuildBankSlotOverlay()
 			-- show some help for new users as well
-			print("Draw with left mouse button, erase with left mouse button while holding shift down")
-			print("Right click on item in guild bank or right click while holding down shift on an already drawn item will set that item to be drawn")
+			print("Draw with left mouse button, erase with shift left mouse button")
+			print("Right click on drawn item or shift right click on guild bank item to draw that")
 		end
 		if itemlink and itemlink ~= Commodity.drawlink then
 			Commodity.drawlink = itemlink
@@ -135,9 +135,9 @@ function Commodity:Draw(slot)
 	elseif IsMouseButtonDown("RightButton") then
 		local item
 		if IsShiftKeyDown() then
-			item = Commodity:GetCommodityItemId(tabindex, slot)
-		else
 			item = GetGuildBankItemLink(tabindex, slot)
+		else
+			item = Commodity:GetCommodityItemId(tabindex, slot)
 		end
 		local drawlink, texture
 		if item then
