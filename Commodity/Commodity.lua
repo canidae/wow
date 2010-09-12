@@ -9,8 +9,14 @@ function SlashCmdList.Commodity(msg)
 			print("Guild bank window must be open")
 			return
 		end
-		local itemname, itemlink, _, _, _, _, _, _, _, itemtexture = GetItemInfo(rest)
-		if not itemlink and rest and rest ~= "" then
+		local itemname, itemlink, itemtexture
+		if rest and rest ~= "" then
+			itemname, itemlink, _, _, _, _, _, _, _, itemtexture = GetItemInfo(rest)
+			if not itemlink then
+				itemname, itemlink, _, _, _, _, _, _, _, itemtexture = GetItemInfo(tonumber(rest))
+			end
+		end
+		if not itemlink then
 			print("I'm not familiar with item \"" .. rest .. "\"")
 			return
 		end
@@ -70,6 +76,9 @@ function SlashCmdList.Commodity(msg)
 			Commodity.tabsupdated = {}
 			Commodity.drawmode = 1
 			Commodity:SetGuildBankSlotOverlay()
+			-- show some help for new users as well
+			print("Draw with left mouse button, erase with left mouse button while holding shift down")
+			print("Right click on item in guild bank or right click while holding down shift on an already drawn item will set that item to be drawn")
 		end
 		if itemlink and itemlink ~= Commodity.drawlink then
 			Commodity.drawlink = itemlink
@@ -126,9 +135,9 @@ function Commodity:Draw(slot)
 	elseif IsMouseButtonDown("RightButton") then
 		local item
 		if IsShiftKeyDown() then
-			item = GetGuildBankItemLink(tabindex, slot)
-		else
 			item = Commodity:GetCommodityItemId(tabindex, slot)
+		else
+			item = GetGuildBankItemLink(tabindex, slot)
 		end
 		local drawlink, texture
 		if item then
