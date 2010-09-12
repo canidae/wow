@@ -114,7 +114,7 @@ function SlashCmdList.Commodity(msg)
 		end
 	else
 		print("Commodity usage:")
-		print("/commodity draw [item] - Reserve slots for item by drawing it in guild bank")
+		print("/commodity draw [itemid or itemlink] - Reserve slots for item in guild bank")
 		print("/commodity done - Exit draw mode, will also broadcast changes to guild")
 	end
 end
