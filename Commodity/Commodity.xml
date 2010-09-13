@@ -13,10 +13,10 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_db.overlayvisible)
+				this:SetChecked(commodity_player.overlayvisible)
 			</OnShow>
 			<OnClick>
-				commodity_db.overlayvisible = this:GetChecked()
+				commodity_player.overlayvisible = this:GetChecked()
 				Commodity:SetGuildBankSlotOverlay()
 			</OnClick>
 			<OnEnter>
@@ -41,10 +41,10 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_db.sortguildbanktab)
+				this:SetChecked(commodity_player.sortguildbanktab)
 			</OnShow>
 			<OnClick>
-				commodity_db.sortguildbanktab = this:GetChecked()
+				commodity_player.sortguildbanktab = this:GetChecked()
 				Commodity:SortGuildBankTab()
 			</OnClick>
 			<OnEnter>
@@ -69,11 +69,11 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_db.showtooltip)
+				this:SetChecked(commodity_player.showtooltip)
 			</OnShow>
 			<OnClick>
-				commodity_db.showtooltip = this:GetChecked()
-				if commodity_db.showtooltip then
+				commodity_player.showtooltip = this:GetChecked()
+				if commodity_player.showtooltip then
 					CommodityTooltipFrame:SetScript("OnShow", Commodity.UpdateTooltip)
 				end
 			</OnClick>
@@ -100,10 +100,10 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_db.withdrawitems)
+				this:SetChecked(commodity_player.withdrawitems)
 			</OnShow>
 			<OnClick>
-				commodity_db.withdrawitems = this:GetChecked()
+				commodity_player.withdrawitems = this:GetChecked()
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")

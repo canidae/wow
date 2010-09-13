@@ -3,6 +3,7 @@
 ## Notes: Guild bank organizer
 ## Version: 100
 ## Author: canidae
-## SavedVariablesPerCharacter: commodity_db
+## SavedVariables: commodity_db
+## SavedVariablesPerCharacter: commodity_player
 ## Dependencies: Blizzard_GuildBankUI
 Commodity.xml

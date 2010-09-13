@@ -6,7 +6,7 @@ function SlashCmdList.Commodity(msg)
 	local command, rest = msg:match("^(%S*)%s*(.*)$")
 	if command == "draw" then
 		if not GuildBankFrame:IsVisible() then
-			print("Guild bank window must be open")
+			print("Guild bank window must be open.")
 			return
 		end
 		local itemname, itemlink, itemtexture
@@ -16,7 +16,7 @@ function SlashCmdList.Commodity(msg)
 				itemname, itemlink, _, _, _, _, _, _, _, itemtexture = GetItemInfo(tonumber(rest))
 			end
 			if not itemlink then
-				print("I'm not familiar with item \"" .. rest .. "\"")
+				print("I'm not familiar with item \"" .. rest .. "\".")
 				return
 			end
 		end
@@ -77,8 +77,8 @@ function SlashCmdList.Commodity(msg)
 			Commodity.drawmode = 1
 			Commodity:SetGuildBankSlotOverlay()
 			-- show some help for new users as well
-			print("Draw with left mouse button, erase with shift left mouse button")
-			print("Right click on drawn item or shift right click on guild bank item to draw that")
+			print("Draw with left mouse button, erase with shift left mouse button.")
+			print("Right click on drawn item or shift right click on guild bank item to draw that.")
 		end
 		if itemlink and itemlink ~= Commodity.drawlink then
 			Commodity.drawlink = itemlink
@@ -161,11 +161,20 @@ function Commodity:OnEvent()
 		this:UnregisterEvent("ADDON_LOADED")
 		if not commodity_db then
 			commodity_db = {}
-			commodity_db.showtooltip = 1
-			commodity_db.overlayvisible = 1
+			print("Hi! You seem to be new to Commodity, or somehow the Commodity database was deleted.")
+			print("To get started, look at the top right corner of your guild bank, also write \"/commodity\" in your chat box :)")
 		end
-		if not commodity_db.overlayalpha then
-			commodity_db.overlayalpha = 0.25
+		if not commodity_db.guilds then
+			commodity_db.guilds = {}
+		end
+		if not commodity_player then
+			commodity_player = {
+				showtooltip = 1,
+				overlayvisible = 1
+			}
+		end
+		if not commodity_player.overlayalpha then
+			commodity_player.overlayalpha = 0.25
 		end
 		-- create overlay frames
 		for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
@@ -179,27 +188,20 @@ function Commodity:OnEvent()
 			overlay:SetAllPoints(button)
 		end
 		-- should we show tooltip?
-		if commodity_db.showtooltip then
+		if commodity_player.showtooltip then
 			CommodityTooltipFrame:SetScript("OnShow", Commodity.UpdateTooltip)
 		end
 		-- broadcast queue, for sending data to other clients at a sane speed
 		Commodity.broadcastqueue = {}
 		Commodity.broadcastdelay = 0
-		-- and broadcast our status in case someone got updated data
-		for tabindex = 1, 6 do
-			Commodity:BroadcastTabLastUpdated(tabindex)
-		end
 	elseif event == "GUILDBANKBAGSLOTS_CHANGED" then
 		if Commodity:ScanGuildBankTab() then
 			-- only sort if tab is changed
 			Commodity:SortGuildBankTab()
 		end
 		Commodity:SetGuildBankSlotOverlay()
-	elseif event == "CHAT_MSG_ADDON" and arg1 == "Commodity" and arg3 == "GUILD" and (commodity_db.broadcastdebug or arg4 ~= GetUnitName("player")) then
+	elseif event == "CHAT_MSG_ADDON" and arg1 == "Commodity" and arg3 == "GUILD" and arg4 ~= GetUnitName("player") then
 		-- Commodity message from someone else than me
-		if commodity_db.broadcastdebug then
-			print(arg1, arg2, arg3, arg4)
-		end
 		local _, _, messagetype, data = string.find(arg2, "^(.)(.*)$")
 		if messagetype == "U" then
 			-- when a tab was last updated
@@ -241,42 +243,76 @@ function Commodity:OnEvent()
 				timestamp = tonumber(timestamp),
 				itemids = {}
 			}
-		elseif messagetype == "I" then
+		elseif messagetype == "I" and Commodity.updatetabdata and Commodity.updatetabdata[arg4] then
 			-- item
 			local _, _, itemid, slots = string.find(data, "^(%d+):(%d+)$")
 			local tabdata = Commodity.updatetabdata[arg4]
-			if tabdata then
-				tabdata.itemids[itemid] = slots
-			end
-		elseif messagetype == "E" then
+			tabdata.itemids[itemid] = slots
+		elseif messagetype == "E" and Commodity.updatetabdata and Commodity.updatetabdata[arg4] then
 			-- end of item list
 			local _, _, tabindex, count = string.find(data, "^(%d)(%d+)$")
 			local tabdata = Commodity.updatetabdata[arg4]
-			if tabdata then
-				local commodities = {}
-				local count2 = 0
-				for itemid, slots in pairs(tabdata.itemids) do
-					local length = strlen(slots)
-					for start = 1, length, 2 do
-						local slot = strsub(slots, start, start + 1)
-						commodities[slot] = itemid
-					end
-					count2 = count2 + 1
+			local commodities = {}
+			local count2 = 0
+			for itemid, slots in pairs(tabdata.itemids) do
+				local length = strlen(slots)
+				for start = 1, length, 2 do
+					local slot = strsub(slots, start, start + 1)
+					commodities[slot] = itemid
 				end
-				if count2 == tonumber(count) then
-					-- only update if the data is more recent than what we got
-					if tabdata.timestamp > Commodity:GetTabLastUpdated(tabindex) then
-						for slot, itemid in pairs(commodities) do
-							Commodity:SetCommodityItemId(tabindex, slot, itemid)
-						end
-						Commodity:SetTabLastUpdated(tabindex, tabdata.timestamp)
-						print(arg4 .. " sent us updated Commodity data for guild bank tab " .. tabindex .. "!")
-						Commodity:SetGuildBankSlotOverlay()
+				count2 = count2 + 1
+			end
+			if count2 == tonumber(count) then
+				-- only update if the data is more recent than what we got
+				if tabdata.timestamp > Commodity:GetTabLastUpdated(tabindex) then
+					for slot, itemid in pairs(commodities) do
+						Commodity:SetCommodityItemId(tabindex, slot, itemid)
 					end
-				else
-					print(arg4 .. " sent Commodity data, but we seem to have missed some of the transmission", count, count2)
+					Commodity:SetTabLastUpdated(tabindex, tabdata.timestamp)
+					print(arg4 .. " sent us updated Commodity data for guild bank tab " .. tabindex .. "!")
+					Commodity:SetGuildBankSlotOverlay()
+				end
+			else
+				print(arg4 .. " sent Commodity data, but we seem to have missed some of the transmission.")
+			end
+			Commodity.updatetabdata[arg4] = nil
+		end
+	end
+	if event == "ADDON_LOADED" or (event == "PLAYER_GUILD_UPDATE" and timesincelast > 0.01) then
+		-- figure out which guild we're in
+		-- this is slightly annoying, while "PLAYER_GUILD_UPDATE" should by all means of logic be the only event necessary,
+		-- it's not quite that simple in the World of Warcraft.
+		-- when you enter the world for the first time with a character, "ADDON_LOADED" is fired, and at this time,
+		-- GetGuildName() will return nil.
+		-- However, then "PLAYER_GUILD_UPDATE" will be fired like 100 times(!) before going completely silent,
+		-- and before this is done spamming, GetGuildInfo() should return our guild name.
+		-- Now on the other hand, if we /reload the game then "PLAYER_GUILD_UPDATE" won't be fired at all,
+		-- but seemingly GetGuildInfo() returns our guild name when event "ADDON_LOADED" is sent.
+		-- In case player decides to join another guild we should look for "PLAYER_GUILD_UPDATE" events.
+		-- *sigh*
+		local realmname = GetRealmName()
+		local guildname = GetGuildInfo("player")
+		if realmname and guildname then
+			local realmguild = realmname .. " - " .. guildname
+			if realmguild ~= Commodity.realmguild then
+				local guilds = commodity_db.guilds
+				if not guilds[realmguild] then
+					guilds[realmguild] = {}
+				end
+				local guild = guilds[realmguild]
+				if not guild.tabs then
+					guild.tabs = {}
+				end
+				Commodity.realmguild = realmguild
+				Commodity.tabs = guild.tabs
+				-- and broadcast our status in case someone got updated data
+				for tabindex = 1, 6 do
+					Commodity:BroadcastTabLastUpdated(tabindex)
 				end
 			end
+		else
+			Commodity.realmguild = nil
+			Commodity.tabs = nil
 		end
 	end
 end
@@ -302,10 +338,13 @@ function Commodity:ScanGuildBankTab(tabindex)
 			return
 		end
 	end
-	local changed
 	-- clear cached items in this tab
 	local tab = Commodity:GetTabData(tabindex)
+	if not tab then
+		return
+	end
 	tab.items = {}
+	local changed
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local _, newamount = GetGuildBankItemInfo(tabindex, slot)
 		if newamount == 0 then
@@ -355,7 +394,7 @@ function Commodity:SetGuildBankSlotOverlay()
 	end
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local texture
-		if Commodity.drawmode or commodity_db.overlayvisible then
+		if Commodity.drawmode or commodity_player.overlayvisible then
 			local itemid = Commodity:GetCommodityItemId(tabindex, slot)
 			if itemid then
 				_, _, _, _, _, _, _, _, _, texture = GetItemInfo(itemid)
@@ -370,14 +409,14 @@ function Commodity:SetGuildBankSlotOverlay()
 			end
 		else
 			overlay:SetDrawLayer("BACKGROUND")
-			overlay:SetAlpha(commodity_db.overlayalpha)
+			overlay:SetAlpha(commodity_player.overlayalpha)
 		end
 		overlay:SetTexture(texture)
 	end
 end
 
 function Commodity:SortGuildBankTab()
-	if not commodity_db.sortguildbanktab then
+	if not commodity_player.sortguildbanktab then
 		return
 	end
 	local tabindex = GetCurrentGuildBankTab()
@@ -457,7 +496,7 @@ function Commodity:SortGuildBankTab()
 end
 
 function Commodity:UpdateTooltip()
-	if not commodity_db.showtooltip then
+	if not commodity_player.showtooltip or not Commodity.tabs then
 		return
 	end
 	local itemname, itemlink = GameTooltip:GetItem()
@@ -469,7 +508,7 @@ function Commodity:UpdateTooltip()
 	if not itemid then
 		return
 	end
-	for tabindex, tab in ipairs(commodity_db.tabs) do
+	for tabindex, tab in ipairs(Commodity.tabs) do
 		local itemamount, commodityamount = Commodity:GetItemData(tabindex, itemid)
 		if commodityamount and commodityamount > 0 then
 			if not itemamount then
@@ -541,19 +580,21 @@ function Commodity:BroadcastTabCommodities(tabindex)
 end
 
 function Commodity:GetTabData(tabindex)
-	if not commodity_db.tabs then
-		commodity_db.tabs = {}
+	if not Commodity.tabs then
+		return
 	end
-	local tabs = commodity_db.tabs
 	tabindex = tonumber(tabindex)
-	if not tabs[tabindex] then
-		tabs[tabindex] = {}
+	if not Commodity.tabs[tabindex] then
+		Commodity.tabs[tabindex] = {}
 	end
-	return tabs[tabindex]
+	return Commodity.tabs[tabindex]
 end
 
 function Commodity:SetCommodityItemId(tabindex, slot, commodityitemid)
 	local tab = Commodity:GetTabData(tabindex)
+	if not tab then
+		return
+	end
 	if not tab.commodities then
 		tab.commodities = {}
 	end
@@ -572,6 +613,9 @@ end
 
 function Commodity:GetCommodityItemId(tabindex, slot)
 	local tab = Commodity:GetTabData(tabindex)
+	if not tab then
+		return
+	end
 	local commodities = tab.commodities
 	if not commodities then
 		return
@@ -582,6 +626,9 @@ end
 
 function Commodity:SetSlotData(tabindex, slot, itemid, amount)
 	local tab = Commodity:GetTabData(tabindex)
+	if not tab then
+		return
+	end
 	if not tab.slots then
 		tab.slots = {}
 	end
@@ -602,6 +649,9 @@ end
 
 function Commodity:GetSlotData(tabindex, slot)
 	local tab = Commodity:GetTabData(tabindex)
+	if not tab then
+		return
+	end
 	local slots = tab.slots
 	if not slots then
 		return
@@ -616,6 +666,9 @@ end
 
 function Commodity:SetItemData(tabindex, itemid, itemamount, commodityamount)
 	local tab = Commodity:GetTabData(tabindex)
+	if not tab then
+		return
+	end
 	if not tab.items then
 		tab.items = {}
 	end
@@ -639,6 +692,9 @@ end
 
 function Commodity:GetItemData(tabindex, itemid)
 	local tab = Commodity:GetTabData(tabindex)
+	if not tab then
+		return
+	end
 	local items = tab.items
 	if not items then
 		return
@@ -653,6 +709,9 @@ end
 
 function Commodity:SetTabLastUpdated(tabindex, timestamp)
 	local tab = Commodity:GetTabData(tabindex)
+	if not tab then
+		return
+	end
 	if not timestamp then
 		local _, month, day, year = CalendarGetDate()
 		if month < 10 then
@@ -675,7 +734,7 @@ end
 
 function Commodity:GetTabLastUpdated(tabindex)
 	local tab = Commodity:GetTabData(tabindex)
-	if tab.lastupdated then
+	if tab and tab.lastupdated then
 		return tab.lastupdated
 	end
 	return 0
@@ -685,5 +744,6 @@ Commodity.eventtimes = {}
 
 Commodity:SetScript("OnEvent", Commodity.OnEvent)
 Commodity:RegisterEvent("ADDON_LOADED")
+Commodity:RegisterEvent("PLAYER_GUILD_UPDATE")
 Commodity:RegisterEvent("GUILDBANKBAGSLOTS_CHANGED")
 Commodity:RegisterEvent("CHAT_MSG_ADDON")
