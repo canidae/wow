@@ -455,13 +455,12 @@ function Commodity:SortGuildBankTab()
 						if not commodityitemid2 or commodityitemid2 == itemid then
 							-- slot not reserved or reserved for same item
 							if not itemid2 or ((itemid2 ~= itemid and itemid2 == commodityitemid) or (itemid2 == itemid and amount + amount2 <= maxstacksize)) then
-								-- either empty slot or slot with same item and room enough to stack all items here
-								-- or the item we're swapping against actually want to be in current slot
+								-- (empty slot) or (<slot2> is occupied by item that should go in <slot>) or (same item in <slot> and <slot2> and we can stack them)
 								moveto = slot2
 								movefrom = slot
-								if itemid2 then
-									-- we do this to prevent that the misplaced item is temporarily placed in an empty slot
-									-- if it's just going to be moved to a (correct) reserved slot later
+								if itemid2 or commodityitemid2 then
+									-- if we can place item in reserved slot or stack item, break
+									-- otherwise, place items to the bottom right corner of guild bank
 									break
 								end
 							end
