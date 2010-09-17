@@ -38,7 +38,7 @@ function SlashCmdList.Commodity(msg)
 				Commodity["UpdateTooltip" .. slot] = button.UpdateTooltip
 				-- no point doing this more than once either
 				button:SetScript("OnMouseDown", function(self, mouse, down)
-					Commodity:Draw(slot)
+					Commodity:Draw(slot, 1)
 					self:UpdateTooltip(self)
 				end)
 				button:SetScript("OnEnter", function(self, motion)
@@ -76,9 +76,10 @@ function SlashCmdList.Commodity(msg)
 			Commodity.tabsupdated = {}
 			Commodity.drawmode = 1
 			Commodity:SetGuildBankSlotOverlay()
-			-- show some help for new users as well
-			print("Draw with left mouse button, erase with shift left mouse button.")
+			-- show some help for users as well
 			print("Right click on drawn item or shift right click on guild bank item to draw that.")
+			print("Draw with left mouse button, erase with shift left mouse button.")
+			print("Left click again to increase stack size by 1, hold down ctrl to increase by 5.")
 		end
 		if itemlink and itemlink ~= Commodity.drawlink then
 			Commodity.drawlink = itemlink
@@ -111,6 +112,7 @@ function SlashCmdList.Commodity(msg)
 			end
 			-- sort open tab as well
 			Commodity:SortGuildBankTab()
+			print("Done drawing, broadcasting changes")
 		end
 	else
 		print("Commodity usage:")
@@ -119,17 +121,29 @@ function SlashCmdList.Commodity(msg)
 	end
 end
 
-function Commodity:Draw(slot)
+function Commodity:Draw(slot, increasestack)
 	local tabindex = GetCurrentGuildBankTab()
 	if not tabindex or not slot then
 		return
 	end
 	if IsMouseButtonDown("LeftButton") then
 		if IsShiftKeyDown() then
-			Commodity:SetCommodityData(tabindex, slot, nil)
+			Commodity:SetCommodityData(tabindex, slot, nil, nil)
 		elseif Commodity.drawlink then
+			local commodityitemid, stacksize = Commodity:GetCommodityData(tabindex, slot)
 			local _, _, itemid = string.find(Commodity.drawlink, "item:(%d+):")
-			Commodity:SetCommodityData(tabindex, slot, itemid)
+			local _, _, _, _, _, _, _, maxstacksize = GetItemInfo(itemid)
+			if commodityitemid == tonumber(itemid) then
+				if increasestack then
+					if IsControlKeyDown() then
+						stacksize = stacksize + 4
+					end
+					stacksize = math.fmod(stacksize, maxstacksize) + 1
+				end
+			else
+				stacksize = maxstacksize
+			end
+			Commodity:SetCommodityData(tabindex, slot, itemid, stacksize)
 		end
 		Commodity:SetGuildBankSlotOverlay()
 	elseif IsMouseButtonDown("RightButton") then
@@ -176,6 +190,29 @@ function Commodity:OnEvent()
 		if not commodity_player.overlayalpha then
 			commodity_player.overlayalpha = 0.25
 		end
+		if not commodity_player.overlaydrawalpha then
+			commodity_player.overlaydrawalpha = 0.7
+		end
+		-- update database if it's changed
+		if not commodity_db.databaseversion then
+			-- early beta didn't have a stack size per slot (nor a databaseversion)
+			for guildname, guilddata in pairs(commodity_db.guilds) do
+				if guilddata.tabs then
+					for tabindex, tab in pairs(guilddata.tabs) do
+						if tab.commodities then
+							for slot, commodityitemid in pairs(tab.commodities) do
+								local _, _, _, _, _, _, _, maxstacksize = GetItemInfo(commodityitemid)
+								tab.commodities[slot] = {
+									itemid = commodityitemid,
+									stacksize = maxstacksize
+								}
+							end
+						end
+					end
+				end
+			end
+			commodity_db.databaseversion = 1
+		end
 		-- create overlay frames
 		for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 			index = math.fmod(slot, NUM_SLOTS_PER_GUILDBANK_GROUP)
@@ -185,8 +222,9 @@ function Commodity:OnEvent()
 			local column = math.ceil((slot - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
 			local button = _G["GuildBankColumn" .. column .. "Button" .. index]
 			local overlay = button:CreateTexture("CommodityOverlayTexture" .. slot, "BACKGROUND")
-			-- TODO: fontstring with stacksize
+			local overlaytext = button:CreateFontString("CommodityOverlayText" .. slot, "BACKGROUND", "NumberFontNormal")
 			overlay:SetAllPoints(button)
+			overlaytext:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
 		end
 		-- should we show tooltip?
 		if commodity_player.showtooltip then
@@ -207,19 +245,21 @@ function Commodity:OnEvent()
 		if messagetype == "U" then
 			-- when a tab was last updated
 			local _, _, tabindex, timestamp = string.find(data, "^(%d)(%d+)$")
-			timestamp = tonumber(timestamp)
-			local ourtimestamp = Commodity:GetTabLastUpdated(tabindex)
-			if timestamp > ourtimestamp then
-				-- this person got more recent data than us, request person to dump tab commodities
-				Commodity:BroadcastRequest(tabindex, arg4)
-			elseif timestamp < ourtimestamp then
-				-- this person got less recent data than us, broadcast when our tab was last updated so person can request data
-				Commodity:BroadcastTabLastUpdated(tabindex)
+			if tabindex and timestamp then
+				timestamp = tonumber(timestamp)
+				local ourtimestamp = Commodity:GetTabLastUpdated(tabindex)
+				if timestamp > ourtimestamp then
+					-- this person got more recent data than us, request person to dump tab commodities
+					Commodity:BroadcastRequest(tabindex, arg4)
+				elseif timestamp < ourtimestamp then
+					-- this person got less recent data than us, broadcast when our tab was last updated so person can request data
+					Commodity:BroadcastTabLastUpdated(tabindex)
+				end
 			end
 		elseif messagetype == "R" then
 			-- person requesting tab data to be dumped
 			local _, _, tabindex, player = string.find(data, "^(%d)(.+)$")
-			if player == GetUnitName("player") then
+			if tabindex and player == GetUnitName("player") then
 				-- they want us to dump our data
 				-- check that we're not already dumping data for this tab
 				local dump = 1
@@ -237,46 +277,52 @@ function Commodity:OnEvent()
 		elseif messagetype == "B" then
 			-- beginning of item list
 			local _, _, tabindex, timestamp = string.find(data, "^(%d)(%d+)$")
-			if not Commodity.updatetabdata then
-				Commodity.updatetabdata = {}
+			if tabindex and timestamp and Commodity:GetTabLastUpdated(tabindex) < tonumber(timestamp) then
+				if not Commodity.updatetabdata then
+					Commodity.updatetabdata = {}
+				end
+				Commodity.updatetabdata[arg4] = {
+					timestamp = tonumber(timestamp),
+					itemids = {}
+				}
 			end
-			Commodity.updatetabdata[arg4] = {
-				timestamp = tonumber(timestamp),
-				itemids = {}
-			}
 		elseif messagetype == "I" and Commodity.updatetabdata and Commodity.updatetabdata[arg4] then
 			-- item
-			local _, _, itemid, slots = string.find(data, "^(%d+):(%d+)$")
-			local tabdata = Commodity.updatetabdata[arg4]
-			tabdata.itemids[itemid] = slots
+			if Commodity.updatetabdata then
+				local _, _, itemidandstacksize, slots = string.find(data, "^(%d+:%d+):(%d+)$")
+				local tabdata = Commodity.updatetabdata[arg4]
+				if itemidandstacksize and slots and tabdata then
+					tabdata.itemids[itemidandstacksize] = slots
+				end
+			end
 		elseif messagetype == "E" and Commodity.updatetabdata and Commodity.updatetabdata[arg4] then
 			-- end of item list
-			local _, _, tabindex, count = string.find(data, "^(%d)(%d+)$")
-			local tabdata = Commodity.updatetabdata[arg4]
-			local commodities = {}
-			local count2 = 0
-			for itemid, slots in pairs(tabdata.itemids) do
-				local length = strlen(slots)
-				for start = 1, length, 2 do
-					local slot = strsub(slots, start, start + 1)
-					commodities[slot] = itemid
-				end
-				count2 = count2 + 1
-			end
-			if count2 == tonumber(count) then
-				-- only update if the data is more recent than what we got
-				if tabdata.timestamp > Commodity:GetTabLastUpdated(tabindex) then
-					for slot, itemid in pairs(commodities) do
-						Commodity:SetCommodityData(tabindex, slot, itemid)
+			if Commodity.updatetabdata then
+				local _, _, tabindex, count = string.find(data, "^(%d)(%d+)$")
+				local tabdata = Commodity.updatetabdata[arg4]
+				if tabindex and count and tabdata then
+					local count2 = 0
+					if tabdata.timestamp > Commodity:GetTabLastUpdated(tabindex) then
+						for itemidandstacksize, slots in pairs(tabdata.itemids) do
+							local _, _, itemid, stacksize = string.find(itemidandstacksize, "(%d+):(%d+)")
+							local length = strlen(slots)
+							for start = 1, length, 2 do
+								local slot = strsub(slots, start, start + 1)
+								Commodity:SetCommodityData(tabindex, slot, itemid, stacksize)
+							end
+							count2 = count2 + 1
+						end
+						if count2 == tonumber(count) then
+							Commodity:SetTabLastUpdated(tabindex, tabdata.timestamp)
+							print(arg4 .. " sent us updated Commodity data for guild bank tab " .. tabindex .. "!")
+							Commodity:SetGuildBankSlotOverlay()
+						else
+							print(arg4 .. " sent Commodity data, but we seem to have missed some of the transmission. Got " .. count2 .. " items, expected " .. count .. ".")
+						end
 					end
-					Commodity:SetTabLastUpdated(tabindex, tabdata.timestamp)
-					print(arg4 .. " sent us updated Commodity data for guild bank tab " .. tabindex .. "!")
-					Commodity:SetGuildBankSlotOverlay()
+					Commodity.updatetabdata[arg4] = nil
 				end
-			else
-				print(arg4 .. " sent Commodity data, but we seem to have missed some of the transmission.")
 			end
-			Commodity.updatetabdata[arg4] = nil
 		end
 	end
 	if event == "ADDON_LOADED" or (event == "PLAYER_GUILD_UPDATE" and timesincelast > 0.01) then
@@ -324,7 +370,7 @@ function Commodity:OnUpdate(elapsed)
 		local message = table.remove(Commodity.broadcastqueue, 1)
 		if message then
 			SendAddonMessage("Commodity", message, "GUILD")
-			Commodity.broadcastdelay = 0.2
+			Commodity.broadcastdelay = 0.3
 		else
 			-- no more messages in queue
 			Commodity:SetScript("OnUpdate", nil)
@@ -367,7 +413,7 @@ function Commodity:ScanGuildBankTab(tabindex)
 		local commodityitemid, stacksize = Commodity:GetCommodityData(tabindex, slot)
 		if commodityitemid then
 			local _, _, _, _, _, _, _, maxstacksize = GetItemInfo(commodityitemid)
-			if not stacksize or stacksize > maxstacksize then
+			if not stacksize then
 				stacksize = maxstacksize
 			end
 			if stacksize then
@@ -396,26 +442,33 @@ function Commodity:SetGuildBankSlotOverlay()
 	if not tabindex then
 		return
 	end
+	if not Commodity.drawmode and not commodity_player.overlayvisible then
+		return
+	end
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local texture
-		if Commodity.drawmode or commodity_player.overlayvisible then
-			local itemid = Commodity:GetCommodityData(tabindex, slot)
-			if itemid then
-				_, _, _, _, _, _, _, _, _, texture = GetItemInfo(itemid)
-			end
+		local itemid, stacksize = Commodity:GetCommodityData(tabindex, slot)
+		if itemid then
+			_, _, _, _, _, _, _, _, _, texture = GetItemInfo(itemid)
 		end
 		local overlay = _G["CommodityOverlayTexture" .. slot]
+		local overlaytext = _G["CommodityOverlayText" .. slot]
 		if Commodity.drawmode then
 			overlay:SetDrawLayer("OVERLAY")
-			overlay:SetAlpha(0.7)
+			overlay:SetAlpha(commodity_player.overlaydrawalpha)
+			overlaytext:SetDrawLayer("OVERLAY")
+			overlaytext:SetAlpha(1.0)
 			if not texture then
 				texture = "Interface\\PaperDoll\\UI-Backpack-EmptySlot"
 			end
 		else
 			overlay:SetDrawLayer("BACKGROUND")
 			overlay:SetAlpha(commodity_player.overlayalpha)
+			overlaytext:SetDrawLayer("BACKGROUND")
+			overlaytext:SetAlpha(commodity_player.overlayalpha)
 		end
 		overlay:SetTexture(texture)
+		overlaytext:SetText(stacksize)
 	end
 end
 
@@ -436,7 +489,7 @@ function Commodity:SortGuildBankTab()
 			if itemid then
 				-- there already is an item occupying this slot
 				local _, _, _, _, _, _, _, maxstacksize = GetItemInfo(itemid)
-				if not stacksize or stacksize > maxstacksize then
+				if not stacksize then
 					stacksize = maxstacksize
 				end
 				if itemid == commodityitemid then
@@ -457,12 +510,15 @@ function Commodity:SortGuildBankTab()
 						-- actually, we got too many items in this stack, split it up
 						for slot2 = slot + 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 							local itemid2, amount2 = Commodity:GetSlotData(tabindex, slot2)
+							if not amount2 then
+								amount2 = 0
+							end
 							local commodityitemid2, stacksize2 = Commodity:GetCommodityData(tabindex, slot2)
-							if itemid2 == itemid and commodityitemid2 == itemid and amount2 < stacksize2 then
+							if (not itemid2 and commodityitemid2 == itemid) or (itemid2 == itemid and amount2 < stacksize2) then
 								-- found another stack of same item that got room for more items
 								partialmove = math.min(amount - stacksize, stacksize2 - amount2)
-								moveto = slot
-								movefrom = slot2
+								moveto = slot2
+								movefrom = slot
 								break
 							end
 						end
@@ -535,7 +591,7 @@ function Commodity:UpdateTooltip()
 	if not itemid then
 		return
 	end
-	for tabindex, tab in ipairs(Commodity.tabs) do
+	for tabindex, tab in pairs(Commodity.tabs) do
 		local itemamount, commodityamount = Commodity:GetItemData(tabindex, itemid)
 		if commodityamount and commodityamount > 0 then
 			if not itemamount then
@@ -584,8 +640,10 @@ function Commodity:BroadcastTabCommodities(tabindex)
 			commodityitemid = 0
 		end
 		if not stacksize then
-			local _, _, _, _, _, _, _, maxstacksize = GetItemInfo(commodityitemid)
-			stacksize = maxstacksize
+			_, _, _, _, _, _, _, stacksize = GetItemInfo(commodityitemid)
+		end
+		if not stacksize then
+			stacksize = 0
 		end
 		local itemidandstacksize = commodityitemid .. ":" .. stacksize
 		if not commodities[itemidandstacksize] then
@@ -632,8 +690,12 @@ function Commodity:SetCommodityData(tabindex, slot, itemid, stacksize)
 	end
 	slot = tonumber(slot)
 	itemid = tonumber(itemid)
+	stacksize = tonumber(stacksize)
 	if itemid == 0 then
 		itemid = nil
+	end
+	if stacksize == 0 then
+		stacksize = nil
 	end
 	tab.commodities[slot] = {
 		itemid = itemid,
