@@ -481,96 +481,110 @@ function Commodity:SortGuildBankTab()
 		return
 	end
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+		local itemid, amount = Commodity:GetSlotData(tabindex, slot)
+		if not amount then
+			amount = 0
+		end
 		local commodityitemid, stacksize = Commodity:GetCommodityData(tabindex, slot)
-		if commodityitemid then
-			-- we want a certain item in this slot
-			local moveto, movefrom, partialmove
-			local itemid, amount = Commodity:GetSlotData(tabindex, slot)
-			if itemid then
-				-- there already is an item occupying this slot
-				local _, _, _, _, _, _, _, maxstacksize = GetItemInfo(itemid)
-				if not stacksize then
-					stacksize = maxstacksize
-				end
-				if itemid == commodityitemid then
-					-- correct item in slot, but is the stack filled?
-					if amount < stacksize then
-						-- stack is not filled, should do something about that
-						for slot2 = slot + 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-							local itemid2, amount2 = Commodity:GetSlotData(tabindex, slot2)
-							if itemid2 == itemid then
-								-- found another stack of same item
-								partialmove = math.min(stacksize - amount, amount2)
+		if itemid and not stacksize then
+			_, _, _, _, _, _, _, stacksize = GetItemInfo(itemid)
+		end
+		if commodityitemid and (not itemid or commodityitemid ~= itemid or amount ~= stacksize) then
+			-- reserved slot, but wrong item here, or too few/many items in stack
+			local moveto, movefrom, moveamount
+			for slot2 = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+				if slot2 ~= slot then
+					local itemid2, amount2 = Commodity:GetSlotData(tabindex, slot2)
+					if not amount2 then
+						amount2 = 0
+					end
+					local commodityitemid2, stacksize2 = Commodity:GetCommodityData(tabindex, slot2)
+					if itemid2 and not stacksize2 then
+						_, _, _, _, _, _, _, stacksize2 = GetItemInfo(itemid2)
+					end
+					if not itemid then
+						-- no item in reserved slot <slot>, move a matching stack of items there
+						if itemid2 and itemid2 == commodityitemid then
+							-- item in <slot2> match the reservation in <slot>
+							if itemid2 ~= commodityitemid2 or slot2 > slot then
+								-- this item is in a slot reserved for another item or it is in a later slot
 								moveto = slot
 								movefrom = slot2
-								break
-							end
-						end
-					elseif amount > stacksize then
-						-- actually, we got too many items in this stack, split it up
-						for slot2 = slot + 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-							local itemid2, amount2 = Commodity:GetSlotData(tabindex, slot2)
-							if not amount2 then
-								amount2 = 0
-							end
-							local commodityitemid2, stacksize2 = Commodity:GetCommodityData(tabindex, slot2)
-							if (not itemid2 and commodityitemid2 == itemid) or (itemid2 == itemid and amount2 < stacksize2) then
-								-- found another stack of same item that got room for more items
-								partialmove = math.min(amount - stacksize, stacksize2 - amount2)
-								moveto = slot2
-								movefrom = slot
-								break
-							end
-						end
-					end
-				else
-					-- oh dear, wrong item in slot
-					for slot2 = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-						local itemid2, amount2 = Commodity:GetSlotData(tabindex, slot2)
-						local commodityitemid2, stacksize2 = Commodity:GetCommodityData(tabindex, slot2)
-						if not commodityitemid2 or commodityitemid2 == itemid then
-							-- slot not reserved or reserved for same item
-							if not itemid2 or ((itemid2 ~= itemid and itemid2 == commodityitemid) or (itemid2 == itemid and amount2 < stacksize2)) then
-								-- (empty slot) or (<slot2> is occupied by item that should go in <slot>) or (same item in <slot> and <slot2> and we can stack them)
-								moveto = slot2
-								movefrom = slot
-								if itemid2 or commodityitemid2 then
-									-- if we can place item in reserved slot or stack item, break
-									-- otherwise, place items to the bottom right corner of guild bank
-									if itemid2 and amount + amount2 > stacksize2 then
-										-- stacking, but can't move all items as that would exceed target stack limit
-										partialmove = stacksize2 - amount2
-									end
+								moveamount = math.min(stacksize, amount2)
+								if itemid2 ~= commodityitemid2 then
+									-- only break when we're moving a misplaced item
 									break
 								end
+							elseif amount2 > stacksize2 then
+								-- there are too many items in this slot!
+								moveto = slot
+								movefrom = slot2
+								moveamount = math.min(stacksize, amount2 - stacksize2)
+								break
 							end
 						end
-					end
-				end
-			else
-				-- no item currently in this slot
-				for slot2 = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-					local itemid2, amount2 = Commodity:GetSlotData(tabindex, slot2)
-					local commodityitemid2 = Commodity:GetCommodityData(tabindex, slot2)
-					if itemid2 and (commodityitemid2 ~= commodityitemid or slot2 > slot) and itemid2 == commodityitemid then
-						-- found an item that match this commodity
-						moveto = slot
-						movefrom = slot2
-						if amount2 > stacksize then
-							-- can't move all items to target, stack is too large
-							partialmove = stacksize
+					elseif itemid and itemid ~= commodityitemid then
+						-- misplaced item in <slot>
+						if not itemid2 and (not commodityitemid2 or itemid == commodityitemid2) then
+							-- empty slot that's either not reserved or our item match the reservation, we can move it here
+							moveto = slot2
+							movefrom = slot
+							moveamount = amount
+							if commodityitemid2 then
+								-- we want to place the item in the first slot reserved for this item
+								-- and if we don't find such a reserved slot, we want to place it in the last non-reserved slot
+								-- also, we may have a lower stack size in this reserved slot, hence:
+								moveamount = math.min(amount, stacksize2)
+								break
+							end
+						elseif itemid2 and itemid == itemid2 then
+							-- same item, stack as much as possible, even if item in slot2 is misplaced (it will be moved later)
+							if commodityitemid2 and itemid2 ~= commodityitemid2 then
+								-- slot is reserved for something else, might as well fill up the stack
+								_, _, _, _, _, _, _, stacksize2 = GetItemInfo(itemid2)
+							end
+							local tmpmoveamount = math.min(amount, stacksize2 - amount2)
+							if tmpmoveamount > 0 then
+								moveto = slot2
+								movefrom = slot
+								moveamount = tmpmoveamount
+								break
+							end
+						elseif commodityitemid2 and itemid == commodityitemid2 then
+							-- item in <slot> match reserved slot <slot2> (which, if any, got a misplaced item)
+							-- move entire stack, we'll have to make more moves later anyways if <slot2> don't want that many items
+							moveto = slot2
+							movefrom = slot
+							moveamount = amount
+							break
 						end
-						break
+					elseif amount ~= stacksize and slot2 > slot then
+						-- amount doesn't match stack size
+						if amount > stacksize then
+							-- too many items in stack
+							if not itemid2 or (itemid == itemid2 and amount2 < stacksize2) then
+								-- free slot or slot with same item and room for more
+								moveto = slot2
+								movefrom = slot
+								moveamount = math.min(amount - stacksize, stacksize2 - amount2)
+								break
+							end
+						else
+							-- too few items in stack
+							if itemid2 and itemid == itemid2 then
+								-- found a stack of same item in a later slot
+								moveto = slot
+								movefrom = slot2
+								moveamount = math.min(stacksize - amount, amount2)
+								break
+							end
+						end
 					end
 				end
 			end
 			if movefrom then
 				ClearCursor()
-				if partialmove then
-					SplitGuildBankItem(tabindex, movefrom, partialmove)
-				else
-					PickupGuildBankItem(tabindex, movefrom)
-				end
+				SplitGuildBankItem(tabindex, movefrom, moveamount)
 				PickupGuildBankItem(tabindex, moveto)
 				return
 			end
