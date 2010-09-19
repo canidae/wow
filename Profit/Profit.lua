@@ -40,12 +40,23 @@ function Profit:OnEvent()
 			-- multiplier for buyout price when no items of the type are found at the AH
 			profit_db.sellboostpercent = 2.00
 		end
+		-- hook function for easy auctioning
+		hooksecurefunc("ContainerFrameItemButton_OnClick", Profit.OnContainerItemClick)
 	elseif event == "AUCTION_ITEM_LIST_UPDATE" or (event == "AUCTION_MULTISELL_UPDATE" and arg1 == arg2) then
 		Profit:SetScript("OnUpdate", Profit.OnUpdate)
 	end
 end
 
-function Profit.OnUpdate()
+function Profit:OnContainerItemClick(button)
+	if AuctionFrame:IsVisible() and button and button == "RightButton" then
+		print(self:GetParent():GetID(), self:GetID())
+		if IsControlKeyDown() then
+		else
+		end
+	end
+end
+
+function Profit:OnUpdate()
 	if not CanSendAuctionQuery() then
 		return
 	end
