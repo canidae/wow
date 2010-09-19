@@ -86,13 +86,41 @@
 			</OnLeave>
 		</Scripts>
 	</CheckButton>
+	<CheckButton name="CommodityAlwaysShowStackSizeCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
+		<Size> 
+			<AbsDimension x="18" y="23" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="CommodityShowTooltipCheckButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="4" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				this:SetChecked(commodity_player.alwaysshowstacksize)
+			</OnShow>
+			<OnClick>
+				commodity_player.alwaysshowstacksize = this:GetChecked()
+				Commodity:SetGuildBankSlotOverlay()
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText("Show the desired stack size of a reserved slot even if an item is placed in the slot", nil, nil, nil, nil, 1)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
 	<!--
 	<CheckButton name="CommodityWithdrawItemsCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
 		<Size> 
 			<AbsDimension x="18" y="23" />
 		</Size>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="CommodityShowTooltipCheckButton" relativePoint="TOPLEFT">
+			<Anchor point="TOPRIGHT" relativeTo="CommodityAlwaysShowStackSizeCheckButton" relativePoint="TOPLEFT">
 				<Offset>
 					<AbsDimension x="4" y="0" />
 				</Offset>

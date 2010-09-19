@@ -22,7 +22,7 @@ function Loyalty:OnUpdate()
 				else
 					-- pet is in range, flash yellow
 					LoyaltyHealthBarTexture:SetVertexColor(1.0, 1.0, 0.0, 1.0)
-					if InCombatLockdown() and UnitIsPVP("player") then
+					if InCombatLockdown() then --and UnitIsPVP("player") then
 						-- play sound alerting us to heal
 						PlaySound("igQuestFailed")
 					end

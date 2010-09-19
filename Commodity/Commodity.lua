@@ -442,9 +442,6 @@ function Commodity:SetGuildBankSlotOverlay()
 	if not tabindex then
 		return
 	end
-	if not Commodity.drawmode and not commodity_player.overlayvisible then
-		return
-	end
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local texture
 		local itemid, stacksize = Commodity:GetCommodityData(tabindex, slot)
@@ -461,11 +458,19 @@ function Commodity:SetGuildBankSlotOverlay()
 			if not texture then
 				texture = "Interface\\PaperDoll\\UI-Backpack-EmptySlot"
 			end
-		else
+		elseif commodity_player.overlayvisible then
 			overlay:SetDrawLayer("BACKGROUND")
 			overlay:SetAlpha(commodity_player.overlayalpha)
-			overlaytext:SetDrawLayer("BACKGROUND")
-			overlaytext:SetAlpha(commodity_player.overlayalpha)
+			if commodity_player.alwaysshowstacksize then
+				overlaytext:SetDrawLayer("OVERLAY")
+				overlaytext:SetAlpha(1.0)
+			else
+				overlaytext:SetDrawLayer("BACKGROUND")
+				overlaytext:SetAlpha(commodity_player.overlayalpha)
+			end
+		else
+			overlay:SetAlpha(0.0)
+			overlaytext:SetAlpha(0.0)
 		end
 		overlay:SetTexture(texture)
 		overlaytext:SetText(stacksize)
@@ -562,12 +567,19 @@ function Commodity:SortGuildBankTab()
 						-- amount doesn't match stack size
 						if amount > stacksize then
 							-- too many items in stack
-							if not itemid2 or (itemid == itemid2 and amount2 < stacksize2) then
+							if (not itemid2 and not commodityitemid2) or (itemid2 and itemid == itemid2 and amount2 < stacksize2) then
 								-- free slot or slot with same item and room for more
 								moveto = slot2
 								movefrom = slot
+								if not stacksize2 then
+									-- moving to empty slot, non-reserved slot, target stacksize equals source stacksize
+									_, _, _, _, _, _, _, stacksize2 = GetItemInfo(itemid)
+								end
 								moveamount = math.min(amount - stacksize, stacksize2 - amount2)
-								break
+								if itemid2 then
+									-- only break if we're moving items to another stack
+									break
+								end
 							end
 						else
 							-- too few items in stack
