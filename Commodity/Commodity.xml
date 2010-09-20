@@ -45,7 +45,9 @@
 			</OnShow>
 			<OnClick>
 				commodity_player.sortguildbanktab = this:GetChecked()
-				Commodity:SortGuildBankTab()
+				if commodity_player.sortguildbanktab then
+					Commodity:SortGuildBankTab()
+				end
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
