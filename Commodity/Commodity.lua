@@ -175,6 +175,7 @@ function Commodity:OnEvent()
 		this:UnregisterEvent("ADDON_LOADED")
 		if not commodity_db then
 			commodity_db = {}
+			commodity_db.databaseversion = 1
 			print("Hi! You seem to be new to Commodity, or somehow the Commodity database was deleted.")
 			print("To get started, look at the top right corner of your guild bank, also write \"/commodity\" in your chat box :)")
 		end
@@ -192,26 +193,6 @@ function Commodity:OnEvent()
 		end
 		if not commodity_player.overlaydrawalpha then
 			commodity_player.overlaydrawalpha = 0.7
-		end
-		-- update database if it's changed
-		if not commodity_db.databaseversion then
-			-- early beta didn't have a stack size per slot (nor a databaseversion)
-			for guildname, guilddata in pairs(commodity_db.guilds) do
-				if guilddata.tabs then
-					for tabindex, tab in pairs(guilddata.tabs) do
-						if tab.commodities then
-							for slot, commodityitemid in pairs(tab.commodities) do
-								local _, _, _, _, _, _, _, maxstacksize = GetItemInfo(commodityitemid)
-								tab.commodities[slot] = {
-									itemid = commodityitemid,
-									stacksize = maxstacksize
-								}
-							end
-						end
-					end
-				end
-			end
-			commodity_db.databaseversion = 1
 		end
 		-- create overlay frames
 		for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
@@ -588,7 +569,6 @@ function Commodity:SortGuildBankTab()
 								moveto = slot
 								movefrom = slot2
 								moveamount = math.min(stacksize - amount, amount2)
-								break
 							end
 						end
 					end
