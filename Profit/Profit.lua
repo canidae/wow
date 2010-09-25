@@ -56,6 +56,7 @@ function Profit:OnUpdate()
 	end
 	-- fetch data
 	local batch, total = GetNumAuctionItems("list")
+	local wasnil = 0
 	for index = 1, batch do
 		local itemlink = GetAuctionItemLink("list", index)
 		if itemlink then
@@ -77,8 +78,11 @@ function Profit:OnUpdate()
 				end
 			end
 		else
-			print("itemlink for an item was nil, item ignored")
+			wasnil = wasnil + 1
 		end
+	end
+	if wasnil > 0 then
+		print("itemlink for " .. wasnil .. " items was nil, items ignored")
 	end
 	-- update status bar
 	Profit.page = Profit.page + 1
