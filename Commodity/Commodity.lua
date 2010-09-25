@@ -13,7 +13,10 @@ function SlashCmdList.Commodity(msg)
 		if rest and rest ~= "" then
 			itemname, itemlink, _, _, _, _, _, _, _, itemtexture = GetItemInfo(rest)
 			if not itemlink then
-				itemname, itemlink, _, _, _, _, _, _, _, itemtexture = GetItemInfo(tonumber(rest))
+				local itemid = tonumber(rest)
+				if itemid then
+					itemname, itemlink, _, _, _, _, _, _, _, itemtexture = GetItemInfo(itemid)
+				end
 			end
 			if not itemlink then
 				print("I'm not familiar with item \"" .. rest .. "\".")
