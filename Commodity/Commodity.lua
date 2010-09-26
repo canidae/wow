@@ -550,7 +550,7 @@ function Commodity:SortGuildBankTab()
 							moveamount = amount
 							break
 						end
-					elseif amount ~= stacksize and slot2 > slot then
+					elseif amount ~= stacksize and (slot2 > slot or not commodityitemid2 or itemid2 ~= commodityitemid2) then
 						-- amount doesn't match stack size
 						if amount > stacksize then
 							-- too many items in stack
