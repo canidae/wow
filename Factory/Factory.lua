@@ -343,11 +343,13 @@ function Factory:ScanGuildBankTab()
 		local _, amount, locked = GetGuildBankItemInfo(tab, slot)
 		if amount and amount > 0 and not locked then
 			local itemlink = GetGuildBankItemLink(tab, slot)
-			local _, itemname, _ = strsplit("[]", itemlink)
-			if guildbanktab[itemname] then
-				guildbanktab[itemname] = guildbanktab[itemname] + amount
-			else
-				guildbanktab[itemname] = amount
+			if itemlink then
+				local _, itemname, _ = strsplit("[]", itemlink)
+				if guildbanktab[itemname] then
+					guildbanktab[itemname] = guildbanktab[itemname] + amount
+				else
+					guildbanktab[itemname] = amount
+				end
 			end
 		end
 	end
