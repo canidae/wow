@@ -529,7 +529,7 @@ function Commodity:SortGuildBankTab()
 								moveamount = math.min(amount, stacksize2)
 								break
 							end
-						elseif itemid2 and itemid == itemid2 then
+						elseif itemid2 and itemid == itemid2 and slot2 > slot then
 							-- same item, stack as much as possible, even if item in slot2 is misplaced (it will be moved later)
 							if commodityitemid2 and itemid2 ~= commodityitemid2 then
 								-- slot is reserved for something else, might as well fill up the stack
@@ -550,7 +550,7 @@ function Commodity:SortGuildBankTab()
 							moveamount = amount
 							break
 						end
-					elseif amount ~= stacksize and slot2 > slot then
+					elseif amount ~= stacksize and (slot2 > slot or not commodityitemid2 or itemid2 ~= commodityitemid2) then
 						-- amount doesn't match stack size
 						if amount > stacksize then
 							-- too many items in stack
