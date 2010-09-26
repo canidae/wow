@@ -76,6 +76,7 @@ function SlashCmdList.Commodity(msg)
 			end
 		end
 		if not Commodity.drawmode then
+			Commodity:DeleteTable(Commodity.tabsupdated)
 			Commodity.tabsupdated = {}
 			Commodity.drawmode = 1
 			Commodity:SetGuildBankSlotOverlay()
@@ -265,6 +266,7 @@ function Commodity:OnEvent()
 				if not Commodity.updatetabdata then
 					Commodity.updatetabdata = {}
 				end
+				Commodity:DeleteTable(Commodity.updatetabdata[arg4])
 				Commodity.updatetabdata[arg4] = {
 					timestamp = tonumber(timestamp),
 					itemids = {}
@@ -304,7 +306,7 @@ function Commodity:OnEvent()
 							print(arg4 .. " sent Commodity data, but we seem to have missed some of the transmission. Got " .. count2 .. " items, expected " .. count .. ".")
 						end
 					end
-					Commodity.updatetabdata[arg4] = nil
+					Commodity:DeleteTable(Commodity.updatetabdata[arg4])
 				end
 			end
 		end
@@ -342,8 +344,8 @@ function Commodity:OnEvent()
 				end
 			end
 		else
-			Commodity.realmguild = nil
-			Commodity.tabs = nil
+			Commodity:DeleteTable(Commodity.realmguild)
+			Commodity:DeleteTable(Commodity.tabs)
 		end
 	end
 end
@@ -374,6 +376,7 @@ function Commodity:ScanGuildBankTab(tabindex)
 	if not tab then
 		return
 	end
+	Commodity:DeleteTable(tab.items)
 	tab.items = {}
 	local changed
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
@@ -675,7 +678,26 @@ function Commodity:BroadcastTabCommodities(tabindex)
 		count = count + 1
 	end
 	table.insert(Commodity.broadcastqueue, "E" .. tabindex .. count)
+	Commodity:DeleteTable(commodities)
 	Commodity:SetScript("OnUpdate", Commodity.OnUpdate)
+end
+
+function Commodity:DeleteTable(table)
+	-- unfortunately lua (or wow) still haven't figured out how to clean up tabless properly
+	-- so to prevent calling the gc too often, we'll use our own method to delete a table
+	if not table then
+		return
+	end
+	if not type(table) ~= "table" then
+		-- reached the leaf
+		table = nil
+		return
+	end
+	for key, value in pairs(table) do
+		Commodity:DeleteTable(value)
+		table[key] = nil
+	end
+	table = nil
 end
 
 function Commodity:GetTabData(tabindex)
@@ -706,10 +728,16 @@ function Commodity:SetCommodityData(tabindex, slot, itemid, stacksize)
 	if stacksize == 0 then
 		stacksize = nil
 	end
-	tab.commodities[slot] = {
-		itemid = itemid,
-		stacksize = stacksize
-	}
+	if tab.commodities[slot] then
+		-- prevent loose tables
+		tab.commodities[slot].itemid = itemid
+		tab.commodities[slot].stacksize = stacksize
+	else
+		tab.commodities[slot] = {
+			itemid = itemid,
+			stacksize = stacksize
+		}
+	end
 	-- set that tab is updated when in drawmode (used to figure out which tabs to broadcast)
 	if Commodity.drawmode and Commodity.tabsupdated then
 		tabindex = tonumber(tabindex)
@@ -751,10 +779,16 @@ function Commodity:SetSlotData(tabindex, slot, itemid, amount)
 	if amount == 0 then
 		amount = nil
 	end
-	tab.slots[slot] = {
-		itemid = itemid,
-		amount = amount
-	}
+	if tab.slots[slot] then
+		-- prevent loose tables
+		tab.slots[slot].itemid = itemid
+		tab.slots[slot].amount = amount
+	else
+		tab.slots[slot] = {
+			itemid = itemid,
+			amount = amount
+		}
+	end
 end
 
 function Commodity:GetSlotData(tabindex, slot)
@@ -794,10 +828,16 @@ function Commodity:SetItemData(tabindex, itemid, itemamount, commodityamount)
 	if commodityamount == 0 then
 		commodityamount = nil
 	end
-	tab.items[itemid] = {
-		itemamount = itemamount,
-		commodityamount = commodityamount
-	}
+	if tab.items[itemid] then
+		-- prevent loose tables
+		tab.items[itemid].itemamount = itemamount
+		tab.items[itemid].commodityamount = commodityamount
+	else
+		tab.items[itemid] = {
+			itemamount = itemamount,
+			commodityamount = commodityamount
+		}
+	end
 end
 
 function Commodity:GetItemData(tabindex, itemid)
