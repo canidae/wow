@@ -22,7 +22,7 @@ function Profit:OnEvent()
 		end
 		if not profit_db.selltime then
 			-- how long to put up the item (1 = 8h, 2 = 24h, 3 = 48h)
-			profit_db.selltime = 3
+			profit_db.selltime = 2
 		end
 		if not profit_db.sellbidpercent then
 			-- the bid price relative to buyout price
