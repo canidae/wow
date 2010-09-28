@@ -507,7 +507,7 @@ function Commodity:SortGuildBankTab()
 									-- only break when we're moving a misplaced item
 									break
 								end
-							elseif amount2 > stacksize2 then
+							elseif itemid2 == commodityitemid2 and amount2 > stacksize2 then
 								-- there are too many items in this slot!
 								moveto = slot
 								movefrom = slot2
@@ -518,7 +518,7 @@ function Commodity:SortGuildBankTab()
 					elseif itemid and itemid ~= commodityitemid then
 						-- misplaced item in <slot>
 						if not itemid2 and (not commodityitemid2 or itemid == commodityitemid2) then
-							-- empty slot that's either not reserved or our item match the reservation, we can move it here
+							-- empty <slot2> that's either not reserved or our item match the reservation, we can move it here
 							moveto = slot2
 							movefrom = slot
 							moveamount = amount
@@ -542,7 +542,7 @@ function Commodity:SortGuildBankTab()
 								moveamount = tmpmoveamount
 								break
 							end
-						elseif commodityitemid2 and itemid == commodityitemid2 then
+						elseif commodityitemid2 and itemid == commodityitemid2 and itemid2 ~= commodityitemid2 then
 							-- item in <slot> match reserved slot <slot2> (which, if any, got a misplaced item)
 							-- move entire stack, we'll have to make more moves later anyways if <slot2> don't want that many items
 							moveto = slot2
@@ -550,7 +550,7 @@ function Commodity:SortGuildBankTab()
 							moveamount = amount
 							break
 						end
-					elseif amount ~= stacksize and (slot2 > slot or not commodityitemid2 or itemid2 ~= commodityitemid2) then
+					elseif amount ~= stacksize and (not commodityitemid2 or itemid2 ~= commodityitemid2 or slot2 > slot) then
 						-- amount doesn't match stack size
 						if amount > stacksize then
 							-- too many items in stack
@@ -575,6 +575,10 @@ function Commodity:SortGuildBankTab()
 								moveto = slot
 								movefrom = slot2
 								moveamount = math.min(stacksize - amount, amount2)
+								if not commodityitemid2 or itemid2 ~= commodityitemid2 then
+									-- unless <slot2> is reserved for itemid2, then break
+									break
+								end
 							end
 						end
 					end
