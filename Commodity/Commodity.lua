@@ -687,19 +687,15 @@ function Commodity:BroadcastTabCommodities(tabindex)
 end
 
 function Commodity:DeleteTable(table)
-	-- unfortunately lua (or wow) still haven't figured out how to clean up tabless properly
-	-- so to prevent calling the gc too often, we'll use our own method to delete a table
+	-- lua doesn't clean up tables properly, but a blizzard function called "wipe" will
+	-- the "wipe" function won't check if we gave it a table (give it "nil" or a string/number and it'll fail),
+	-- and it will set the reference to an empty table, but we wish to delete it alltogether
 	if not table then
 		return
 	end
-	if not type(table) ~= "table" then
-		-- reached the leaf
-		table = nil
-		return
-	end
-	for key, value in pairs(table) do
-		Commodity:DeleteTable(value)
-		table[key] = nil
+	if type(table) == "table" then
+		-- got a table, wipe it
+		wipe(table)
 	end
 	table = nil
 end
