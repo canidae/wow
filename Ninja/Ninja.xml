@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="Ninja.lua" />
+	<Frame name="NinjaGroupLootFrameTemplate" virtual="true" hidden="false">
+		<Scripts>
+			<OnShow>
+				Ninja:Roll(self:GetParent().rollID)
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Frame name="NinjaGroupLootFrame1" parent="GroupLootFrame1" inherits="NinjaGroupLootFrameTemplate" />
+	<Frame name="NinjaGroupLootFrame2" parent="GroupLootFrame2" inherits="NinjaGroupLootFrameTemplate" />
+	<Frame name="NinjaGroupLootFrame3" parent="GroupLootFrame3" inherits="NinjaGroupLootFrameTemplate" />
+	<Frame name="NinjaGroupLootFrame4" parent="GroupLootFrame4" inherits="NinjaGroupLootFrameTemplate" />
+</Ui>

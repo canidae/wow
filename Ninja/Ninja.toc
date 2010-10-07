@@ -1,0 +1,6 @@
+## Interface: 30300
+## Title: Ninja
+## Notes: Makes it easier to ninja... I mean automatically roll on items
+## Version: 1.0
+## Author: canidae
+Ninja.xml
