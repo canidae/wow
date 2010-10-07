@@ -1,0 +1,6 @@
+## Interface: 30300
+## Title: Graydor
+## Notes: Automatically vendor gray items, simple as that
+## Version: 1.0
+## Author: canidae
+Graydor.xml

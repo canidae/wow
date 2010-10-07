@@ -259,22 +259,6 @@ function Profit:AuctionItem(bag, slot, allstacks)
 	print(stacks .. "x" .. stackcount .. " " .. itemlink .. ": " .. color .. bidprice .. "(" .. math.floor(bidprice * 100 / totalvendorprice) .. "%)/" .. buyoutprice .. "(" .. math.floor(buyoutprice * 100 / totalvendorprice) .. "%)|r")
 end
 
-function Profit:VendorItems()
-	-- vendor gray items
-	for bag = 0, NUM_BAG_SLOTS do
-		for slot = 1, GetContainerNumSlots(bag) do
-			local texture, _, locked = GetContainerItemInfo(bag, slot)
-			if texture and not locked then
-				local itemlink = GetContainerItemLink(bag, slot)
-				local itemname, _, quality, _, _, _, _, _, _, _, itemvendorprice = GetItemInfo(itemlink)
-				if quality == 0 and itemvendorprice and itemvendorprice > 0 then
-					UseContainerItem(bag, slot)
-				end
-			end
-		end
-	end
-end
-
 function Profit:GetBuyoutPricePerItem(itemname)
 	local item = profit_db.items[itemname]
 	if item then
@@ -361,11 +345,7 @@ function Profit:UpdateTooltip()
 			end
 			local profit = buyoutprice / itemvendorprice
 			local profittext = math.floor(profit * 1000) / 10
-			if profit > profit_db.sellprofitpercent then
-				GameTooltip:AddLine("Auction (" .. profittext .. "%, stack: " .. stacksize .. ")")
-			else
-				GameTooltip:AddLine("Vendor (" .. profittext .. "%)")
-			end
+			GameTooltip:AddLine("Auction (" .. profittext .. "%, stack: " .. stacksize .. ")")
 		end
 	end
 end

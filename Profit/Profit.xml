@@ -72,39 +72,6 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
-	<CheckButton name="ProfitMerchantAutoVendorGrayItemsCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="MerchantFrame" hidden="false">
-		<Size>  
-			<AbsDimension x="18" y="23" />
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MerchantFrameCloseButton" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="2" y="-4" />
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnShow>
-				this:SetChecked(profit_db.autovendoritems)
-				if profit_db.autovendoritems then
-					Profit:VendorItems()
-				end
-			</OnShow>
-			<OnClick>
-				profit_db.autovendoritems = this:GetChecked()
-				if profit_db.autovendoritems then
-					Profit:VendorItems()
-				end
-			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText("Check to automatically vendor gray items when Merchant Frame is shown", nil, nil, nil, nil, 1)
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
-		</Scripts>
-	</CheckButton>
 	<Frame name="ProfitTooltipFrame" parent="GameTooltip" hidden="false">
 		<Scripts>
 			<OnShow>
