@@ -150,6 +150,11 @@
 				<TextInsets>
 					<AbsInset left="5" right="5" top="5" bottom="5" />
 				</TextInsets>
+				<Scripts>
+					<OnEscapePressed>
+						this:ClearFocus()
+					</OnEscapePressed>
+				</Scripts>
 			</EditBox>
 		</Frames>
 	</Frame>
@@ -162,7 +167,7 @@
 				this.cancel = Ninja.LoadSettings
 				InterfaceOptions_AddCategory(this)
 
-				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should not automatically roll on")
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should not automatically roll on.")
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -173,7 +178,7 @@
 				this.parent = "Ninja"
 				InterfaceOptions_AddCategory(this)
 
-				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically roll need on")
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically roll need on.")
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -184,7 +189,7 @@
 				this.parent = "Ninja"
 				InterfaceOptions_AddCategory(this)
 
-				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically roll greed on")
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically roll greed on.")
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -195,7 +200,7 @@
 				this.parent = "Ninja"
 				InterfaceOptions_AddCategory(this)
 
-				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically roll disenchant on")
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically roll disenchant on.")
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -206,7 +211,7 @@
 				this.parent = "Ninja"
 				InterfaceOptions_AddCategory(this)
 
-				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically pass on")
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically pass on.")
 			</OnLoad>
 		</Scripts>
 	</Frame>

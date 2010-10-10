@@ -3,12 +3,30 @@ Ninja = CreateFrame("Frame")
 SLASH_Ninja1 = "/ninja"
 function SlashCmdList.Ninja(msg)
 	msg = strtrim(msg or "")
+	local number = tonumber(msg)
 	if msg == "" then
 		InterfaceOptionsFrame_OpenToCategory("Ninja")
 	elseif msg == "on" then
 		ninja_db.enabled = 1
+		NinjaEnabledCheckButton:SetChecked(ninja_db.enabled)
+		print("Ninja enabled")
 	elseif msg == "off" then
 		ninja_db.enabled = nil
+		NinjaEnabledCheckButton:SetChecked(ninja_db.enabled)
+		print("Ninja disabled")
+	elseif number and number >= 0 and number <= 59 then
+		ninja_db.rollwaittime = number
+		NinjaRollWaitTimeSlider:SetValue(ninja_db.rollwaittime)
+		local sec = " second"
+		if number ~= 1 then
+			sec = sec .. "s"
+		end
+		print("Ninja will wait " .. number .. sec .. " before rolling")
+	else
+		print("Ninja usage:")
+		print("/ninja - open configuration")
+		print("/ninja on/off - enable/disable")
+		print("/ninja <0-59> - set roll wait time")
 	end
 end
 
@@ -106,6 +124,14 @@ function Ninja:SaveSettings()
 	ninja_db.codes[2] = NinjaConfigGreedCodeFrameCode:GetText()
 	ninja_db.codes[3] = NinjaConfigDisenchantCodeFrameCode:GetText()
 	ninja_db.codes[4] = NinjaConfigNoneCodeFrameCode:GetText()
+
+	-- test roll codes
+	local r = Ninja:GetItemData()
+	r.need = 1
+	r.greed = 1
+	r.disenchant = 1
+	local c = Ninja:GetItemData()
+	Ninja:Compare(r, c, 1)
 end
 
 function Ninja:LoadSettings()
@@ -188,7 +214,7 @@ function Ninja:Roll(rollid)
 	wipe(c)
 end
 
-function Ninja:Compare(rollitem, currentitem)
+function Ninja:Compare(rollitem, currentitem, test)
 	for index, roll in pairs(ninja_db.rollorder) do
 		if (roll ~= 1 or rollitem.need) and (roll ~= 2 or rollitem.greed) and (roll ~= 3 or rollitem.disenchant) then
 			local text = strtrim(ninja_db.codes[roll] or "")
@@ -197,14 +223,30 @@ function Ninja:Compare(rollitem, currentitem)
 				for index, line in pairs(lines) do
 					line = strtrim(line or "")
 					if line ~= "" then
-						local func = assert(loadstring([[
+						local func, errormessage = loadstring([[
 						return function(r, c)
 							return ]] .. line .. [[
 						end
-						]]))
-						if func()(rollitem, currentitem) then
+						]])
+						if not func then
+							local rolltype
+							if roll == 0 then
+								rolltype = "pass"
+							elseif roll == 1 then
+								rolltype = "need"
+							elseif roll == 2 then
+								rolltype = "greed"
+							elseif roll == 3 then
+								rolltype = "disenchant"
+							else
+								rolltype = "no"
+							end
+							print("Invalid code for " .. rolltype .. " roll:", errormessage)
+						elseif func()(rollitem, currentitem) then
 							wipe(lines)
-							return roll
+							if not test then
+								return roll
+							end
 						end
 					end
 				end
