@@ -173,11 +173,7 @@ function Ninja:Roll(rollid)
 		elseif roll == 3 then
 			msg = "|cfff811daDisenchanting|r "
 		end
-		msg = msg .. itemlink .. " in " .. ninja_db.rollwaittime .. " second"
-		if ninja_db.rollwaittime ~= 1 then
-			msg = msg .. "s"
-		end
-		msg = msg .. " |Hninja:" .. rollid .. ":" .. roll .. "|h|cffff0000[Cancel]|r|h"
+		msg = msg .. itemlink .. " in " .. ninja_db.rollwaittime .. "s" .. " |Hninja:" .. rollid .. ":" .. roll .. "|h|cffff0000[Cancel]|r|h"
 		print(msg)
 		-- hide roll frame
 		for frameid = 1, NUM_GROUP_LOOT_FRAMES do
