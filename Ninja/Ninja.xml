@@ -1,14 +1,213 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 	<Script file="Ninja.lua" />
-	<Frame name="NinjaGroupLootFrameTemplate" virtual="true" hidden="false">
+	<Frame name="NinjaConfigFrame">
+		<Frames>
+			<CheckButton name="NinjaEnabledCheckButton" inherits="ChatConfigCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-55" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText("Enabled")
+						this.tooltip = "Automatically roll on items"
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Slider name="NinjaRollWaitTimeSlider" inherits="OptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-45" />
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="-45" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Low"):SetText("0")
+						getglobal(this:GetName() .. "High"):SetText("59")
+						this:SetValueStep(1)
+						this:SetMinMaxValues(0, 59)
+					</OnLoad>
+					<OnValueChanged>
+						local msg = "Roll wait: " .. this:GetValue() .. " second"
+						if this:GetValue() ~= 1 then
+							msg = msg .. "s"
+						end
+						getglobal(this:GetName() .. "Text"):SetText(msg)
+					</OnValueChanged>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+						GameTooltip:SetText("Time to wait before rolling on items. Keep in mind that roll time is (usually) 60 seconds, but it may vary", nil, nil, nil, nil, 1)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Frame name="NinjaCodeHelpFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NinjaRollWaitTimeSlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10" />
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackGroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5" />
+					</BackGroundInsets>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="NinjaCodeHelpTitleText" inherits="GameFontHighlightSmall" justifyH="CENTER" text="Ninja code help">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-10" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
-			<OnShow>
-				Ninja:Roll(self:GetParent().rollID)
-			</OnShow>
+			<OnLoad>
+				this.name = "Ninja"
+				InterfaceOptions_AddCategory(this)
+			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="NinjaGroupLootFrame1" parent="GroupLootFrame1" inherits="NinjaGroupLootFrameTemplate" />
-	<Frame name="NinjaGroupLootFrame2" parent="GroupLootFrame2" inherits="NinjaGroupLootFrameTemplate" />
-	<Frame name="NinjaGroupLootFrame3" parent="GroupLootFrame3" inherits="NinjaGroupLootFrameTemplate" />
-	<Frame name="NinjaGroupLootFrame4" parent="GroupLootFrame4" inherits="NinjaGroupLootFrameTemplate" />
+	<Frame name="NinjaRollCodeFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentDescriptionText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-10" />
+							</Offset>
+						</Anchor>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="-10" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="$parentCode" multiLine="true" autoFocus="false">
+				<FontString inherits="ChatFontNormal" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDescriptionText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5" />
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackGroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5" />
+					</BackGroundInsets>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+				<TextInsets>
+					<AbsInset left="5" right="5" top="5" bottom="5" />
+				</TextInsets>
+			</EditBox>
+		</Frames>
+	</Frame>
+	<Frame name="NinjaConfigNoneCodeFrame" inherits="NinjaRollCodeFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				this.name = "None"
+				this.parent = "Ninja"
+				this.okay = Ninja.SaveSettings
+				this.cancel = Ninja.LoadSettings
+				InterfaceOptions_AddCategory(this)
+
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should not automatically roll on")
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="NinjaConfigNeedCodeFrame" inherits="NinjaRollCodeFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				this.name = "Need"
+				this.parent = "Ninja"
+				InterfaceOptions_AddCategory(this)
+
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically roll need on")
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="NinjaConfigGreedCodeFrame" inherits="NinjaRollCodeFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				this.name = "Greed"
+				this.parent = "Ninja"
+				InterfaceOptions_AddCategory(this)
+
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically roll greed on")
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="NinjaConfigDisenchantCodeFrame" inherits="NinjaRollCodeFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				this.name = "Disenchant"
+				this.parent = "Ninja"
+				InterfaceOptions_AddCategory(this)
+
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically roll disenchant on")
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="NinjaConfigPassCodeFrame" inherits="NinjaRollCodeFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				this.name = "Pass"
+				this.parent = "Ninja"
+				InterfaceOptions_AddCategory(this)
+
+				getglobal(this:GetName() .. "DescriptionText"):SetText("Code for items Ninja should automatically pass on")
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>
