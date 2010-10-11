@@ -14,7 +14,7 @@ function SlashCmdList.Ninja(msg)
 		ninja_db.enabled = nil
 		NinjaEnabledCheckButton:SetChecked(ninja_db.enabled)
 		print("Ninja disabled")
-	elseif number and number >= 0 and number <= 59 then
+	elseif number and number >= 0 and number <= 19 then
 		ninja_db.rollwaittime = number
 		NinjaRollWaitTimeSlider:SetValue(ninja_db.rollwaittime)
 		local sec = " second"
@@ -26,7 +26,7 @@ function SlashCmdList.Ninja(msg)
 		print("Ninja usage:")
 		print("/ninja - open configuration")
 		print("/ninja on/off - enable/disable")
-		print("/ninja <0-59> - set roll wait time")
+		print("/ninja <0-19> - set roll wait time")
 	end
 end
 
@@ -47,7 +47,7 @@ function Ninja:OnEvent()
 			ninja_db.rollorder = {4, 1, 2, 3, 0}
 		end
 		if not ninja_db.rollwaittime then
-			ninja_db.rollwaittime = 15
+			ninja_db.rollwaittime = 10
 		end
 
 		-- hook functions
@@ -91,6 +91,8 @@ function Ninja:OnEvent()
 	elseif event == "CONFIRM_LOOT_ROLL" or event == "CONFIRM_DISENCHANT_ROLL" then
 		-- we'll need to confirm need/greed/disenchant rolls on bop items
 		ConfirmLootRoll(arg1, arg2)
+		-- also hide the confirmation window. not sure if "arg1" (roll id) is needed, but it's used in GroupLootFrame_OnEvent() (LootFrame.lua)
+		StaticPopup_Hide("CONFIRM_LOOT_ROLL", arg1)
 	end
 end
 

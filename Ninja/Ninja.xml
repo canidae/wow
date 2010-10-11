@@ -36,9 +36,9 @@
 				<Scripts>
 					<OnLoad>
 						getglobal(this:GetName() .. "Low"):SetText("0")
-						getglobal(this:GetName() .. "High"):SetText("59")
-						this:SetValueStep(1)
-						this:SetMinMaxValues(0, 59)
+						getglobal(this:GetName() .. "High"):SetText("19")
+						this:SetValueStep(0.25)
+						this:SetMinMaxValues(0, 19)
 					</OnLoad>
 					<OnValueChanged>
 						local msg = "Roll wait: " .. this:GetValue() .. " second"
@@ -49,7 +49,7 @@
 					</OnValueChanged>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-						GameTooltip:SetText("Time to wait before rolling on items. Keep in mind that roll time is (usually) 60 seconds, but it may vary", nil, nil, nil, nil, 1)
+						GameTooltip:SetText("Time to wait before rolling on items. Keep in mind that roll time is (usually) 60 seconds, and that only 4 items are rolled for at the same time. Too high setting means rolls will time out, but even with 19 second roll time that means 13 rolls needs to be started at the same time for the last roll to time out.", nil, nil, nil, nil, 1)
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide()
