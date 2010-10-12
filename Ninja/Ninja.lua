@@ -190,7 +190,16 @@ function Ninja:Roll(rollid)
 	end
 	if roll and roll >= 0 and roll <= 3 then
 		Ninja:SetScript("OnUpdate", Ninja.OnUpdate)
-		Ninja.rolls[rollid .. ":" .. roll] = ninja_db.rollwaittime
+		local waittime = ninja_db.rollwaittime
+		-- circumvent bug with rolling on two BoP/disenchant items at the same time
+		for rollidandtype, time in pairs(Ninja.rolls) do
+			if waittime - 0.5 < time then
+				waittime = time + 0.5
+			end
+		end
+		-- prettyfication for output later
+		waittime = math.floor(waittime * 10 + 0.5) / 10
+		Ninja.rolls[rollid .. ":" .. roll] = waittime
 		local msg
 		if roll == 0 then
 			msg = "|cffcb0000Passing|r "
@@ -201,7 +210,7 @@ function Ninja:Roll(rollid)
 		elseif roll == 3 then
 			msg = "|cfff811daDisenchanting|r "
 		end
-		msg = msg .. itemlink .. " in " .. ninja_db.rollwaittime .. "s" .. " |Hninja:" .. rollid .. ":" .. roll .. "|h|cffff0000[Cancel]|r|h"
+		msg = msg .. itemlink .. " in " .. waittime .. "s" .. " |Hninja:" .. rollid .. ":" .. roll .. "|h|cffff0000[Cancel]|r|h"
 		print(msg)
 		-- hide roll frame
 		for frameid = 1, NUM_GROUP_LOOT_FRAMES do

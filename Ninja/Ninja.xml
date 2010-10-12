@@ -37,19 +37,20 @@
 					<OnLoad>
 						getglobal(this:GetName() .. "Low"):SetText("0")
 						getglobal(this:GetName() .. "High"):SetText("19")
-						this:SetValueStep(0.25)
+						this:SetValueStep(0.1)
 						this:SetMinMaxValues(0, 19)
 					</OnLoad>
 					<OnValueChanged>
-						local msg = "Roll wait: " .. this:GetValue() .. " second"
-						if this:GetValue() ~= 1 then
+						local waittime = math.floor(this:GetValue() * 10 + 0.5) / 10
+						local msg = "Roll wait: " .. waittime .. " second"
+						if waittime ~= 1 then
 							msg = msg .. "s"
 						end
 						getglobal(this:GetName() .. "Text"):SetText(msg)
 					</OnValueChanged>
 					<OnEnter>
 						GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-						GameTooltip:SetText("Time to wait before rolling on items. Keep in mind that roll time is (usually) 60 seconds, and that only 4 items are rolled for at the same time. Too high setting means rolls will time out, but even with 19 second roll time that means 13 rolls needs to be started at the same time for the last roll to time out.", nil, nil, nil, nil, 1)
+						GameTooltip:SetText("Time to wait before rolling on items. Keep in mind that roll time is (usually) 60 seconds, and that only 4 items are rolled for at the same time. Too high setting means rolls will time out, with 19 seconds roll time then 13 rolls needs to be started at the same time for the last roll to time out. There will also be at least half a second between each roll to avoid triggering a bug with the BoP/disenchant warning.", nil, nil, nil, nil, 1)
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide()
