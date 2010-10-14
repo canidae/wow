@@ -30,7 +30,7 @@ function SlashCmdList.Ninja(msg)
 	end
 end
 
-function Ninja:OnEvent()
+function Ninja:OnEvent(event, arg1, arg2, ...)
 	if event == "ADDON_LOADED" and arg1 == "Ninja" then
 		if not ninja_db then
 			ninja_db = {}

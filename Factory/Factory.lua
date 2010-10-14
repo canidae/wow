@@ -1,13 +1,13 @@
 Factory = CreateFrame("Frame")
 
-function Factory:OnEvent()
+function Factory:OnEvent(event, arg1, ...)
 	local timesincelast = GetTime()
 	if Factory.eventtimes[event] then
 		timesincelast = timesincelast - Factory.eventtimes[event]
 	end
 	Factory.eventtimes[event] = GetTime()
 	if event == "ADDON_LOADED" and arg1 == "Factory" then
-		this:UnregisterEvent("ADDON_LOADED")
+		self:UnregisterEvent("ADDON_LOADED")
 		if not factory_items or not factory_items.version or factory_items.version ~= 1 then
 			factory_items = {}
 			factory_items.version = 1
@@ -33,7 +33,7 @@ function Factory:OnEvent()
 			factory_workbench = {}
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		this:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 		Factory.playername = GetUnitName("player")
 	elseif event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_UPDATE" then
 		Factory:ScanProfession()

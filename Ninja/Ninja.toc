@@ -1,4 +1,4 @@
-## Interface: 30300
+## Interface: 40000
 ## Title: Ninja
 ## Notes: Makes it easier to ninja... I mean automatically roll on items
 ## Version: 1.0

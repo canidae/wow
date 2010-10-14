@@ -1,6 +1,6 @@
 Profit = CreateFrame("Frame")
 
-function Profit:OnEvent()
+function Profit:OnEvent(event, arg1, ...)
 	local timesincelast = GetTime()
 	if Profit.eventtimes[event] then
 		timesincelast = timesincelast - Profit.eventtimes[event]
@@ -8,7 +8,7 @@ function Profit:OnEvent()
 	--print(event, timesincelast)
 	Profit.eventtimes[event] = GetTime()
 	if event == "ADDON_LOADED" and arg1 == "Profit" then
-		this:UnregisterEvent("ADDON_LOADED")
+		self:UnregisterEvent("ADDON_LOADED")
 		if not profit_db then
 			profit_db = {}
 		end
