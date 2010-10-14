@@ -13,10 +13,10 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_player.overlayvisible)
+				self:SetChecked(commodity_player.overlayvisible)
 			</OnShow>
 			<OnClick>
-				commodity_player.overlayvisible = this:GetChecked()
+				commodity_player.overlayvisible = self:GetChecked()
 				Commodity:SetGuildBankSlotOverlay()
 			</OnClick>
 			<OnEnter>
@@ -41,10 +41,10 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_player.sortguildbanktab)
+				self:SetChecked(commodity_player.sortguildbanktab)
 			</OnShow>
 			<OnClick>
-				commodity_player.sortguildbanktab = this:GetChecked()
+				commodity_player.sortguildbanktab = self:GetChecked()
 				if commodity_player.sortguildbanktab then
 					Commodity:SortGuildBankTab()
 				end
@@ -71,10 +71,10 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_player.showtooltip)
+				self:SetChecked(commodity_player.showtooltip)
 			</OnShow>
 			<OnClick>
-				commodity_player.showtooltip = this:GetChecked()
+				commodity_player.showtooltip = self:GetChecked()
 				if commodity_player.showtooltip then
 					CommodityTooltipFrame:SetScript("OnShow", Commodity.UpdateTooltip)
 				end
@@ -101,10 +101,10 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_player.alwaysshowstacksize)
+				self:SetChecked(commodity_player.alwaysshowstacksize)
 			</OnShow>
 			<OnClick>
-				commodity_player.alwaysshowstacksize = this:GetChecked()
+				commodity_player.alwaysshowstacksize = self:GetChecked()
 				Commodity:SetGuildBankSlotOverlay()
 			</OnClick>
 			<OnEnter>
@@ -130,10 +130,10 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				this:SetChecked(commodity_player.withdrawitems)
+				self:SetChecked(commodity_player.withdrawitems)
 			</OnShow>
 			<OnClick>
-				commodity_player.withdrawitems = this:GetChecked()
+				commodity_player.withdrawitems = self:GetChecked()
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")

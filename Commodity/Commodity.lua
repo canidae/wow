@@ -168,7 +168,7 @@ function Commodity:Draw(slot, increasestack)
 	end
 end
 
-function Commodity:OnEvent()
+function Commodity:OnEvent(event, arg1, arg2, arg3, arg4, ...)
 	local timesincelast = GetTime()
 	if Commodity.eventtimes[event] then
 		timesincelast = timesincelast - Commodity.eventtimes[event]
@@ -176,7 +176,7 @@ function Commodity:OnEvent()
 	Commodity.eventtimes[event] = GetTime()
 	--print(event .. " - " .. timesincelast)
 	if event == "ADDON_LOADED" and arg1 == "Commodity" then
-		this:UnregisterEvent("ADDON_LOADED")
+		self:UnregisterEvent("ADDON_LOADED")
 		if not commodity_db then
 			commodity_db = {}
 			commodity_db.databaseversion = 1
