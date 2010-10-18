@@ -142,11 +142,11 @@ function Ninja:LoadSettings()
 	NinjaRollWaitTimeSlider:SetValue(ninja_db.rollwaittime)
 
 	-- roll code
-	NinjaConfigPassCodeFrameCode:SetText(ninja_db.codes[0])
-	NinjaConfigNeedCodeFrameCode:SetText(ninja_db.codes[1])
-	NinjaConfigGreedCodeFrameCode:SetText(ninja_db.codes[2])
-	NinjaConfigDisenchantCodeFrameCode:SetText(ninja_db.codes[3])
-	NinjaConfigNoneCodeFrameCode:SetText(ninja_db.codes[4])
+	NinjaConfigPassCodeFrameCode:SetText(ninja_db.codes[0] or "")
+	NinjaConfigNeedCodeFrameCode:SetText(ninja_db.codes[1] or "")
+	NinjaConfigGreedCodeFrameCode:SetText(ninja_db.codes[2] or "")
+	NinjaConfigDisenchantCodeFrameCode:SetText(ninja_db.codes[3] or "")
+	NinjaConfigNoneCodeFrameCode:SetText(ninja_db.codes[4] or "")
 end
 
 function Ninja:Roll(rollid)
