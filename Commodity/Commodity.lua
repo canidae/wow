@@ -278,6 +278,7 @@ function Commodity:OnEvent(event, arg1, arg2, arg3, arg4, ...)
 				local _, _, itemidandstacksize, slots = string.find(data, "^(%d+:%d+):(%d+)$")
 				local tabdata = Commodity.updatetabdata[arg4]
 				if itemidandstacksize and slots and tabdata then
+					-- TODO: sometimes tabdata.itemids is deleted here, why?
 					tabdata.itemids[itemidandstacksize] = slots
 				end
 			end
