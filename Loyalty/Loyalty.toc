@@ -1,6 +1,6 @@
-## Interface: 30300
+## Interface: 40000
 ## Title: Loyalty
 ## Notes: Hunter's second best friend
-## Version: 100
+## Version: 1.0
 ## Author: canidae
 Loyalty.xml
