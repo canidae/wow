@@ -3,4 +3,5 @@
 ## Notes: Hunter's second best friend
 ## Version: 1.0
 ## Author: canidae
+## SavedVariablesPerCharacter: loyalty_db
 Loyalty.xml
