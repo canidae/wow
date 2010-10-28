@@ -516,7 +516,7 @@ function Commodity:SortGuildBankTab()
 								break
 							end
 						end
-					elseif itemid and itemid ~= commodityitemid then
+					elseif itemid ~= commodityitemid then
 						-- misplaced item in <slot>
 						if not itemid2 and (not commodityitemid2 or itemid == commodityitemid2) then
 							-- empty <slot2> that's either not reserved or our item match the reservation, we can move it here
@@ -555,7 +555,7 @@ function Commodity:SortGuildBankTab()
 						-- amount doesn't match stack size
 						if amount > stacksize then
 							-- too many items in stack
-							if (not itemid2 and not commodityitemid2) or (itemid2 and itemid == itemid2 and amount2 < stacksize2) then
+							if (not itemid2 and not commodityitemid2) or (itemid2 and itemid == itemid2 and itemid2 == commodityitemid2 and amount2 < stacksize2) then
 								-- free slot or slot with same item and room for more
 								moveto = slot2
 								movefrom = slot
