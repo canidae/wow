@@ -116,8 +116,7 @@
 			</OnLeave>
 		</Scripts>
 	</CheckButton>
-	<!--
-	<CheckButton name="CommodityWithdrawItemsCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
+	<CheckButton name="CommodityDrawCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
 		<Size> 
 			<AbsDimension x="18" y="23" />
 		</Size>
@@ -130,20 +129,24 @@
 		</Anchors>
 		<Scripts>
 			<OnShow>
-				self:SetChecked(commodity_player.withdrawitems)
+				self:SetChecked(Commodity.drawmode)
 			</OnShow>
 			<OnClick>
-				commodity_player.withdrawitems = self:GetChecked()
+				if self:GetChecked() then
+					SlashCmdList.Commodity("draw")
+				else
+					SlashCmdList.Commodity("done")
+				end
+				self:SetChecked(Commodity.drawmode)
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText("Automatically withdraw items that aren't wanted in the currently open guild bank tab (TODO: Make this only withdraw items in slots that are reserved for something else, this also means the sorting will have to move items in slots reserved for something else to slots that aren't reserved)", nil, nil, nil, nil, 1)
+				GameTooltip:SetText("Enter draw mode, try also \"/commodity draw &lt;item&gt;\"", nil, nil, nil, nil, 1)
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide()
 			</OnLeave>
 		</Scripts>
 	</CheckButton>
-	-->
 	<Frame name="CommodityTooltipFrame" parent="GameTooltip" hidden="false" />
 </Ui>

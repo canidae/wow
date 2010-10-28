@@ -5,10 +5,6 @@ SLASH_Commodity1 = "/commodity"
 function SlashCmdList.Commodity(msg)
 	local command, rest = msg:match("^(%S*)%s*(.*)$")
 	if command == "draw" then
-		if not GuildBankFrame:IsVisible() then
-			print("Guild bank window must be open.")
-			return
-		end
 		local itemname, itemlink, itemtexture
 		if rest and rest ~= "" then
 			itemname, itemlink, _, _, _, _, _, _, _, itemtexture = GetItemInfo(rest)
@@ -80,10 +76,6 @@ function SlashCmdList.Commodity(msg)
 			Commodity.tabsupdated = {}
 			Commodity.drawmode = 1
 			Commodity:SetGuildBankSlotOverlay()
-			-- show some help for users as well
-			print("Right click on drawn item or shift right click on guild bank item to draw that.")
-			print("Draw with left mouse button, erase with shift left mouse button.")
-			print("Left click again to increase stack size by 1, hold down ctrl to increase by 5.")
 		end
 		if itemlink and itemlink ~= Commodity.drawlink then
 			Commodity.drawlink = itemlink
@@ -119,9 +111,13 @@ function SlashCmdList.Commodity(msg)
 			print("Done drawing, broadcasting changes")
 		end
 	else
-		print("Commodity usage:")
+		print("|cff27b700Commodity usage:|r")
 		print("/commodity draw [itemid or itemlink] - Reserve slots for item in guild bank")
 		print("/commodity done - Exit draw mode, will also broadcast changes to guild")
+		print("|cff27b700Reserving slots in guild bank:|r")
+		print("Pick: Right click (reserved item), shift right click (bank item)")
+		print("Draw: Left mouse button (reserve), shift left mouse button (erase)")
+		print("Stack: Left click again (+1), ctrl left click again (+5)")
 	end
 end
 
