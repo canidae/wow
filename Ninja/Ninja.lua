@@ -68,7 +68,7 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 				end
 				local timeleft = GetLootRollTimeLeft(rollid)
 				if not isshown and timeleft and timeleft > 0 then
-					GroupLootFrame_OpenNewFrame(rollid, GetLootRollTimeLeft(rollid))
+					GroupLootFrame_OpenNewFrame(rollid, timeleft)
 				end
 				Ninja.rolls[rollidandtype] = nil
 			else
