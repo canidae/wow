@@ -1,0 +1,6 @@
+## Interface: 40000
+## Title: SmartTargeting
+## Notes: Smarter targeting of enemy players/mobs
+## Version: 1.0
+## Author: canidae
+SmartTargeting.lua
