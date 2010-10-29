@@ -270,41 +270,37 @@ function Commodity:OnEvent(event, arg1, arg2, arg3, arg4, ...)
 			end
 		elseif messagetype == "I" and Commodity.updatetabdata and Commodity.updatetabdata[arg4] then
 			-- item
-			if Commodity.updatetabdata then
-				local _, _, itemidandstacksize, slots = string.find(data, "^(%d+:%d+):(%d+)$")
-				local tabdata = Commodity.updatetabdata[arg4]
-				if itemidandstacksize and slots and tabdata then
-					-- TODO: sometimes tabdata.itemids is deleted here, why?
-					tabdata.itemids[itemidandstacksize] = slots
-				end
+			local _, _, itemidandstacksize, slots = string.find(data, "^(%d+:%d+):(%d+)$")
+			local tabdata = Commodity.updatetabdata[arg4]
+			if itemidandstacksize and slots and tabdata then
+				-- TODO: sometimes tabdata.itemids is deleted here, why?
+				tabdata.itemids[itemidandstacksize] = slots
 			end
 		elseif messagetype == "E" and Commodity.updatetabdata and Commodity.updatetabdata[arg4] then
 			-- end of item list
-			if Commodity.updatetabdata then
-				local _, _, tabindex, count = string.find(data, "^(%d)(%d+)$")
-				local tabdata = Commodity.updatetabdata[arg4]
-				if tabindex and count and tabdata then
-					local count2 = 0
-					if tabdata.timestamp > Commodity:GetTabLastUpdated(tabindex) then
-						for itemidandstacksize, slots in pairs(tabdata.itemids) do
-							local _, _, itemid, stacksize = string.find(itemidandstacksize, "(%d+):(%d+)")
-							local length = strlen(slots)
-							for start = 1, length, 2 do
-								local slot = strsub(slots, start, start + 1)
-								Commodity:SetCommodityData(tabindex, slot, itemid, stacksize)
-							end
-							count2 = count2 + 1
+			local _, _, tabindex, count = string.find(data, "^(%d)(%d+)$")
+			local tabdata = Commodity.updatetabdata[arg4]
+			if tabindex and count and tabdata then
+				local count2 = 0
+				if tabdata.timestamp > Commodity:GetTabLastUpdated(tabindex) then
+					for itemidandstacksize, slots in pairs(tabdata.itemids) do
+						local _, _, itemid, stacksize = string.find(itemidandstacksize, "(%d+):(%d+)")
+						local length = strlen(slots)
+						for start = 1, length, 2 do
+							local slot = strsub(slots, start, start + 1)
+							Commodity:SetCommodityData(tabindex, slot, itemid, stacksize)
 						end
-						if count2 == tonumber(count) then
-							Commodity:SetTabLastUpdated(tabindex, tabdata.timestamp)
-							print(arg4 .. " sent us updated Commodity data for guild bank tab " .. tabindex .. "!")
-							Commodity:SetGuildBankSlotOverlay()
-						else
-							print(arg4 .. " sent Commodity data, but we seem to have missed some of the transmission. Got " .. count2 .. " items, expected " .. count .. ".")
-						end
+						count2 = count2 + 1
 					end
-					Commodity:DeleteTable(Commodity.updatetabdata[arg4])
+					if count2 == tonumber(count) then
+						Commodity:SetTabLastUpdated(tabindex, tabdata.timestamp)
+						print(arg4 .. " sent us updated Commodity data for guild bank tab " .. tabindex .. "!")
+						Commodity:SetGuildBankSlotOverlay()
+					else
+						print(arg4 .. " sent Commodity data, but we seem to have missed some of the transmission. Got " .. count2 .. " items, expected " .. count .. ".")
+					end
 				end
+				Commodity:DeleteTable(Commodity.updatetabdata[arg4])
 			end
 		end
 	end
