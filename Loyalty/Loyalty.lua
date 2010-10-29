@@ -7,23 +7,23 @@ Loyalty.aspects = {
 	"Aspect of the Wild"
 }
 Loyalty.abilities = {
-	["Black Arrow"] = "player",
-	["Explosive Shot"] = "player",
-	["Serpent Sting"] = "player",
-	["Scatter Shot"] = "player",
-	["Mend Pet"] = "pet",
-	["Wyvern Sting"] = "player",
-	["Disengage"] = "player",
-	["Deterrence"] = "player",
-	["Flare"] = "player",
-	["Bestial Wrath"] = "player",
-	["Intimidation"] = "player",
-	["Master's Call"] = "player",
-	["Medallion of the Horde"] = "player",
-	["Kill Command"] = "player",
-	["Concussive Shot"] = "player",
-	["Arcane Torrent"] = "player",
-	["Feign Death"] = "player"
+	["Black Arrow"] = "playercooldown",
+	["Explosive Shot"] = "playercooldown",
+	["Serpent Sting"] = "targetdebuff",
+	["Scatter Shot"] = "playercooldown",
+	["Mend Pet"] = "petbuff",
+	["Wyvern Sting"] = "playercooldown",
+	["Disengage"] = "playercooldown",
+	["Deterrence"] = "playercooldown",
+	["Flare"] = "playercooldown",
+	["Bestial Wrath"] = "playercooldown",
+	["Intimidation"] = "playercooldown",
+	["Master's Call"] = "playercooldown",
+	["Medallion of the Horde"] = "playercooldown",
+	["Kill Command"] = "playercooldown",
+	["Concussive Shot"] = "playercooldown",
+	["Arcane Torrent"] = "playercooldown",
+	["Feign Death"] = "playercooldown"
 }
 Loyalty.mend = "Mend Pet"
 
