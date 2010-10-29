@@ -82,33 +82,39 @@ function SlashCmdList.Commodity(msg)
 		end
 	elseif command == "done" then
 		if Commodity.drawmode then
-			-- restore function hooks so we can play around with guildbank again
-			for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-				index = math.fmod(slot, NUM_SLOTS_PER_GUILDBANK_GROUP)
-				if index == 0 then
-					index = NUM_SLOTS_PER_GUILDBANK_GROUP
-				end
-				local column = math.ceil((slot - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
-				local button = _G["GuildBankColumn" .. column .. "Button" .. index]
-				button:SetScript("OnMouseDown", Commodity["OnMouseDown" .. slot])
-				button:SetScript("OnEnter", Commodity["OnEnter" .. slot])
-				button:SetScript("OnClick", Commodity["OnClick" .. slot])
-				button:SetScript("OnDragStart", Commodity["OnDragStart" .. slot])
-				button:SetScript("OnReceiveDrag", Commodity["OnReceiveDrag" .. slot])
-				button.UpdateTooltip = Commodity["UpdateTooltip" .. slot]
-			end
-			Commodity.drawmode = nil
-			Commodity:SetGuildBankSlotOverlay()
-			SetCursor(nil)
 			-- broadcast any updated tabs
+			local allok = 1
 			for tabindex, one in pairs(Commodity.tabsupdated) do
 				Commodity:ScanGuildBankTab(tabindex)
-				Commodity:SetTabLastUpdated(tabindex)
-				Commodity:BroadcastTabCommodities(tabindex)
+				if Commodity:SetTabLastUpdated(tabindex) then
+					Commodity:BroadcastTabCommodities(tabindex)
+				else
+					print("You changed tab " .. tabindex .. " too recently, please wait until next minute before leaving draw mode")
+					allok = nil
+				end
 			end
-			-- sort open tab as well
-			Commodity:SortGuildBankTab()
-			print("Done drawing, broadcasting changes")
+			if allok then
+				-- restore function hooks so we can play around with guildbank again
+				for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+					index = math.fmod(slot, NUM_SLOTS_PER_GUILDBANK_GROUP)
+					if index == 0 then
+						index = NUM_SLOTS_PER_GUILDBANK_GROUP
+					end
+					local column = math.ceil((slot - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
+					local button = _G["GuildBankColumn" .. column .. "Button" .. index]
+					button:SetScript("OnMouseDown", Commodity["OnMouseDown" .. slot])
+					button:SetScript("OnEnter", Commodity["OnEnter" .. slot])
+					button:SetScript("OnClick", Commodity["OnClick" .. slot])
+					button:SetScript("OnDragStart", Commodity["OnDragStart" .. slot])
+					button:SetScript("OnReceiveDrag", Commodity["OnReceiveDrag" .. slot])
+					button.UpdateTooltip = Commodity["UpdateTooltip" .. slot]
+				end
+				Commodity.drawmode = nil
+				Commodity:SetGuildBankSlotOverlay()
+				SetCursor(nil)
+				-- sort open tab as well
+				Commodity:SortGuildBankTab()
+			end
 		end
 	else
 		print("|cff27b700Commodity usage:|r")
@@ -872,7 +878,12 @@ function Commodity:SetTabLastUpdated(tabindex, timestamp)
 		end
 		timestamp = year .. month .. day .. hour .. minute
 	end
+	timestamp = tonumber(timestamp)
+	if tab.lastupdated == timestamp then
+		return
+	end
 	tab.lastupdated = tonumber(timestamp)
+	return 1
 end
 
 function Commodity:GetTabLastUpdated(tabindex)
