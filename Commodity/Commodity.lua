@@ -268,18 +268,16 @@ function Commodity:OnEvent(event, arg1, arg2, arg3, arg4, ...)
 				if not Commodity.updatetabdata then
 					Commodity.updatetabdata = {}
 				end
-				Commodity:DeleteTable(Commodity.updatetabdata[arg4])
 				Commodity.updatetabdata[arg4] = {
 					timestamp = tonumber(timestamp),
 					itemids = {}
 				}
 			end
-		elseif messagetype == "I" and Commodity.updatetabdata and Commodity.updatetabdata[arg4] then
+		elseif messagetype == "I" and Commodity.updatetabdata and Commodity.updatetabdata[arg4] and Commodity.updatetabdata[arg4].itemids then
 			-- item
 			local _, _, itemidandstacksize, slots = string.find(data, "^(%d+:%d+):(%d+)$")
 			local tabdata = Commodity.updatetabdata[arg4]
 			if itemidandstacksize and slots and tabdata then
-				-- TODO: sometimes tabdata.itemids is deleted here, why?
 				tabdata.itemids[itemidandstacksize] = slots
 			end
 		elseif messagetype == "E" and Commodity.updatetabdata and Commodity.updatetabdata[arg4] then
@@ -307,6 +305,7 @@ function Commodity:OnEvent(event, arg1, arg2, arg3, arg4, ...)
 					end
 				end
 				Commodity:DeleteTable(Commodity.updatetabdata[arg4])
+				Commodity.updatetabdata[arg4] = nil
 			end
 		end
 	end
@@ -343,7 +342,6 @@ function Commodity:OnEvent(event, arg1, arg2, arg3, arg4, ...)
 				end
 			end
 		else
-			Commodity:DeleteTable(Commodity.realmguild)
 			Commodity:DeleteTable(Commodity.tabs)
 		end
 	end
@@ -376,7 +374,6 @@ function Commodity:ScanGuildBankTab(tabindex)
 		return
 	end
 	Commodity:DeleteTable(tab.items)
-	tab.items = {}
 	local changed
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local _, newamount = GetGuildBankItemInfo(tabindex, slot)
@@ -688,7 +685,6 @@ end
 function Commodity:DeleteTable(table)
 	-- lua doesn't clean up tables properly, but a blizzard function called "wipe" will
 	-- the "wipe" function won't check if we gave it a table (give it "nil" or a string/number and it'll fail),
-	-- and it will set the reference to an empty table, but we wish to delete it alltogether
 	if not table then
 		return
 	end
@@ -696,7 +692,6 @@ function Commodity:DeleteTable(table)
 		-- got a table, wipe it
 		wipe(table)
 	end
-	table = nil
 end
 
 function Commodity:GetTabData(tabindex)
