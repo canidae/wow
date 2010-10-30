@@ -1,7 +1,7 @@
 ## Interface: 40000
 ## Title: Commodity
 ## Notes: Guild bank organizer
-## Version: 1.6
+## Version: 1.7
 ## Author: canidae
 ## SavedVariables: commodity_db
 ## SavedVariablesPerCharacter: commodity_player
