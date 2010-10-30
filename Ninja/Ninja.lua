@@ -34,6 +34,7 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 	if event == "ADDON_LOADED" and arg1 == "Ninja" then
 		if not ninja_db then
 			ninja_db = {}
+			ninja_db.enabled = 1
 		end
 		if not ninja_db.codes then
 			ninja_db.codes = {}
@@ -89,7 +90,7 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 				break
 			end
 		end
-	elseif event == "CONFIRM_LOOT_ROLL" or event == "CONFIRM_DISENCHANT_ROLL" then
+	elseif (event == "CONFIRM_LOOT_ROLL" or event == "CONFIRM_DISENCHANT_ROLL") and ninja_db.enabled then
 		-- we'll need to confirm need/greed/disenchant rolls on bop items
 		ConfirmLootRoll(arg1, arg2)
 		-- also hide the confirmation window. not sure if "arg1" (roll id) is needed, but it's used in GroupLootFrame_OnEvent() (LootFrame.lua)
