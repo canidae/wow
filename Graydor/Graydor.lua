@@ -1,4 +1,4 @@
-Graydor = CreateFrame("Frame", nil, "MerchantFrame")
+Graydor = CreateFrame("Frame", nil, MerchantFrame)
 
 function Graydor:Sell(...)
 	ClearCursor()
