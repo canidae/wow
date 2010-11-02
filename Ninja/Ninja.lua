@@ -79,6 +79,41 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 
 		-- load settings
 		Ninja:LoadSettings()
+
+		-- set help text (don't like this, have to keep it up to date manually)
+		Ninja:AddHelpLine("Ninja quick reference", "ffffff")
+		Ninja:AddHelpLine("Color codes:", "bbbbbb")
+		Ninja:AddHelpLine("number", "number", "A numeric value [0,∞], never <nil>, may be -1 (noted below)")
+		Ninja:AddHelpLine("string", "string", "A string value, never <nil>, no value is \"\"")
+		Ninja:AddHelpLine("boolean", "boolean", "A boolean value, may be <nil>")
+		Ninja:AddHelpLine()
+		Ninja:AddHelpLine("Usage:", "bbbbbb")
+		Ninja:AddHelpLine("r.<key>", "41d5c9", "The item being rolled for")
+		Ninja:AddHelpLine("c.<key>", "c843c6", "An item in a matching inventory slot")
+		Ninja:AddHelpLine()
+		Ninja:AddHelpLine("Item info:", "bbbbbb")
+		Ninja:AddHelpLine("id", "number", "Item ID (-1 if unknown)")
+		Ninja:AddHelpLine("rarity", "number", "Item rarity (see also poor, common, etc below. -1 if unknown)")
+		Ninja:AddHelpLine("level/equiplevel", "number", "Item level/equip level (-1 if unknown)")
+		Ninja:AddHelpLine("stack", "number", "Item stack count (-1 if unknown)")
+		Ninja:AddHelpLine("price", "number", "Item vendor price")
+		Ninja:AddHelpLine("name/link", "string", "Item name/link")
+		Ninja:AddHelpLine("type/subtype", "string", "Item type (armor, weapon)/subtype (cloth, sword)")
+		Ninja:AddHelpLine("equiploc", "string", "Item equip location")
+		Ninja:AddHelpLine("texture", "string", "Item texture")
+		Ninja:AddHelpLine("poor/common/uncommon/rare/epic/legendary/artifact/heirloom", "boolean", "Quality")
+		Ninja:AddHelpLine("isweapon/isarmor", "boolean", "Item is weapon/armor")
+		Ninja:AddHelpLine("exists", "boolean", "Whether item exists (only makes sense for \"c\")")
+		Ninja:AddHelpLine()
+		Ninja:AddHelpLine("Attributes:", "bbbbbb")
+		Ninja:AddHelpLine("agi/int/spi/sta/str", "number", "Base attributes")
+		Ninja:AddHelpLine("armor/health/mana", "number", "Armor/Health/Mana")
+		Ninja:AddHelpLine("sdmg/sheal/spen", "number", "Spell damage/healing/penetration")
+		Ninja:AddHelpLine("crit/exp/haste/hit/mastery/dodge/parry/res", "number", "Ratings")
+		Ninja:AddHelpLine("holy/fire/nature/frost/shadow/arcane", "number", "Resistances")
+		Ninja:AddHelpLine("meta/prismatic/blue/red/yellow", "number", "Sockets")
+		Ninja:AddHelpLine("dps", "number", "Damage per second")
+		Ninja:AddHelpLine("fap", "number", "Feral attack power")
 	elseif event == "START_LOOT_ROLL" then
 		Ninja:Roll(arg1)
 	elseif event == "CANCEL_LOOT_ROLL" then
@@ -96,6 +131,28 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 		-- also hide the confirmation window. not sure if "arg1" (roll id) is needed, but it's used in GroupLootFrame_OnEvent() (LootFrame.lua)
 		StaticPopup_Hide("CONFIRM_LOOT_ROLL", arg1)
 	end
+end
+
+function Ninja:AddHelpLine(text, color, description)
+	local add = ""
+	if text then
+		if not color then
+			add = add .. "|cffffffff"
+		elseif color == "number" then
+			add = add .. "|cffffff00"
+		elseif color == "string" then
+			add = add .. "|cff0055ff"
+		elseif color == "boolean" then
+			add = add .. "|cff00ff00"
+		else
+			add = add .. "|cff" .. color
+		end
+		add = add .. text .. "|r"
+		if description then
+			add = add .. " - " .. description
+		end
+	end
+	NinjaCodeHelpFrameText:SetText((NinjaCodeHelpFrameText:GetText() or "") .. add .. "\n")
 end
 
 function Ninja:OnUpdate(elapsed)
@@ -292,7 +349,7 @@ function Ninja:GetItemData(link)
 	i.stack = tonumber(stackcount) or -1
 	i.equiploc = equiploc or ""
 	i.texture = texture or ""
-	i.price = tonumber(price) or -1
+	i.price = tonumber(price) or 0
 
 	i.poor = i.rarity == 0
 	i.common = i.rarity == 1
@@ -312,9 +369,9 @@ function Ninja:GetItemData(link)
 		stats = {}
 	end
 	i.agi = tonumber(stats[ITEM_MOD_AGILITY_SHORT]) or 0
-	i.arp = tonumber(stats[ITEM_MOD_ARMOR_PENETRATION_RATING_SHORT]) or 0
-	i.ap = tonumber(stats[ITEM_MOD_ATTACK_POWER_SHORT]) or 0
-	i.br = tonumber(stats[ITEM_MOD_BLOCK_RATING_SHORT]) or 0
+	--i. = tonumber(stats[ITEM_MOD_ARMOR_PENETRATION_RATING_SHORT]) or 0
+	--i. = tonumber(stats[ITEM_MOD_ATTACK_POWER_SHORT]) or 0
+	--i. = tonumber(stats[ITEM_MOD_BLOCK_RATING_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_BLOCK_VALUE_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_CRIT_MELEE_RATING_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_CRIT_RANGED_RATING_SHORT]) or 0
@@ -325,7 +382,7 @@ function Ninja:GetItemData(link)
 	--i. = tonumber(stats[ITEM_MOD_CRIT_TAKEN_RATING_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_CRIT_TAKEN_SPELL_RATING_SHORT]) or 0
 	i.dps = tonumber(stats[ITEM_MOD_DAMAGE_PER_SECOND_SHORT]) or 0
-	i.def = tonumber(stats[ITEM_MOD_DEFENSE_SKILL_RATING_SHORT]) or 0
+	--i. = tonumber(stats[ITEM_MOD_DEFENSE_SKILL_RATING_SHORT]) or 0
 	i.dodge = tonumber(stats[ITEM_MOD_DODGE_RATING_SHORT]) or 0
 	i.exp = tonumber(stats[ITEM_MOD_EXPERTISE_RATING_SHORT]) or 0
 	i.fap = tonumber(stats[ITEM_MOD_FERAL_ATTACK_POWER_SHORT]) or 0
@@ -347,6 +404,7 @@ function Ninja:GetItemData(link)
 	i.int = tonumber(stats[ITEM_MOD_INTELLECT_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_MANA_REGENERATION_SHORT]) or 0
 	i.mana = tonumber(stats[ITEM_MOD_MANA_SHORT]) or 0
+	i.mastery = tonumber(stats[ITEM_MOD_MASTERY_RATING_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_MELEE_ATTACK_POWER_SHORT]) or 0
 	i.parry = tonumber(stats[ITEM_MOD_PARRY_RATING_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_POWER_REGEN0_SHORT]) or 0
@@ -361,7 +419,7 @@ function Ninja:GetItemData(link)
 	i.sdmg = tonumber(stats[ITEM_MOD_SPELL_DAMAGE_DONE_SHORT]) or 0
 	i.sheal = tonumber(stats[ITEM_MOD_SPELL_HEALING_DONE_SHORT]) or 0
 	i.spen = tonumber(stats[ITEM_MOD_SPELL_PENETRATION_SHORT]) or 0
-	i.spow = tonumber(stats[ITEM_MOD_SPELL_POWER_SHORT]) or 0
+	--i. = tonumber(stats[ITEM_MOD_SPELL_POWER_SHORT]) or 0
 	i.spi = tonumber(stats[ITEM_MOD_SPIRIT_SHORT]) or 0
 	i.sta = tonumber(stats[ITEM_MOD_STAMINA_SHORT]) or 0
 	i.str = tonumber(stats[ITEM_MOD_STRENGTH_SHORT]) or 0

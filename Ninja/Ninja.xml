@@ -83,11 +83,16 @@
 				</Backdrop>
 				<Layers>
 					<Layer level="BORDER">
-						<FontString name="NinjaCodeHelpTitleText" inherits="GameFontHighlightSmall" justifyH="CENTER" text="Ninja code help">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
 							<Anchors>
-								<Anchor point="TOP">
+								<Anchor point="TOPLEFT">
 									<Offset>
-										<AbsDimension x="0" y="-10" />
+										<AbsDimension x="8" y="-8" />
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-8" y="8" />
 									</Offset>
 								</Anchor>
 							</Anchors>
