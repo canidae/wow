@@ -51,17 +51,23 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 			local _, _, rollidandtype = string.find(link, "^ninja:(%d+:%d+)$")
 			if rollidandtype then
 				local _, _, rollid, rolltype = string.find(rollidandtype, "(%d+):(%d+)")
-				-- make sure we're not already showing it
-				local isshown
-				for frameid = 1, NUM_GROUP_LOOT_FRAMES do
-					local frame = getglobal("GroupLootFrame" .. frameid)
-					if frame:IsShown() and tonumber(frame.rollID) == tonumber(rollid) then
-						isshown = 1
-						break
+				rollid = tonumber(rollid)
+				-- make sure we've not rolled on it already and that we're not already showing it
+				local show = 1
+				if Ninja.rolled[rollid] then
+					print("Too late, already rolled on item")
+					show = nil
+				else
+					for frameid = 1, NUM_GROUP_LOOT_FRAMES do
+						local frame = getglobal("GroupLootFrame" .. frameid)
+						if frame:IsShown() and tonumber(frame.rollID) == rollid then
+							show = nil
+							break
+						end
 					end
 				end
 				local timeleft = GetLootRollTimeLeft(rollid)
-				if not isshown and timeleft and timeleft > 0 then
+				if show and timeleft and timeleft > 0 then
 					GroupLootFrame_OpenNewFrame(rollid, timeleft)
 				end
 				Ninja.rolls[rollidandtype] = nil
@@ -156,6 +162,7 @@ function Ninja:OnUpdate(elapsed)
 			-- time's up, roll the dice
 			local _, _, rollid, rolltype = string.find(rollidandtype, "(%d+):(%d+)")
 			RollOnLoot(rollid, rolltype)
+			Ninja.rolled[rollid] = 1
 			Ninja.rolls[rollidandtype] = nil
 		else
 			empty = nil
@@ -466,6 +473,7 @@ Ninja.equiplocmap = {
 	["INVTYPE_TABARD"] = {19}
 }
 Ninja.rolls = {}
+Ninja.rolled = {}
 
 Ninja:SetScript("OnEvent", Ninja.OnEvent)
 Ninja:RegisterEvent("ADDON_LOADED")
