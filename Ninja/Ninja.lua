@@ -3,7 +3,6 @@ Ninja = CreateFrame("Frame")
 SLASH_Ninja1 = "/ninja"
 function SlashCmdList.Ninja(msg)
 	msg = strtrim(msg or "")
-	local number = tonumber(msg)
 	if msg == "" then
 		InterfaceOptionsFrame_OpenToCategory("Ninja")
 	elseif msg == "on" then
@@ -14,19 +13,10 @@ function SlashCmdList.Ninja(msg)
 		ninja_db.enabled = nil
 		NinjaEnabledCheckButton:SetChecked(ninja_db.enabled)
 		print("Ninja disabled")
-	elseif number and number >= 0 and number <= 19 then
-		ninja_db.rollwaittime = number
-		NinjaRollWaitTimeSlider:SetValue(ninja_db.rollwaittime)
-		local sec = " second"
-		if number ~= 1 then
-			sec = sec .. "s"
-		end
-		print("Ninja will wait " .. number .. sec .. " before rolling")
 	else
 		print("Ninja usage:")
 		print("/ninja - open configuration")
 		print("/ninja on/off - enable/disable")
-		print("/ninja <0-19> - set roll wait time")
 	end
 end
 
@@ -47,8 +37,11 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 			-- 4: don't roll (special value only used in Ninja)
 			ninja_db.rollorder = {4, 1, 2, 3, 0}
 		end
-		if not ninja_db.rollwaittime then
-			ninja_db.rollwaittime = 10
+		if not ninja_db.rolldelay then
+			ninja_db.rolldelay = 10
+		end
+		if not ninja_db.betweendelay then
+			ninja_db.betweendelay = 2
 		end
 
 		-- hook functions
@@ -83,9 +76,9 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 		-- set help text (don't like this, have to keep it up to date manually)
 		Ninja:AddHelpLine("Ninja quick reference", "ffffff")
 		Ninja:AddHelpLine("Color codes:", "bbbbbb")
-		Ninja:AddHelpLine("number", "number", "A numeric value [0,∞], never <nil>, may be -1 (noted below)")
+		Ninja:AddHelpLine("number", "number", "A numeric value [-1,∞], never <nil>, -1 == unknown value")
 		Ninja:AddHelpLine("string", "string", "A string value, never <nil>, no value is \"\"")
-		Ninja:AddHelpLine("boolean", "boolean", "A boolean value, may be <nil>")
+		Ninja:AddHelpLine("boolean", "boolean", "A boolean value")
 		Ninja:AddHelpLine()
 		Ninja:AddHelpLine("Usage:", "bbbbbb")
 		Ninja:AddHelpLine("r.<key>", "41d5c9", "The item being rolled for")
@@ -177,7 +170,8 @@ end
 function Ninja:SaveSettings()
 	-- called when player clicks "Okay" in addon options frame
 	ninja_db.enabled = NinjaEnabledCheckButton:GetChecked()
-	ninja_db.rollwaittime = NinjaRollWaitTimeSlider:GetValue()
+	ninja_db.rolldelay = NinjaRollWaitTimeSlider:GetValue()
+	ninja_db.betweendelay = NinjaDelayBetweenRollSlider:GetValue()
 
 	-- roll code
 	ninja_db.codes[0] = NinjaConfigPassCodeFrameCode:GetText()
@@ -198,7 +192,8 @@ end
 function Ninja:LoadSettings()
 	-- called on addon load and when player clicks "Cancel" in addon options frame
 	NinjaEnabledCheckButton:SetChecked(ninja_db.enabled)
-	NinjaRollWaitTimeSlider:SetValue(ninja_db.rollwaittime)
+	NinjaRollWaitTimeSlider:SetValue(ninja_db.rolldelay)
+	NinjaDelayBetweenRollSlider:SetValue(ninja_db.betweendelay)
 
 	-- roll code
 	NinjaConfigPassCodeFrameCode:SetText(ninja_db.codes[0] or "")
@@ -249,11 +244,11 @@ function Ninja:Roll(rollid)
 	end
 	if roll and roll >= 0 and roll <= 3 then
 		Ninja:SetScript("OnUpdate", Ninja.OnUpdate)
-		local waittime = ninja_db.rollwaittime
+		local waittime = ninja_db.rolldelay
 		-- circumvent bug with rolling on two BoP/disenchant items at the same time
 		for rollidandtype, time in pairs(Ninja.rolls) do
-			if waittime - 0.5 < time then
-				waittime = time + 0.5
+			if waittime - ninja_db.betweendelay < time then
+				waittime = time + ninja_db.betweendelay
 			end
 		end
 		-- prettyfication for output later

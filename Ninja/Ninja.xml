@@ -6,7 +6,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="10" y="-10" />
+							<AbsDimension x="10" y="-30" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -16,41 +16,78 @@
 				<Scripts>
 					<OnLoad>
 						getglobal(self:GetName() .. "Text"):SetText("Enabled")
-						self.tooltip = "Automatically roll on items"
+						self.tooltip = "Automatically roll on items. Will also hide BoP/disenchant warning."
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
 			<Slider name="NinjaRollWaitTimeSlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="10" y="-45" />
+						<Offset>"
+							<AbsDimension x="100" y="-18" />
 						</Offset>
 					</Anchor>
 					<Anchor point="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-10" y="-45" />
+							<AbsDimension x="-10" y="-18" />
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(self:GetName() .. "Low"):SetText("0")
-						getglobal(self:GetName() .. "High"):SetText("19")
+						getglobal(self:GetName() .. "Low"):SetText("0.0")
+						getglobal(self:GetName() .. "High"):SetText("19.0")
 						self:SetValueStep(0.1)
 						self:SetMinMaxValues(0, 19)
 					</OnLoad>
 					<OnValueChanged>
-						local waittime = math.floor(self:GetValue() * 10 + 0.5) / 10
-						local msg = "Roll wait: " .. waittime .. " second"
-						if waittime ~= 1 then
+						local delay = math.floor(self:GetValue() * 10 + 0.5) / 10
+						local msg = "Roll delay: " .. delay .. " second"
+						if delay ~= 1 then
 							msg = msg .. "s"
 						end
 						getglobal(self:GetName() .. "Text"):SetText(msg)
 					</OnValueChanged>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-						GameTooltip:SetText("Time to wait before rolling on items. Keep in mind that roll time is (usually) 60 seconds, and that only 4 items are rolled for at the same time. Too high setting means rolls will time out, with 19 seconds roll time then 13 rolls needs to be started at the same time for the last roll to time out. There will also be at least half a second between each roll to avoid triggering a bug with the BoP/disenchant warning.", nil, nil, nil, nil, 1)
+						GameTooltip:SetText("Time to wait before rolling on items. Keep in mind that only 4 items are rolled for at the same time. 19 seconds delay means that with a 60 second roll time, at most 12 items (that will be rolled for) can be looted at the same time, the 13th will time out.", nil, nil, nil, nil, 1)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="NinjaDelayBetweenRollSlider" inherits="OptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NinjaRollWaitTimeSlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-11" />
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="NinjaRollWaitTimeSlider" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-11" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName() .. "Low"):SetText("0.1")
+						getglobal(self:GetName() .. "High"):SetText("5.0")
+						self:SetValueStep(0.1)
+						self:SetMinMaxValues(0.1, 5)
+					</OnLoad>
+					<OnValueChanged>
+						local delay = math.floor(self:GetValue() * 10 + 0.5) / 10
+						local msg = "Delay between rolls: " .. delay .. " second"
+						if delay ~= 1 then
+							msg = msg .. "s"
+						end
+						getglobal(self:GetName() .. "Text"):SetText(msg)
+					</OnValueChanged>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+						GameTooltip:SetText("Delay between subsequent rolls. Too low value (mainly &lt; 0.3) may trigger a bug with the BoP/disenchant warning.", nil, nil, nil, nil, 1)
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide()
@@ -59,14 +96,14 @@
 			</Slider>
 			<Frame name="NinjaCodeHelpFrame">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="NinjaRollWaitTimeSlider" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPRIGHT" relativeTo="NinjaDelayBetweenRollSlider" relativePoint="BOTTOMRIGHT">
 						<Offset>
 							<AbsDimension x="0" y="-10" />
 						</Offset>
 					</Anchor>
-					<Anchor point="BOTTOMRIGHT">
+					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="-10" y="10" />
+							<AbsDimension x="10" y="10" />
 						</Offset>
 					</Anchor>
 				</Anchors>
