@@ -290,11 +290,7 @@ function Ninja:Compare(rollitem, currentitem, test)
 				for index, line in pairs(lines) do
 					line = strtrim(line or "")
 					if line ~= "" then
-						local func, errormessage = loadstring([[
-						return function(r, c)
-							return ]] .. line .. [[
-						end
-						]])
+						local func, errormessage = loadstring("return function(r, c) return " .. line .. "; end")
 						if not func then
 							local rolltype
 							if roll == 0 then
@@ -308,7 +304,8 @@ function Ninja:Compare(rollitem, currentitem, test)
 							else
 								rolltype = "None"
 							end
-							print("Invalid code in <" .. rolltype .. ">:", errormessage)
+							_, _, errormessage = string.find(errormessage, ".*:1:(.*)$")
+							print("Invalid code: <" .. rolltype .. "> line " .. index .. ": \"" .. line .. "\" -", strtrim(errormessage))
 						elseif func()(rollitem, currentitem) then
 							if not test then
 								wipe(lines)
