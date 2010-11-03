@@ -74,29 +74,25 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 		Ninja:LoadSettings()
 
 		-- set help text (don't like this, have to keep it up to date manually)
-		Ninja:AddHelpLine("Ninja quick reference", "ffffff")
-		Ninja:AddHelpLine("Color codes:", "bbbbbb")
+		Ninja:AddHelpLine("r.<key>", "41d5c9", "The item being rolled for")
+		Ninja:AddHelpLine("c.<key>", "c843c6", "An item in a matching inventory slot")
 		Ninja:AddHelpLine("number", "number", "A numeric value [-1,∞], never <nil>, -1 == unknown value")
 		Ninja:AddHelpLine("string", "string", "A string value, never <nil>, no value is \"\"")
 		Ninja:AddHelpLine("boolean", "boolean", "A boolean value")
-		Ninja:AddHelpLine()
-		Ninja:AddHelpLine("Usage:", "bbbbbb")
-		Ninja:AddHelpLine("r.<key>", "41d5c9", "The item being rolled for")
-		Ninja:AddHelpLine("c.<key>", "c843c6", "An item in a matching inventory slot")
 		Ninja:AddHelpLine()
 		Ninja:AddHelpLine("Item info:", "bbbbbb")
 		Ninja:AddHelpLine("id", "number", "Item ID (-1 if unknown)")
 		Ninja:AddHelpLine("rarity", "number", "Item rarity (see also poor, common, etc below. -1 if unknown)")
 		Ninja:AddHelpLine("level/equiplevel", "number", "Item level/equip level (-1 if unknown)")
-		Ninja:AddHelpLine("stack", "number", "Item stack count (-1 if unknown)")
+		Ninja:AddHelpLine("stack", "number", "Item max stack size (-1 if unknown)")
 		Ninja:AddHelpLine("price", "number", "Item vendor price")
 		Ninja:AddHelpLine("name/link", "string", "Item name/link")
 		Ninja:AddHelpLine("type/subtype", "string", "Item type (armor, weapon)/subtype (cloth, sword)")
 		Ninja:AddHelpLine("equiploc", "string", "Item equip location")
 		Ninja:AddHelpLine("texture", "string", "Item texture")
 		Ninja:AddHelpLine("poor/common/uncommon/rare/epic/legendary/artifact/heirloom", "boolean", "Quality")
-		Ninja:AddHelpLine("isweapon/isarmor", "boolean", "Item is weapon/armor")
-		Ninja:AddHelpLine("exists", "boolean", "Whether item exists (only makes sense for \"c\")")
+		Ninja:AddHelpLine("isweapon/isarmor", "boolean", "Whether item is weapon/armor")
+		Ninja:AddHelpLine("exists", "boolean", "Whether item exists (\"r.exists\" is probably always true)")
 		Ninja:AddHelpLine()
 		Ninja:AddHelpLine("Attributes:", "bbbbbb")
 		Ninja:AddHelpLine("agi/int/spi/sta/str", "number", "Base attributes")
@@ -105,8 +101,12 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 		Ninja:AddHelpLine("crit/exp/haste/hit/mastery/dodge/parry/res", "number", "Ratings")
 		Ninja:AddHelpLine("holy/fire/nature/frost/shadow/arcane", "number", "Resistances")
 		Ninja:AddHelpLine("meta/prismatic/blue/red/yellow", "number", "Sockets")
-		Ninja:AddHelpLine("dps", "number", "Damage per second")
-		Ninja:AddHelpLine("fap", "number", "Feral attack power")
+		Ninja:AddHelpLine("dps/fap", "number", "Damage per second/Feral attack power")
+		Ninja:AddHelpLine()
+		Ninja:AddHelpLine("Only available for roll item (r.<key>):", "bbbbbb")
+		Ninja:AddHelpLine("count", "number", "Item count (probably always 1)")
+		Ninja:AddHelpLine("bop", "boolean", "Whether item binds on pickup")
+		Ninja:AddHelpLine("need/greed/disenchant", "boolean", "Whether you can need/greed/disenchant item")
 	elseif event == "START_LOOT_ROLL" then
 		Ninja:Roll(arg1)
 	elseif event == "CANCEL_LOOT_ROLL" then
@@ -185,6 +185,8 @@ function Ninja:SaveSettings()
 	r.need = 1
 	r.greed = 1
 	r.disenchant = 1
+	r.count = 1
+	r.bop = 1
 	local c = Ninja:GetItemData()
 	Ninja:Compare(r, c, 1)
 end
@@ -296,20 +298,20 @@ function Ninja:Compare(rollitem, currentitem, test)
 						if not func then
 							local rolltype
 							if roll == 0 then
-								rolltype = "pass"
+								rolltype = "Pass"
 							elseif roll == 1 then
-								rolltype = "need"
+								rolltype = "Need"
 							elseif roll == 2 then
-								rolltype = "greed"
+								rolltype = "Greed"
 							elseif roll == 3 then
-								rolltype = "disenchant"
+								rolltype = "Disenchant"
 							else
-								rolltype = "no"
+								rolltype = "None"
 							end
-							print("Invalid code for " .. rolltype .. " roll:", errormessage)
+							print("Invalid code in <" .. rolltype .. ">:", errormessage)
 						elseif func()(rollitem, currentitem) then
-							wipe(lines)
 							if not test then
+								wipe(lines)
 								return roll
 							end
 						end
