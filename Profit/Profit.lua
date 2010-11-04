@@ -36,11 +36,11 @@ function Profit:OnEvent(event, arg1, ...)
 			-- how much profit we at least want to make, relative to vendor price
 			profit_db.sellprofitpercent = 1.80
 		end
-		-- hook function for easy auctioning
-		hooksecurefunc("ContainerFrameItemButton_OnClick", Profit.OnContainerItemClick)
-		hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", Profit.OnContainerItemClick)
 	elseif event == "AUCTION_ITEM_LIST_UPDATE" then
 		Profit:SetScript("OnUpdate", Profit.OnUpdate)
+	elseif event == "NEW_AUCTION_UPDATE" then
+		print(event)
+		Profit:AuctionItem()
 	end
 end
 
@@ -82,7 +82,8 @@ function Profit:OnUpdate()
 		end
 	end
 	if wasnil > 0 then
-		print("itemlink for " .. wasnil .. " items was nil, items ignored")
+		-- TODO: can we improve this? rescanning page won't work (we'll get duplicate data for items we got link to)
+		print("missing itemlink for", wasnil, "items on page", Profit.page, ", skipping items")
 	end
 	-- update status bar
 	Profit.page = Profit.page + 1
@@ -145,12 +146,9 @@ function Profit:OnUpdate()
 	Profit.scan = nil
 	Profit.page = 0
 	-- call AuctionItem if we're auctioning an item
-	if Profit.auctionbag and Profit.auctionslot then
-		Profit:AuctionItem(Profit.auctionbag, Profit.auctionslot, Profit.auctionallstacks)
-		-- reset these each time
-		Profit.auctionbag = nil
-		Profit.auctionslot = nil
-		Profit.auctionallstacks = nil
+	if Profit.auctioning then
+		Profit:AuctionItem()
+		Profit.auctioning = nil
 	end
 end
 
@@ -196,32 +194,18 @@ function Profit:StartScan(itemname)
 	QueryAuctionItems(Profit.scan, 0, 0, 0, 0, 0, Profit.page, 0, 0, 0)
 end
 
-function Profit:OnContainerItemClick(button)
-	if not AuctionFrame:IsVisible() or not button or button ~= "RightButton" or IsShiftKeyDown() or IsAltKeyDown() then
+function Profit:AuctionItem()
+	local itemname, _, count, _, _, _, itemvendorprice, maxstackcount, totalcount = GetAuctionSellItemInfo();
+	if not itemname then
 		return
 	end
-	Profit:AuctionItem(self:GetParent():GetID(), self:GetID(), IsControlKeyDown())
-end
-
-function Profit:AuctionItem(bag, slot, allstacks)
-	if not AuctionFrame:IsVisible() then
-		return
-	end
-	local itemlink = GetContainerItemLink(bag, slot)
-	local _, stackcount, locked = GetContainerItemInfo(bag, slot)
-	if not itemlink or locked then
-		return
-	end
-	local itemname, _, _, _, _, _, _, _, _, _, itemvendorprice = GetItemInfo(itemlink)
 	if not itemvendorprice or itemvendorprice < 1 then
 		itemvendorprice = 1
 	end
 	local item = profit_db.items[itemname]
 	if not item or Profit:MinutesSinceLastScan(itemname) > 10 then
 		-- data is too old, need to rescan
-		Profit.auctionbag = bag
-		Profit.auctionslot = slot
-		Profit.auctionallstacks = allstacks
+		Profit.auctioning = 1
 		if item then
 			-- update timestamp (to prevent it from being scanned endlessly if item is not already being sold on ah)
 			Profit:SetItemData(itemname, item.minprice, item.average, item.stddev, item.myprice, item.auctions)
@@ -232,31 +216,33 @@ function Profit:AuctionItem(bag, slot, allstacks)
 		Profit:StartScan(itemname)
 		return
 	end
+	local _, itemlink = GetItemInfo(itemname)
 	local buyoutprice = Profit:GetBuyoutPricePerItem(itemname)
 	if not buyoutprice then
 		print("Unable to find price for " .. itemlink .. ", possibly never seen the item on the Auction House")
 		return
 	end
 	-- we got what we need of information to sell this item
-	local stacks = 1
-	if allstacks then
-		local totalcount = GetItemCount(itemname)
-		stacks = math.floor(totalcount / stackcount)
-	end
-	buyoutprice = math.floor(buyoutprice * stackcount)
+	local stackcount = 10
+	local stacks = math.max(math.floor(totalcount / stackcount), 1)
+	buyoutprice = math.floor(buyoutprice)
 	local bidprice = math.floor(buyoutprice * profit_db.sellbidpercent)
-	local totalvendorprice = itemvendorprice * stackcount
-	if bidprice > totalvendorprice * profit_db.sellprofitpercent then
+	if bidprice > itemvendorprice * profit_db.sellprofitpercent then
 		-- will earn enough
-		PickupContainerItem(bag, slot)
-		ClickAuctionSellItemButton()
-		StartAuction(bidprice, buyoutprice, profit_db.selltime, stackcount, stacks)
-		color = "|cff00ff00"
+		AuctionsStackSizeEntry:SetNumber(stackcount)
+		AuctionsNumStacksEntry:SetNumber(stacks)
+		AuctionFrameAuctions.priceType = 1 -- should really be PRICE_TYPE_UNIT, but that is apparently local :\
+		UIDropDownMenu_SetText(PriceDropDown, AUCTION_PRICE_PER_ITEM)
+		MoneyInputFrame_SetCopper(StartPrice, bidprice)
+		MoneyInputFrame_SetCopper(BuyoutPrice, buyoutprice)
+		AuctionFrameAuctions.duration = profit_db.selltime
+		UIDropDownMenu_SetText(DurationDropDown, AUCTION_DURATION_TWO)
+		UpdateDeposit()
+		AuctionsFrameAuctions_ValidateAuction()
 	else
-		-- won't earn enough
-		color = "|cffff0000"
+		-- won't earn enough, print warning
+		print("Low profit for", itemlink .. ": |cffff0000", math.floor(bidprice * 100 / itemvendorprice - 100) .. "%/" .. math.floor(buyoutprice * 100 / itemvendorprice - 100) .. "%|r")
 	end
-	print(stacks .. "x" .. stackcount .. " " .. itemlink .. ": " .. color .. bidprice .. "(" .. math.floor(bidprice * 100 / totalvendorprice) .. "%)/" .. buyoutprice .. "(" .. math.floor(buyoutprice * 100 / totalvendorprice) .. "%)|r")
 end
 
 function Profit:GetBuyoutPricePerItem(itemname)
@@ -358,3 +344,4 @@ Profit:SetScript("OnEvent", Profit.OnEvent)
 
 Profit:RegisterEvent("ADDON_LOADED")
 Profit:RegisterEvent("AUCTION_ITEM_LIST_UPDATE")
+Profit:RegisterEvent("NEW_AUCTION_UPDATE")
