@@ -105,10 +105,10 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 		Ninja:AddHelpLine("agi/int/spi/sta/str", "number", "Base attributes")
 		Ninja:AddHelpLine("armor/health/mana", "number", "Armor/Health/Mana")
 		Ninja:AddHelpLine("sdmg/sheal/spen", "number", "Spell damage/healing/penetration")
+		Ninja:AddHelpLine("dps/ap/fap", "number", "Damage per second/Attack Power/Feral attack power")
 		Ninja:AddHelpLine("crit/exp/haste/hit/mastery/dodge/parry/res", "number", "Ratings")
 		Ninja:AddHelpLine("holy/fire/nature/frost/shadow/arcane", "number", "Resistances")
 		Ninja:AddHelpLine("meta/prismatic/blue/red/yellow", "number", "Sockets")
-		Ninja:AddHelpLine("dps/fap", "number", "Damage per second/Feral attack power")
 		Ninja:AddHelpLine()
 		Ninja:AddHelpLine("Only available for roll item (r.<key>):", "bbbbbb")
 		Ninja:AddHelpLine("count", "number", "Item count (probably always 1)")
@@ -372,7 +372,7 @@ function Ninja:GetItemData(link)
 	end
 	i.agi = tonumber(stats[ITEM_MOD_AGILITY_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_ARMOR_PENETRATION_RATING_SHORT]) or 0
-	--i. = tonumber(stats[ITEM_MOD_ATTACK_POWER_SHORT]) or 0
+	i.ap = tonumber(stats[ITEM_MOD_ATTACK_POWER_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_BLOCK_RATING_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_BLOCK_VALUE_SHORT]) or 0
 	--i. = tonumber(stats[ITEM_MOD_CRIT_MELEE_RATING_SHORT]) or 0
