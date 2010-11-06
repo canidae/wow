@@ -131,17 +131,15 @@ function Loyalty:OnUpdate(elapsed)
 		end
 	end
 
-	if not status then
-		local aspectactive
-		for index, aspect in pairs(Loyalty.aspects) do
-			if UnitBuff("player", aspect) then
-				aspectactive = 1
-				break
-			end
+	local aspectactive
+	for index, aspect in pairs(Loyalty.aspects) do
+		if UnitBuff("player", aspect) then
+			aspectactive = 1
+			break
 		end
-		if not aspectactive then
-			status = "No aspect?"
-		end
+	end
+	if not aspectactive then
+		status = "No aspect?"
 	end
 
 	LoyaltyFrameStatus:SetText(status or "")

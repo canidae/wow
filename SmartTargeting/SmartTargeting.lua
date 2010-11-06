@@ -5,11 +5,12 @@ function SmartTargeting:OnEvent(event, arg1, ...)
 		SmartTargeting:UnregisterEvent("ADDON_LOADED")
 		SmartTargeting:RegisterEvent("UPDATE_BINDINGS")
 		SmartTargeting:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_REGEN_ENABLED" then
-		local pvpzone = SmartTargeting:GetZoneType() == "pvp"
+	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_REGEN_ENABLED" or (event == "UPDATE_BINDINGS" and not SmartTargeting.checked) then
+		SmartTargeting.checked = 1 -- workaround for issue when [involuntarily] disconnecting in pvp zone and reenter game in a pve zone
+		local pvpzone = SmartTargeting:InPvpZone()
 		local tne = pvpzone and smarttargeting_pve_tnep or smarttargeting_pve_tne
 		local tnep = pvpzone and smarttargeting_pve_tne or smarttargeting_pve_tnep
-		local ctne, ctnep = SmartTargeting:GetBindings("pve")
+		local ctne, ctnep = SmartTargeting:GetBindings()
 		if ctne ~= tne or ctnep ~= tnep then
 			SmartTargeting:UnregisterEvent("UPDATE_BINDINGS")
 			if not InCombatLockdown() and (not tne or SetBinding(tne, "TARGETNEARESTENEMY")) and (not tnep or SetBinding(tnep, "TARGETNEARESTENEMYPLAYER")) then
@@ -23,25 +24,24 @@ function SmartTargeting:OnEvent(event, arg1, ...)
 			SmartTargeting:RegisterEvent("UPDATE_BINDINGS")
 		end
 	end
-	if event == "UPDATE_BINDINGS" or (event == "ADDON_LOADED" and arg1 == "SmartTargeting" and not smarttargeting_pve_tne and not smarttargeting_pve_tnep) then
-		smarttargeting_pve_tne, smarttargeting_pve_tnep = SmartTargeting:GetBindings(SmartTargeting:GetZoneType())
+	if (event == "UPDATE_BINDINGS" and SmartTargeting.checked) or (event == "ADDON_LOADED" and arg1 == "SmartTargeting" and not smarttargeting_pve_tne and not smarttargeting_pve_tnep) then
+		smarttargeting_pve_tne, smarttargeting_pve_tnep = SmartTargeting:GetBindings(SmartTargeting:InPvpZone())
 	end
 end
 
-function SmartTargeting:GetZoneType()
+function SmartTargeting:InPvpZone()
 	local pvptype = GetZonePVPInfo()
 	if pvptype == "arena" or pvptype == "combat" then
-		return "pvp"
+		return 1
 	end
 	local _, instancetype = IsInInstance()
 	if instancetype == "pvp" then
-		return "pvp"
+		return 1
 	end
-	return "pve"
 end
 
-function SmartTargeting:GetBindings(zonetype)
-	if zonetype == "pvp" then
+function SmartTargeting:GetBindings(pvpzone)
+	if pvpzone then
 		return GetBindingKey("TARGETNEARESTENEMYPLAYER"), GetBindingKey("TARGETNEARESTENEMY")
 	end
 	return GetBindingKey("TARGETNEARESTENEMY"), GetBindingKey("TARGETNEARESTENEMYPLAYER")
