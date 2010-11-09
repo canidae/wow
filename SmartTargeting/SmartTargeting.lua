@@ -11,7 +11,7 @@ function SmartTargeting:OnEvent(event, arg1, ...)
 		local tne = pvpzone and smarttargeting_pve_tnep or smarttargeting_pve_tne
 		local tnep = pvpzone and smarttargeting_pve_tne or smarttargeting_pve_tnep
 		local ctne, ctnep = SmartTargeting:GetBindings()
-		if ctne ~= tne or ctnep ~= tnep then
+		if (tne and ctne ~= tne) or (tnep and ctnep ~= tnep) then
 			SmartTargeting:UnregisterEvent("UPDATE_BINDINGS")
 			if not InCombatLockdown() and (not tne or SetBinding(tne, "TARGETNEARESTENEMY")) and (not tnep or SetBinding(tnep, "TARGETNEARESTENEMYPLAYER")) then
 				print("|cffc9a61b" .. (tnep or "<unbound>") .. "|r set to |cff00ccffenemy players|r, |cffc9a61b" .. (tne or "<unbound>") .. "|r set to |cff00ccffall enemies|r.")

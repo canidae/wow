@@ -123,7 +123,7 @@ function Profit:OnUpdate()
 	end
 	if wasnil > 0 then
 		-- TODO: can we improve this? rescanning page won't work (we'll get duplicate data for items we got link to)
-		print(Profit.msg, "Missing itemlink for", wasnil, "items on page", Profit.page, ", skipping items")
+		print(Profit.msg, "Missing itemlink for", wasnil, "items on page", Profit.page .. ", skipping items")
 	end
 	-- update status bar
 	Profit.page = Profit.page + 1
@@ -259,7 +259,7 @@ function Profit:AuctionItem()
 		return
 	end
 	-- we got what we need of information to sell this item
-	local stacksize = item.stacksize or math.min(totalcount, maxstacksize)
+	local stacksize = math.min(item.stacksize or maxstacksize, totalcount)
 	local stacks = math.max(math.floor(totalcount / stacksize), 1)
 	buyoutprice = math.floor(buyoutprice)
 	local bidprice = math.floor(buyoutprice * profit_db.sellbidpercent)
@@ -361,7 +361,7 @@ function Profit:UpdateTooltip()
 			end
 			GameTooltip:AddLine("Rivaling auctions: " .. item.auctions)
 		end
-		SetTooltipMoney(GameTooltip, math.floor(buyoutprice * count), nil, count .. "x@AH:", nil)
+		SetTooltipMoney(GameTooltip, math.floor(buyoutprice), nil, "1x@AH:", nil)
 	end
 end
 
