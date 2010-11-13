@@ -362,6 +362,9 @@ function Profit:UpdateTooltip()
 			GameTooltip:AddLine("Rivaling auctions: " .. item.auctions)
 		end
 		SetTooltipMoney(GameTooltip, math.floor(buyoutprice), nil, "1x@AH:", nil)
+		if count > 1 then
+			SetTooltipMoney(GameTooltip, math.floor(buyoutprice * count), nil, count .. "x@AH:", nil)
+		end
 	end
 end
 
