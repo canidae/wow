@@ -6,7 +6,7 @@ function Maid:OnEvent(event, arg1, ...)
 		Maid:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 		Maid:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 		Maid:RegisterEvent("UNIT_FACTION")
-	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "ACTIVE_TALENT_GROUP_CHANGED" or (event == "UNIT_FACTION" and arg1 == "player") then
+	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "ACTIVE_TALENT_GROUP_CHANGED" or (event == "UNIT_FACTION" and arg1 == "player") or event == "PLAYER_REGEN_ENABLED" then
 		local _, zone = IsInInstance() -- none, pvp, arena, party, raid
 		if not zone or zone == "none" then
 			zone = GetZonePVPInfo() or "pvp" -- arena, friendly, contested, hostile, sanctuary, combat, and make it "pvp" if nil is returned
