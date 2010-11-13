@@ -27,8 +27,8 @@ function Maid:OnEvent(event, arg1, ...)
 end
 
 function Maid:Dress(name)
-	name = strsub(name, 1, 14)
-	local specname = GetActiveTalentGroup() .. ":" .. name
+	name = strsub(name, 1, 16)
+	local specname = GetActiveTalentGroup() .. ":" .. strsub(name, 1, 14)
 	return (GetEquipmentSetInfoByName(specname) and (Maid:Equip(specname) or 1)) or (GetEquipmentSetInfoByName(name) and (Maid:Equip(name) or 1))
 end
 
