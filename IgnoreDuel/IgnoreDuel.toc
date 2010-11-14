@@ -1,0 +1,6 @@
+## Interface: 40000
+## Title: IgnoreDuel
+## Notes: Hide the duel popup, preventing the person who challenged you to duel you or anyone else immediately again
+## Version: 1.0
+## Author: canidae
+IgnoreDuel.lua
