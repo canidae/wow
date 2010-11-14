@@ -12,7 +12,7 @@ function Loyalty:OnUpdate(elapsed)
 		ReputationWatchStatusBar:SetStatusBarColor(color.r, color.g, color.b);
 		Loyalty.resetrepbar = 1
 	elseif Loyalty.resetrepbar then
-		ReputationWatchStatusBarText:Hide()
+		HideWatchedReputationBarText()
 		ReputationWatchBar_Update()
 		Loyalty.resetrepbar = nil
 	end
