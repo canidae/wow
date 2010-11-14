@@ -264,7 +264,7 @@ function Profit:AuctionItem()
 	buyoutprice = math.floor(buyoutprice)
 	local bidprice = math.floor(buyoutprice * profit_db.sellbidpercent)
 	local selltime = item.selltime or profit_db.selltime
-	local deposit = CalculateAuctionDeposit(selltime, 1, 1)
+	local deposit = CalculateAuctionDeposit(selltime, stacksize, stacks) / (stacksize * stacks)
 	-- update fields
 	AuctionsStackSizeEntry:SetNumber(stacksize)
 	AuctionsNumStacksEntry:SetNumber(stacks)
