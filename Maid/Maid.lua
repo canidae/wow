@@ -9,7 +9,7 @@ function Maid:OnEvent(event, arg1, ...)
 			zone = "battleground" -- "pvp" is returned when we're in battleground, so change it to "battleground"
 		end
 
-		-- pve - friendly - contested - pvp - hostile - sanctuary - combat - battleground - arena - raid - party - <zone>
+		-- pve - pvp - sanctuary - friendly - contested - hostile - raid - party - combat - battleground - arena - <zone>
 		if not (Maid:Dress(GetSubZoneText()) or Maid:Dress(GetZoneText()) or Maid:Dress(GetRealZoneText())) then
 			while zone do
 				if (UnitIsPVP("player") or zone ~= "pvp") and Maid:Dress(zone) then -- skip set "pvp" when we're not enabled for pvp
@@ -47,16 +47,16 @@ function Maid:Equip(set)
 end
 
 Maid.order = {
-	["party"] = "raid",
-	["raid"] = "arena",
 	["arena"] = "battleground",
 	["battleground"] = "combat",
-	["combat"] = "sanctuary",
+	["combat"] = "party",
+	["party"] = "raid",
+	["raid"] = "sanctuary",
 	["sanctuary"] = "hostile",
-	["hostile"] = "pvp",
-	["pvp"] = "contested",
+	["hostile"] = "contested",
 	["contested"] = "friendly",
-	["friendly"] = "pve",
+	["friendly"] = "pvp",
+	["pvp"] = "pve",
 }
 Maid.msg = "|cfff33bd7[Maid]|r"
 Maid:SetScript("OnEvent", Maid.OnEvent)
