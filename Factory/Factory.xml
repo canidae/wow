@@ -1,43 +1,79 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 	<Script file="Factory.lua"/>
-	<Button name="FactoryButton" inherits="UIPanelButtonTemplate" text="F" parent="TradeSkillFrame" hidden="false">
-		<Size>
+	<CheckButton name="FactoryCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="TradeSkillFrame" hidden="false">
+		<Size>  
 			<AbsDimension x="18" y="23" />
 		</Size>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="TradeSkillFrameCloseButton" relativePoint="TOPLEFT">
+			<Anchor point="TOPRIGHT">
 				<Offset>
-					<AbsDimension x="2" y="-4" />
+					<AbsDimension x="-24" y="0" />
 				</Offset>
 			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnClick>
-				if FactoryFrame:IsVisible() then
-					FactoryFrame:Hide()
-				else
+			<OnShow>
+				self:SetChecked(factory_settings.showframe)
+				if factory_settings.showframe then
 					FactoryFrame:Show()
+				else
+					FactoryFrame:Hide()
+				end
+			</OnShow>
+			<OnClick>
+				factory_settings.showframe = self:GetChecked()
+				if factory_settings.showframe then
+					FactoryFrame:Show()
+				else
+					FactoryFrame:Hide()
 				end
 			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText("Show Factory frame", nil, nil, nil, nil, 1)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
 		</Scripts>
-	</Button>
-	<Button name="FactoryReagentButton" inherits="UIPanelButtonTemplate" text="R" parent="TradeSkillFrame" hidden="false">
-		<Size>
+	</CheckButton>
+	<CheckButton name="FactoryReagentCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="TradeSkillFrame" hidden="false">
+		<Size>  
 			<AbsDimension x="18" y="23" />
 		</Size>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="FactoryButton" relativePoint="TOPLEFT" />
+			<Anchor point="TOPRIGHT" relativeTo="FactoryCheckButton" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="4" y="0" />
+				</Offset>
+			</Anchor>
 		</Anchors>
 		<Scripts>
-			<OnClick>
-				if FactoryReagentFrame:IsVisible() then
-					FactoryReagentFrame:Hide()
-				else
+			<OnShow>
+				self:SetChecked(factory_settings.showreagentframe)
+				if factory_settings.showreagentframe then
 					FactoryReagentFrame:Show()
+				else
+					FactoryReagentFrame:Hide()
+				end
+			</OnShow>
+			<OnClick>
+				factory_settings.showreagentframe = self:GetChecked()
+				if factory_settings.showreagentframe then
+					FactoryReagentFrame:Show()
+				else
+					FactoryReagentFrame:Hide()
 				end
 			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetText("Show Factory reagent frame", nil, nil, nil, nil, 1)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
 		</Scripts>
-	</Button>
+	</CheckButton>
 	<Frame name="FactoryFrame" parent="TradeSkillFrame" hidden="false">
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<BackGroundInsets>
@@ -71,7 +107,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="FactoryFrameInfoText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
+				<FontString name="FactoryFrameText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
 					<Size>
 						<AbsDimension x="240" y="380" />
 					</Size>
@@ -148,66 +184,59 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="FactoryReagentFrame" hidden="true" movable="true">
+	<Frame name="FactoryReagentFrame" hidden="true" enableMouse="true" movable="true">
 		<Size>
-			<AbsDimension x="250" y="420" />
+			<AbsDimension x="60" y="12" />
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString name="FactoryReagentFrameInfoText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="|cff25de36Reagents:|r">
 					<Size>
-						<AbsDimension x="240" y="410" />
+						<AbsDimension x="60" y="12" />
 					</Size>
-					<Anchors>
-						<Anchor point="CENTER" />
-					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad>
+				FactoryReagentFrame:RegisterForDrag("LeftButton")
+			</OnLoad>
+			<OnDragStart>
+				if IsAltKeyDown() then
+					FactoryReagentFrame:StartMoving()
+				end
+			</OnDragStart>
+			<OnDragStop>
+				FactoryReagentFrame:StopMovingOrSizing()
+			</OnDragStop>
+		</Scripts>
 		<Frames>
-			<Frame name="FactoryReagentMoveFrame" parent="FactoryReagentFrame" hidden="false">
+			<Frame name="FactoryReagentDataFrame" parent="FactoryReagentFrame" hidden="false">
 				<Size>
-					<AbsDimension x="60" y="12" />
+					<AbsDimension x="250" y="420" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="FactoryReagentFrame" relativePoint="TOPLEFT">
+					<Anchor point="TOPLEFT" relativeTo="FactoryReagentFrame" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="2" y="-4" />
+							<AbsDimension x="-2" y="4" />
 						</Offset>
 					</Anchor>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<FontString name="FactoryReagentMoveFrameInfoText" inherits="GameFontHighlightSmall" text="|cff25de36Reagents:|r">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP" text="test">
 							<Size>
-								<AbsDimension x="60" y="12" />
+								<AbsDimension x="240" y="410" />
 							</Size>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnMouseDown>
-						if arg1 == "LeftButton" and IsAltKeyDown() then
-							FactoryReagentFrame:StartMoving()
-							FactoryReagentFrame.isMoving = true
-						end
-					</OnMouseDown>
-					<OnMouseUp>
-						if FactoryReagentFrame.isMoving then
-							FactoryReagentFrame:StopMovingOrSizing()
-							FactoryReagentFrame.isMoving = false
-						end
-					</OnMouseUp>
-					<OnHide>
-						if FactoryReagentFrame.isMoving then
-							FactoryReagentFrame:StopMovingOrSizing()
-							FactoryReagentFrame.isMoving = false
-						end
-					</OnHide>
-				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>

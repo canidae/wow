@@ -1,9 +1,9 @@
 ## Interface: 40000
 ## Title: Factory
 ## Notes: Simplifies production
-## Version: 300
+## Version: 2.0
 ## Author: canidae
 ## SavedVariables: factory_items
-## SavedVariablesPerCharacter: factory_products, factory_resources, factory_workbench
+## SavedVariablesPerCharacter: factory_products, factory_resources, factory_workbench, factory_settings
 ## Dependencies: Blizzard_TradeSkillUI, Blizzard_GuildBankUI
 Factory.xml

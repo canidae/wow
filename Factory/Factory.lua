@@ -8,6 +8,9 @@ function Factory:OnEvent(event, arg1, ...)
 	Factory.eventtimes[event] = GetTime()
 	if event == "ADDON_LOADED" and arg1 == "Factory" then
 		self:UnregisterEvent("ADDON_LOADED")
+		if not factory_settings then
+			factory_settings = {}
+		end
 		if not factory_items or not factory_items.version or factory_items.version ~= 1 then
 			factory_items = {}
 			factory_items.version = 1
@@ -83,8 +86,8 @@ function Factory:UpdateFactoryFrame()
 			reagentframetext = reagentframetext .. tmptext
 		end
 	end
-	FactoryFrameInfoText:SetText(frametext)
-	FactoryReagentFrameInfoText:SetText(reagentframetext)
+	FactoryFrameText:SetText(frametext)
+	FactoryReagentDataFrameText:SetText(reagentframetext)
 end
 
 function Factory:CheckReagentsKnown(productname)
