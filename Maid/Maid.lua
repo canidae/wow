@@ -1,6 +1,9 @@
 Maid = CreateFrame("Frame")
 
 function Maid:OnEvent(event, arg1, ...)
+	if UnitIsDeadOrGhost("player") or UnitOnTaxi("player") then
+		return
+	end
 	if event == "ZONE_CHANGED_NEW_AREA" or event == "ACTIVE_TALENT_GROUP_CHANGED" or (event == "UNIT_FACTION" and arg1 == "player") or event == "PLAYER_REGEN_ENABLED" then
 		local _, zone = IsInInstance() -- none, pvp, arena, party, raid
 		if not zone or zone == "none" then

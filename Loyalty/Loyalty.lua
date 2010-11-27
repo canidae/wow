@@ -19,7 +19,7 @@ function Loyalty:OnUpdate(elapsed)
 	if UnitExists("pet") and not UnitIsDead("pet") then
 		local pethealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
 		local _, _, _, _, _, duration, expires, _, _, _, _ = UnitBuff("pet", "Mend Pet")
-		if not duration and pethealth < 95 and InCombatLockdown() and (UnitIsPVP("player") or pethealth < 75) then
+		if not duration and pethealth < 80 and (InCombatLockdown() or pethealth < 50) then
 			-- pet is wounded and mend pet is not up, annoy hunter
 			PlaySound("igQuestFailed")
 		end
