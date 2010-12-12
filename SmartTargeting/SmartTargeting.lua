@@ -24,7 +24,7 @@ function SmartTargeting:OnEvent(event, arg1, ...)
 			SmartTargeting:RegisterEvent("UPDATE_BINDINGS")
 		end
 	end
-	if (event == "UPDATE_BINDINGS" and SmartTargeting.checked) or (event == "ADDON_LOADED" and arg1 == "SmartTargeting" and not smarttargeting_pve_tne and not smarttargeting_pve_tnep) then
+	if not InCombatLockdown() and ((event == "UPDATE_BINDINGS" and SmartTargeting.checked) or (event == "ADDON_LOADED" and arg1 == "SmartTargeting" and not smarttargeting_pve_tne and not smarttargeting_pve_tnep)) then
 		smarttargeting_pve_tne, smarttargeting_pve_tnep = SmartTargeting:GetBindings(SmartTargeting:InPvpZone())
 	end
 end
