@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 	<Script file="Commodity.lua" />
-	<CheckButton name="CommodityShowOverlayCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
+	<CheckButton name="CommodityShowTooltipCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
 		<Size> 
 			<AbsDimension x="18" y="23" />
 		</Size>
@@ -8,64 +8,6 @@
 			<Anchor point="TOPRIGHT" relativeTo="GuildBankFrame" relativePoint="TOPRIGHT">
 				<Offset>
 					<AbsDimension x="-27" y="-13" />
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnShow>
-				self:SetChecked(commodity_player.overlayvisible)
-			</OnShow>
-			<OnClick>
-				commodity_player.overlayvisible = self:GetChecked()
-				Commodity:SetGuildBankSlotOverlay()
-			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText("Show icon for item that should be placed in slot", nil, nil, nil, nil, 1)
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="CommoditySortGuildBankTabCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
-		<Size> 
-			<AbsDimension x="18" y="23" />
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="CommodityShowOverlayCheckButton" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="4" y="0" />
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnShow>
-				self:SetChecked(commodity_player.sortguildbanktab)
-			</OnShow>
-			<OnClick>
-				commodity_player.sortguildbanktab = self:GetChecked()
-				if commodity_player.sortguildbanktab then
-					Commodity:SortGuildBankTab()
-				end
-			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText("Automatically sort items", nil, nil, nil, nil, 1)
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="CommodityShowTooltipCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
-		<Size> 
-			<AbsDimension x="18" y="23" />
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="CommoditySortGuildBankTabCheckButton" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="4" y="0" />
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -82,66 +24,6 @@
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 				GameTooltip:SetText("Show guild bank status in tooltip for items that got reserved slots", nil, nil, nil, nil, 1)
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="CommodityAlwaysShowStackSizeCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
-		<Size> 
-			<AbsDimension x="18" y="23" />
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="CommodityShowTooltipCheckButton" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="4" y="0" />
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnShow>
-				self:SetChecked(commodity_player.alwaysshowstacksize)
-			</OnShow>
-			<OnClick>
-				commodity_player.alwaysshowstacksize = self:GetChecked()
-				Commodity:SetGuildBankSlotOverlay()
-			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText("Show the desired stack size of a reserved slot even if an item is placed in the slot", nil, nil, nil, nil, 1)
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="CommodityDrawCheckButton" inherits="ChatConfigBaseCheckButtonTemplate" parent="GuildBankFrame" hidden="false">
-		<Size> 
-			<AbsDimension x="18" y="23" />
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="CommodityAlwaysShowStackSizeCheckButton" relativePoint="TOPLEFT">
-				<Offset>
-					<AbsDimension x="4" y="0" />
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Scripts>
-			<OnShow>
-				self:SetChecked(Commodity.drawmode)
-			</OnShow>
-			<OnClick>
-				if self:GetChecked() then
-					SlashCmdList.Commodity("draw")
-				else
-					SlashCmdList.Commodity("done")
-				end
-				self:SetChecked(Commodity.drawmode)
-			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetText("Enter draw mode, try also \"/commodity draw &lt;item&gt;\"", nil, nil, nil, nil, 1)
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide()
