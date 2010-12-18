@@ -4,20 +4,13 @@ function Commodity:OnEvent(event, arg1, ...)
 	--print(GetTime(), event, arg1, ...)
 	if event == "ADDON_LOADED" and arg1 == "Commodity" then
 		self:UnregisterEvent("ADDON_LOADED")
-		if not commodity_player then
-			commodity_player = {
-				showtooltip = 1
-			}
-		end
-		-- should we show tooltip?
-		if commodity_player.showtooltip then
-			CommodityTooltipFrame:SetScript("OnShow", Commodity.UpdateTooltip)
-		end
 	elseif event == "GUILDBANK_TEXT_CHANGED" then
 		-- someone changed guild tab info, wipe data (will be read again the net time we visit the guild bank)
 		local tab = tonumber(arg1)
-		wipe(Commodity.tabs[tab])
-		Commodity.tabs[tab] = nil
+		if Commodity.tabs[tab] then
+			wipe(Commodity.tabs[tab])
+			Commodity.tabs[tab] = nil
+		end
 	elseif event == "GUILDBANK_UPDATE_TEXT" then
 		-- parse guild bank tab info
 		local tab = tonumber(arg1)
@@ -38,10 +31,10 @@ function Commodity:OnEvent(event, arg1, ...)
 					index = index + 1
 				end
 			end
-		end
-		-- and sort guild bank
-		if GetCurrentGuildBankTab() == tab then
-			Commodity:SortGuildBankTab()
+			-- and sort guild bank
+			if GetCurrentGuildBankTab() == tab then
+				Commodity:SortGuildBankTab()
+			end
 		end
 	elseif event == "GUILDBANKBAGSLOTS_CHANGED" then
 		local tab = GetCurrentGuildBankTab()
@@ -90,13 +83,29 @@ function Commodity:SortGuildBankTab()
 			end
 		end
 	end
-	local slot = 0
+	local slot = 1
+	local slotinc = 1
 	for index, item in ipairs(items) do
-		slot = slot + 1
 		local itemlink = GetGuildBankItemLink(tab, slot)
 		local itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
 		local _, itemamount = GetGuildBankItemInfo(tab, slot)
-		if item.slot > slot then
+		if index > 1 and items[index - 1].name ~= item.name and items[index - 1].name == itemname then
+			slot = slot + slotinc
+		end
+		if slotinc == 1 and item.priority == 666 then
+			slotinc = -1
+			slot = MAX_GUILDBANK_SLOTS_PER_TAB
+		end
+		itemlink = GetGuildBankItemLink(tab, slot)
+		itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
+		_, itemamount = GetGuildBankItemInfo(tab, slot)
+		while itemname and itemname == item.name and itemamount == itemstackcount do
+			slot = slot + slotinc
+			itemlink = GetGuildBankItemLink(tab, slot)
+			itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
+			_, itemamount = GetGuildBankItemInfo(tab, slot)
+		end
+		if (slotinc == 1 and item.slot > slot) or (slotinc == -1 and item.slot < slot) then
 			local _, moveamount = GetGuildBankItemInfo(tab, item.slot)
 			if item.name == itemname then
 				moveamount = math.min(moveamount, itemstackcount - itemamount)
@@ -129,44 +138,3 @@ Commodity:RegisterEvent("ADDON_LOADED")
 Commodity:RegisterEvent("GUILDBANK_TEXT_CHANGED")
 Commodity:RegisterEvent("GUILDBANK_UPDATE_TEXT")
 Commodity:RegisterEvent("GUILDBANKBAGSLOTS_CHANGED")
-
--- OLD
-function Commodity:UpdateTooltip()
-	if not commodity_player.showtooltip or not Commodity.tabs then
-		return
-	end
-	local itemname, itemlink = GameTooltip:GetItem()
-	local itemid
-	if itemlink then
-		_, _, itemid = string.find(itemlink, "item:(%d+):")
-		itemid = tonumber(itemid)
-	end
-	if not itemid then
-		return
-	end
-	for tabindex, tab in pairs(Commodity.tabs) do
-		local itemamount, commodityamount = Commodity:GetItemData(tabindex, itemid)
-		if commodityamount and commodityamount > 0 then
-			if not itemamount then
-				itemamount = 0
-			end
-			local percent = itemamount / commodityamount
-			if percent > 1.0 then
-				percent = 1.0
-			end
-			local r, g
-			local b = 0.0
-			if percent > 0.75 then
-				r = 1.0 - (percent - 0.75) * 4
-				g = 1.0
-			elseif percent > 0.25 then
-				r = 1.0
-				g = (percent - 0.25) * 2
-			else
-				r = 1.0
-				g = 0.0
-			end
-			GameTooltip:AddDoubleLine("Guild bank tab " .. tabindex, itemamount .. "/" .. commodityamount, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, r, g, b)
-		end
-	end
-end
