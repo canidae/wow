@@ -4,6 +4,9 @@ function Commodity:OnEvent(event, arg1, ...)
 	--print(GetTime(), event, arg1, ...)
 	if event == "ADDON_LOADED" and arg1 == "Commodity" then
 		self:UnregisterEvent("ADDON_LOADED")
+		if not commodity_player then
+			commodity_player = {}
+		end
 	elseif event == "GUILDBANK_TEXT_CHANGED" then
 		-- someone changed guild tab info, wipe data (will be read again the net time we visit the guild bank)
 		local tab = tonumber(arg1)
@@ -53,20 +56,39 @@ function Commodity:OnEvent(event, arg1, ...)
 end
 
 function Commodity:SortGuildBankTab()
-	-- sort: Commodity.tabs, type, subtype, itemlevel, name
 	local tab = GetCurrentGuildBankTab()
+	if not commodity_player.sortguildbank or not Commodity.tabs[tab] then
+		return
+	end
+	-- sort: Commodity.tabs, type, subtype, itemlevel, name
 	local items = {}
+	local availableslots = MAX_GUILDBANK_SLOTS_PER_TAB
+	local groups = {
+		commodity = {},
+		type = {},
+		subtype = {},
+		name = {}
+	}
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local _, amount = GetGuildBankItemInfo(tab, slot)
 		local itemlink = GetGuildBankItemLink(tab, slot)
 		if amount and amount > 0 and itemlink then
 			local itemname, _, _, itemlevel, _, itemtype, itemsubtype, itemstackcount = GetItemInfo(itemlink)
+			local priority = math.min(Commodity.tabs[tab][itemname] or 666, Commodity.tabs[tab][itemtype] or 666, Commodity.tabs[tab][itemsubtype] or 666)
+			if priority == 666 then
+				availableslots = availableslots - 1
+			else
+				groups.commodity[priority] = (groups.commodity[priority] or 0) + 1
+				groups.type[itemtype] = (groups.type[itemtype] or 0) + 1
+				groups.subtype[itemsubtype] = (groups.subtype[itemsubtype] or 0) + 1
+				groups.name[itemname] = (groups.name[itemname] or 0) + 1
+			end
 			local item = {
 				type = itemtype,
 				subtype = itemsubtype,
 				level = itemlevel,
 				name = itemname,
-				priority = math.min(Commodity.tabs[tab][itemname] or 666, Commodity.tabs[tab][itemtype] or 666, Commodity.tabs[tab][itemsubtype] or 666),
+				priority = priority,
 				slot = slot
 			}
 			local addlast = 1
@@ -83,8 +105,56 @@ function Commodity:SortGuildBankTab()
 			end
 		end
 	end
+	-- grouping
+	local namegroups = 0
+	local namegrouprows = 0
+	for key, value in pairs(groups.name) do
+		namegroups = namegroups + 1
+		namegrouprows = namegrouprows + math.ceil(value / 7)
+	end
+	local subtypegroups = 0
+	local subtypegrouprows = 0
+	for key, value in pairs(groups.subtype) do
+		subtypegroups = subtypegroups + 1
+		subtypegrouprows = subtypegrouprows + math.ceil(value / 7)
+	end
+	local commoditygroups = 0
+	local commoditygrouprows = 0
+	for key, value in pairs(groups.commodity) do
+		commoditygroups = commoditygroups + 1
+		commoditygrouprows = commoditygrouprows + math.ceil(value / 7)
+	end
+	local typegroups = 0
+	local typegrouprows = 0
+	for key, value in pairs(groups.type) do
+		typegroups = typegroups + 1
+		typegrouprows = typegrouprows + math.ceil(value / 7)
+	end
+	local availablerows = math.floor(availableslots / 7)
+	local groupmethod
+	local bestrowcount = 0
+	if namegrouprows < availablerows and namegrouprows > bestrowcount then
+		groupmethod = "name"
+		bestrowcount = namegrouprows
+	end
+	if subtypegrouprows < availablerows and subtypegrouprows > bestrowcount then
+		groupmethod = "subtype"
+		bestrowcount = subtypegrouprows
+	end
+	if commoditygrouprows < availablerows and commoditygrouprows > bestrowcount then
+		groupmethod = "commodity"
+		bestrowcount = commoditygrouprows
+	end
+	if typegrouprows < availablerows and typegrouprows > bestrowcount then
+		groupmethod = "type"
+		bestrowcount = typegrouprows
+	end
+	--print("Sort: " .. groupmethod .. ", " .. bestrowcount .. "/" .. availablerows)
+	--print(availableslots, availablerows, namegroups, namegrouprows, subtypegroups, subtypegrouprows, typegroups, typegrouprows, commoditygroups, commoditygrouprows)
+	-- end grouping
 	local slot = 1
 	local slotinc = 1
+	local lastitem
 	for index, item in ipairs(items) do
 		local itemlink = GetGuildBankItemLink(tab, slot)
 		local itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
@@ -96,25 +166,44 @@ function Commodity:SortGuildBankTab()
 			slotinc = -1
 			slot = MAX_GUILDBANK_SLOTS_PER_TAB
 		end
+		-- grouping
+		if item.priority ~= 666 then
+			while groupmethod == "name" and lastitem and lastitem.name ~= item.name and slot % 7 ~= 1 do
+				slot = slot + slotinc
+			end
+			while groupmethod == "subtype" and lastitem and lastitem.subtype ~= item.subtype and slot % 7 ~= 1 do
+				slot = slot + slotinc
+			end
+			while groupmethod == "commodity" and lastitem and lastitem.commodity ~= item.commodity and slot % 7 ~= 1 do
+				slot = slot + slotinc
+			end
+			while groupmethod == "type" and lastitem and lastitem.type ~= item.type and slot % 7 ~= 1 do
+				slot = slot + slotinc
+			end
+			lastitem = item
+		end
+		-- end grouping
 		itemlink = GetGuildBankItemLink(tab, slot)
 		itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
 		_, itemamount = GetGuildBankItemInfo(tab, slot)
-		while itemname and itemname == item.name and itemamount == itemstackcount do
+		while itemname and itemname == item.name and itemamount == itemstackcount and item.slot ~= slot do
 			slot = slot + slotinc
 			itemlink = GetGuildBankItemLink(tab, slot)
 			itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
 			_, itemamount = GetGuildBankItemInfo(tab, slot)
 		end
-		if (slotinc == 1 and item.slot > slot) or (slotinc == -1 and item.slot < slot) then
+		if item.slot ~= slot then
 			local _, moveamount = GetGuildBankItemInfo(tab, item.slot)
-			if item.name == itemname then
-				moveamount = math.min(moveamount, itemstackcount - itemamount)
+			if item.name ~= itemname or itemamount ~= itemamount then
+				if item.name == itemname then
+					moveamount = math.min(moveamount, itemstackcount - itemamount)
+				end
+				Commodity:UpdateTabHash()
+				ClearCursor()
+				SplitGuildBankItem(tab, item.slot, moveamount)
+				PickupGuildBankItem(tab, slot)
+				break
 			end
-			Commodity:UpdateTabHash()
-			ClearCursor()
-			SplitGuildBankItem(tab, item.slot, moveamount)
-			PickupGuildBankItem(tab, slot)
-			break
 		end
 	end
 	wipe(items)
