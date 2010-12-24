@@ -46,9 +46,9 @@ function Commodity:OnEvent(event, arg1, ...)
 			QueryGuildBankText(tab)
 		else
 			-- only update when the tab is actually changed
-			local tabhash = Commodity.tabhash
-			Commodity:UpdateTabHash()
-			if tabhash ~= Commodity.tabhash then
+			local tabfingerprint = Commodity.tabfingerprint
+			Commodity:UpdateTabFingerprint()
+			if tabfingerprint ~= Commodity.tabfingerprint then
 				Commodity:SortGuildBankTab()
 			end
 		end
@@ -198,7 +198,7 @@ function Commodity:SortGuildBankTab()
 				if item.name == itemname then
 					moveamount = math.min(moveamount, itemstackcount - itemamount)
 				end
-				Commodity:UpdateTabHash()
+				Commodity:UpdateTabFingerprint()
 				ClearCursor()
 				SplitGuildBankItem(tab, item.slot, moveamount)
 				PickupGuildBankItem(tab, slot)
@@ -209,18 +209,18 @@ function Commodity:SortGuildBankTab()
 	wipe(items)
 end
 
-function Commodity:UpdateTabHash()
+function Commodity:UpdateTabFingerprint()
 	local tab = GetCurrentGuildBankTab()
-	Commodity.tabhash = ""
+	Commodity.tabfingerprint = ""
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local _, amount = GetGuildBankItemInfo(tab, slot)
 		local itemlink = GetGuildBankItemLink(tab, slot)
-		Commodity.tabhash = Commodity.tabhash .. (amount or "0") .. (itemlink or "nil")
+		Commodity.tabfingerprint = Commodity.tabfingerprint .. (amount or "0") .. (itemlink or "nil")
 	end
 end
 
 Commodity.tabs = {}
-Commodity.tabhash = ""
+Commodity.tabfingerprint = ""
 
 Commodity:SetScript("OnEvent", Commodity.OnEvent)
 Commodity:RegisterEvent("ADDON_LOADED")
