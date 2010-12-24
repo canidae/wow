@@ -150,7 +150,6 @@ function Commodity:SortGuildBankTab()
 	-- end grouping
 	local slot = 1
 	local slotinc = 1
-	local lastitem
 	for index, item in ipairs(items) do
 		local itemlink = GetGuildBankItemLink(tab, slot)
 		local itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
@@ -163,20 +162,10 @@ function Commodity:SortGuildBankTab()
 			slot = MAX_GUILDBANK_SLOTS_PER_TAB
 		end
 		-- grouping
-		if item.priority ~= 666 then
-			while groupmethod == "name" and lastitem and lastitem.name ~= item.name and slot % 7 ~= 1 do
+		if item.priority ~= 666 and index > 1 and groupmethod then
+			while items[index - 1][groupmethod] ~= item[groupmethod] and slot % 7 ~= 1 do
 				slot = slot + slotinc
 			end
-			while groupmethod == "subtype" and lastitem and lastitem.subtype ~= item.subtype and slot % 7 ~= 1 do
-				slot = slot + slotinc
-			end
-			while groupmethod == "commodity" and lastitem and lastitem.commodity ~= item.commodity and slot % 7 ~= 1 do
-				slot = slot + slotinc
-			end
-			while groupmethod == "type" and lastitem and lastitem.type ~= item.type and slot % 7 ~= 1 do
-				slot = slot + slotinc
-			end
-			lastitem = item
 		end
 		-- end grouping
 		itemlink = GetGuildBankItemLink(tab, slot)
