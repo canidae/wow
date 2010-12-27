@@ -152,7 +152,7 @@ function Commodity:SortGuildBankTab()
 	local slotinc = 1
 	for index, item in ipairs(items) do
 		if slotinc == 1 and item.priority == 666 then
-			-- reverse sorting, these items shouldn't be in bank tab, place them in bottom right corner
+			-- reverse sorting, these items shouldn't be in this bank tab, place them in bottom right corner
 			slotinc = -1
 			slot = MAX_GUILDBANK_SLOTS_PER_TAB
 		end
@@ -174,16 +174,15 @@ function Commodity:SortGuildBankTab()
 		end
 		if item.slot ~= slot then
 			local _, moveamount = GetGuildBankItemInfo(tab, item.slot)
-			if item.name ~= itemname or itemamount ~= itemamount then
-				if item.name == itemname then
-					moveamount = math.min(moveamount, itemstackcount - itemamount)
-				end
-				Commodity:UpdateTabFingerprint()
-				ClearCursor()
-				SplitGuildBankItem(tab, item.slot, moveamount)
-				PickupGuildBankItem(tab, slot)
-				break
+			if item.name == itemname then
+				moveamount = math.min(moveamount, itemstackcount - itemamount)
 			end
+			ClearCursor()
+			SplitGuildBankItem(tab, item.slot, moveamount)
+			PickupGuildBankItem(tab, slot)
+			break
+		else
+			slot = slot + slotinc
 		end
 	end
 	wipe(items)
