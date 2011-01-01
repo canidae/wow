@@ -98,7 +98,7 @@ function Commodity:SortGuildBankTab()
 			local addlast = 1
 			for index, item2 in ipairs(items) do
 				-- you're pretty clever if you understand the next line =)
-				if item.priority < item2.priority or (item.priority == item2.priority and (item.type < item2.type or (item.type == item2.type and (item.subtype < item2.subtype or (item.subtype == item2.subtype and (item.level > item2.level or (item.level == item2.level and item.name < item2.name))))))) then
+				if item.priority < item2.priority or (item.priority == item2.priority and (item.type < item2.type or (item.type == item2.type and (item.subtype < item2.subtype or (item.subtype == item2.subtype and (item.level > item2.level or (item.level == item2.level and (item.name < item2.name or (priority == 666 and item.name == item2.name))))))))) then
 					table.insert(items, index, item)
 					addlast = nil
 					break
@@ -155,6 +155,8 @@ function Commodity:SortGuildBankTab()
 			-- reverse sorting, these items shouldn't be in this bank tab, place them in bottom right corner
 			slotinc = -1
 			slot = MAX_GUILDBANK_SLOTS_PER_TAB
+		elseif items[index - 1] and items[index - 1].name ~= item.name then
+			slot = slot + slotinc
 		end
 		-- grouping
 		if item.priority ~= 666 and items[index - 1] and groupmethod then
@@ -181,8 +183,6 @@ function Commodity:SortGuildBankTab()
 			SplitGuildBankItem(tab, item.slot, moveamount)
 			PickupGuildBankItem(tab, slot)
 			break
-		else
-			slot = slot + slotinc
 		end
 	end
 	wipe(items)
