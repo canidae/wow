@@ -12,10 +12,12 @@ function Maid:OnEvent(event, arg1, ...)
 			zone = "battleground" -- "pvp" is returned when we're in battleground, so change it to "battleground"
 		end
 
-		-- pve - pvp - sanctuary - friendly - contested - hostile - raid - party - combat - battleground - arena - <zone>
 		if not (Maid:Dress(GetSubZoneText()) or Maid:Dress(GetZoneText()) or Maid:Dress(GetRealZoneText())) then
+			-- pve - pvp - sanctuary - friendly - contested - hostile - raid - party - combat - battleground - arena - <zone>
+			-- seems like you don't get pvp flagged in arena, hence i've added pvp, arena, battleground and combat below
+			local pvp = UnitIsPVP("player") or zone == "pvp" or zone == "arena" or zone == "battleground" or zone == "combat"
 			while zone do
-				if (UnitIsPVP("player") or zone ~= "pvp") and Maid:Dress(zone) then -- skip set "pvp" when we're not enabled for pvp
+				if (pvp or zone ~= "pvp") and Maid:Dress(zone) then -- skip set "pvp" when we're not enabled for pvp
 					break
 				end
 				zone = Maid.order[zone]
@@ -25,7 +27,7 @@ function Maid:OnEvent(event, arg1, ...)
 end
 
 function Maid:Dress(name)
-	if  name then
+	if name then
 		name = strsub(name, 1, 16)
 		local specname = GetActiveTalentGroup() .. ":" .. strsub(name, 1, 14)
 		return (GetEquipmentSetInfoByName(specname) and (Maid:Equip(specname) or 1)) or (GetEquipmentSetInfoByName(name) and (Maid:Equip(name) or 1))
