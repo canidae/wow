@@ -4,9 +4,10 @@ function SmartTargeting:OnEvent(event, arg1, ...)
 	if event == "ADDON_LOADED" and arg1 == "SmartTargeting" then
 		SmartTargeting:UnregisterEvent("ADDON_LOADED")
 		SmartTargeting:RegisterEvent("PLAYER_ENTERING_WORLD")
+		SmartTargeting:RegisterEvent("UPDATE_WORLD_STATES")
 		SmartTargeting:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 		KeyBindingFrameOkayButton:HookScript("OnClick", SmartTargeting.UpdateKeyBindings)
-	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_REGEN_ENABLED" then
+	else
 		if not smarttargeting_pve_tne and not smarttargeting_pve_tnep then
 			SmartTargeting:UpdateKeyBindings()
 		end
@@ -20,7 +21,6 @@ function SmartTargeting:OnEvent(event, arg1, ...)
 				SaveBindings(GetCurrentBindingSet())
 				SmartTargeting:UnregisterEvent("PLAYER_REGEN_ENABLED")
 			else
-				print("|cffe5462cFailed updating targeting bindings, retrying when you leave combat.|r")
 				SmartTargeting:RegisterEvent("PLAYER_REGEN_ENABLED")
 			end
 		end

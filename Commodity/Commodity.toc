@@ -1,7 +1,7 @@
 ## Interface: 40000
 ## Title: Commodity
 ## Notes: Guild bank organizer
-## Version: 2.0beta1
+## Version: 2.0-beta1
 ## Author: canidae
 ## SavedVariablesPerCharacter: commodity_player
 ## Dependencies: Blizzard_GuildBankUI

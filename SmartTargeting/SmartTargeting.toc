@@ -1,7 +1,7 @@
 ## Interface: 40000
 ## Title: SmartTargeting
 ## Notes: Smarter targeting of enemy players/mobs
-## Version: 1.4
+## Version: 1.6
 ## Author: canidae
 ## SavedVariablesPerCharacter: smarttargeting_pve_tne, smarttargeting_pve_tnep
 ## Dependencies: Blizzard_BindingUI
