@@ -1,27 +1,24 @@
 Maid = CreateFrame("Frame")
 
 function Maid:OnEvent(event, arg1, ...)
-	if UnitIsDeadOrGhost("player") then
+	if UnitIsDeadOrGhost("player") or (event == "UNIT_FACTION" and arg1 ~= "player") or (event == "PLAYER_LOGOUT" and Maid:Dress("tinfoil")) then
 		return
 	end
-	if event == "ZONE_CHANGED_NEW_AREA" or event == "ACTIVE_TALENT_GROUP_CHANGED" or (event == "UNIT_FACTION" and arg1 == "player") or event == "PLAYER_REGEN_ENABLED" then
-		local _, zone = IsInInstance() -- none, pvp, arena, party, raid
-		if not zone or zone == "none" then
-			zone = GetZonePVPInfo() or "pvp" -- arena, friendly, contested, hostile, sanctuary, combat, and make it "pvp" if nil is returned
-		elseif zone == "pvp" then
-			zone = "battleground" -- "pvp" is returned when we're in battleground, so change it to "battleground"
-		end
+	local _, zone = IsInInstance() -- none, pvp, arena, party, raid
+	if not zone or zone == "none" then
+		zone = GetZonePVPInfo() or "pvp" -- arena, friendly, contested, hostile, sanctuary, combat, and make it "pvp" if nil is returned
+	elseif zone == "pvp" then
+		zone = "battleground" -- "pvp" is returned when we're in battleground, so change it to "battleground"
+	end
+	-- pve - sanctuary - friendly - contested - hostile - raid - party - pvp - combat - battleground - arena - <zone>
+	if UnitIsPVP("player") and zone ~= "arena" and zone ~= "battleground" and zone ~= "combat" then
+		-- force "zone" to "pvp" if we're pvp toggled, but not in a combat zone, battleground or arena
+		zone = "pvp"
+	end
 
-		if not (Maid:Dress(GetSubZoneText()) or Maid:Dress(GetZoneText()) or Maid:Dress(GetRealZoneText())) then
-			-- pve - pvp - sanctuary - friendly - contested - hostile - raid - party - combat - battleground - arena - <zone>
-			-- seems like you don't get pvp flagged in arena, hence i've added pvp, arena, battleground and combat below
-			local pvp = UnitIsPVP("player") or zone == "pvp" or zone == "arena" or zone == "battleground" or zone == "combat"
-			while zone do
-				if (pvp or zone ~= "pvp") and Maid:Dress(zone) then -- skip set "pvp" when we're not enabled for pvp
-					break
-				end
-				zone = Maid.order[zone]
-			end
+	if not (Maid:Dress(GetSubZoneText()) or Maid:Dress(GetZoneText()) or Maid:Dress(GetRealZoneText())) then
+		while zone and not Maid:Dress(zone) do
+			zone = Maid.order[zone]
 		end
 	end
 end
@@ -54,17 +51,18 @@ end
 Maid.order = {
 	["arena"] = "battleground",
 	["battleground"] = "combat",
-	["combat"] = "party",
+	["combat"] = "pvp",
+	["pvp"] = "party",
 	["party"] = "raid",
-	["raid"] = "sanctuary",
-	["sanctuary"] = "hostile",
+	["raid"] = "hostile",
 	["hostile"] = "contested",
 	["contested"] = "friendly",
-	["friendly"] = "pvp",
-	["pvp"] = "pve",
+	["friendly"] = "sanctuary",
+	["sanctuary"] = "pve"
 }
 Maid.msg = "|cfff33bd7[Maid]|r"
 Maid:SetScript("OnEvent", Maid.OnEvent)
 Maid:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+Maid:RegisterEvent("PLAYER_LOGOUT")
 Maid:RegisterEvent("UNIT_FACTION")
 Maid:RegisterEvent("ZONE_CHANGED_NEW_AREA")
