@@ -1,7 +1,7 @@
 Maid = CreateFrame("Frame")
 
 function Maid:OnEvent(event, arg1, ...)
-	if UnitIsDeadOrGhost("player") or (event == "UNIT_FACTION" and arg1 ~= "player") or (event == "PLAYER_LOGOUT" and Maid:Dress("tinfoil")) then
+	if UnitIsDeadOrGhost("player") or (event == "UNIT_FACTION" and arg1 ~= "player") then
 		return
 	end
 	local _, zone = IsInInstance() -- none, pvp, arena, party, raid
@@ -27,7 +27,7 @@ function Maid:Dress(name)
 	if name then
 		name = strsub(name, 1, 16)
 		local specname = GetActiveTalentGroup() .. ":" .. strsub(name, 1, 14)
-		return (GetEquipmentSetInfoByName(specname) and (Maid:Equip(specname) or 1)) or (GetEquipmentSetInfoByName(name) and (Maid:Equip(name) or 1))
+		return (GetEquipmentSetInfoByName(specname) and Maid:Equip(specname)) or (GetEquipmentSetInfoByName(name) and Maid:Equip(name))
 	end
 end
 
@@ -46,6 +46,7 @@ function Maid:Equip(set)
 			Maid:RegisterEvent("PLAYER_REGEN_ENABLED")
 		end
 	end
+	return 1
 end
 
 Maid.order = {
@@ -63,6 +64,5 @@ Maid.order = {
 Maid.msg = "|cfff33bd7[Maid]|r"
 Maid:SetScript("OnEvent", Maid.OnEvent)
 Maid:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-Maid:RegisterEvent("PLAYER_LOGOUT")
 Maid:RegisterEvent("UNIT_FACTION")
 Maid:RegisterEvent("ZONE_CHANGED_NEW_AREA")
