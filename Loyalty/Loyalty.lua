@@ -1,13 +1,13 @@
 Loyalty = CreateFrame("Frame")
 
 function Loyalty:OnUpdate(elapsed)
+	if not CombatText_AddMessage then
+		return
+	end
 	-- keep an eye on focus
-	local focusMax = UnitPowerMax("player")
 	local focus = UnitPower("player")
-	if Loyalty.lastFocus > 30 and focus <= 30 then
-		CombatText_AddMessage("Low focus", COMBAT_TEXT_SCROLL_FUNCTION, PowerBarColor["FOCUS"].r, PowerBarColor["FOCUS"].g, PowerBarColor["FOCUS"].b, nil, nil)
-	elseif Loyalty.lastFocus < 80 and focus >= 80 then
-		CombatText_AddMessage("High focus", COMBAT_TEXT_SCROLL_FUNCTION, PowerBarColor["FOCUS"].r, PowerBarColor["FOCUS"].g, PowerBarColor["FOCUS"].b, nil, nil)
+	if focus >= 80 and Loyalty.lastFocus < 80 then
+		CombatText_AddMessage("High focus: " .. focus, COMBAT_TEXT_SCROLL_FUNCTION, PowerBarColor["FOCUS"].r, PowerBarColor["FOCUS"].g, PowerBarColor["FOCUS"].b, nil, nil)
 	end
 	Loyalty.lastFocus = focus
 	-- keep an eye on pet
@@ -33,22 +33,21 @@ function Loyalty:OnUpdate(elapsed)
 		local enrages = 0
 		local buff, _, _, count, buffType, duration, expiration, _, _, _, buffId = UnitBuff("target", i)
 		while buff do
-			--if buffType == "Magic" or buffType == "" then
-			if buffType == "" then
+			if buffType == "Magic" or buffType == "" then
 				-- "Enrage" seems to have blank buff type?
 				if not count or count == 0 then
 					-- it appears like count is set to 0 for buffs that doesn't stack
 					count = 1
 				end
 				if buffType == "" then
-					magicBuffs = magicBuffs + count
-				else
 					enrages = enrages + count
+				else
+					magicBuffs = magicBuffs + count
 				end
-				if not Loyalty.target.buffs[buffId] or Loyalty.target.buffs[buffId] ~= expiration then
+				if not Loyalty.target.buffs[buffId] or Loyalty.target.buffs[buffId] ~= count then
 					Loyalty.target.dispellCount = 0
 				end
-				Loyalty.target.buffs[buffId] = expiration
+				Loyalty.target.buffs[buffId] = count
 			end
 			i = i + 1
 			buff, _, _, count, buffType, duration, expiration, _, _, _, buffId = UnitBuff("target", i)
@@ -57,7 +56,7 @@ function Loyalty:OnUpdate(elapsed)
 		if Loyalty.target.dispellCount ~= dispellCount then
 			Loyalty.target.dispellCount = dispellCount
 			if dispellCount > 0 then
-				CombatText_AddMessage("Tranquilizing Shot (" .. dispellCount .. ")", COMBAT_TEXT_SCROLL_FUNCTION, 0.91, 0.93, 0.0, nil, nil)
+				CombatText_AddMessage("Tranquilize (" .. enrages .. "/" .. magicBuffs .. ")", COMBAT_TEXT_SCROLL_FUNCTION, 0.91, 0.93, 0.0, nil, nil)
 			end
 		end
 	end
@@ -72,9 +71,13 @@ function Loyalty:OnUpdate(elapsed)
 				Loyalty.cooldowns[spellId] = 2
 			end
 		else
-			if remaining <= 0.1 then
+			if remaining <= 0.5 then
 				local spell = GetSpellInfo(spellId)
-				CombatText_AddMessage(spell, COMBAT_TEXT_SCROLL_FUNCTION, 0.12, 0.73, 0.95, nil, nil)
+				local crit
+				if duration > 20 then
+					crit = "crit"
+				end
+				CombatText_AddMessage(spell, COMBAT_TEXT_SCROLL_FUNCTION, 0.12, 0.73, 0.95, crit, nil)
 				Loyalty.cooldowns[spellId] = nil
 			end
 		end
@@ -90,10 +93,10 @@ function Loyalty:OnEvent(event, ...)
 				-- spell 90361 is spirit mend, we may want to keep that at automatic cast
 				_, ignore = GetSpellAutocast(spell, SPELLBOOK_PET)
 			end
-			if not ignore then
+			if not ignore and not Loyalty.ignoreCooldowns[spellId] then
 				Loyalty.cooldowns[spellId] = 1
 			end
-			--CombatText_AddMessage(unit .. " - " .. spell .. " (" .. spellId .. ")", COMBAT_TEXT_SCROLL_FUNCTION, 1.0, 1.0, 1.0, nil, nil)
+			--print(unit, spell, spellId)
 		end
 	end
 end
@@ -101,6 +104,10 @@ end
 Loyalty.cooldowns = {}
 Loyalty.target = {}
 Loyalty.lastFocus = 110
+
+Loyalty.ignoreCooldowns = {
+	[82179] = 1
+}
 
 Loyalty:SetScript("OnUpdate", Loyalty.OnUpdate)
 Loyalty:SetScript("OnEvent", Loyalty.OnEvent)
