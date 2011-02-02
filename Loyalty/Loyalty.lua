@@ -5,11 +5,24 @@ function Loyalty:OnUpdate(elapsed)
 		return
 	end
 	-- keep an eye on focus
-	local focus = UnitPower("player")
-	if focus >= 80 and Loyalty.lastFocus < 80 then
-		CombatText_AddMessage("High focus: " .. focus, COMBAT_TEXT_SCROLL_FUNCTION, PowerBarColor["FOCUS"].r, PowerBarColor["FOCUS"].g, PowerBarColor["FOCUS"].b, nil, nil)
+	local powermax = UnitPowerMax("player")
+	local power = UnitPower("player")
+	if not UnitIsDeadOrGhost("player") and (InCombatLockdown() or power < powermax) then
+		ReputationWatchStatusBarText:SetText(power .. " / " .. powermax)
+		ReputationWatchStatusBarText:Show()
+		ReputationWatchStatusBar:SetMinMaxValues(0, powermax)
+		ReputationWatchStatusBar:SetValue(power)
+		if power < 30 or power > powermax - 30 then
+			ReputationWatchStatusBar:SetStatusBarColor(0.9, 0.8, 0);
+		else
+			ReputationWatchStatusBar:SetStatusBarColor(0.2, 0.6, 0);
+		end
+		Loyalty.resetrepbar = 1
+	elseif Loyalty.resetrepbar then
+		HideWatchedReputationBarText()
+		ReputationWatchBar_Update()
+		Loyalty.resetrepbar = nil
 	end
-	Loyalty.lastFocus = focus
 	-- keep an eye on pet
 	if UnitExists("pet") and not UnitIsDead("pet") then
 		local pethealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
@@ -56,7 +69,11 @@ function Loyalty:OnUpdate(elapsed)
 		if Loyalty.target.dispellCount ~= dispellCount then
 			Loyalty.target.dispellCount = dispellCount
 			if dispellCount > 0 then
-				CombatText_AddMessage("Tranquilize (" .. enrages .. "/" .. magicBuffs .. ")", COMBAT_TEXT_SCROLL_FUNCTION, 0.91, 0.93, 0.0, nil, nil)
+				local g = 0.93
+				if enrages > 0 then
+					g = 0.0
+				end
+				CombatText_AddMessage("Tranquilize (" .. enrages .. "/" .. magicBuffs .. ")", COMBAT_TEXT_SCROLL_FUNCTION, 0.91, g, 0.0, nil, nil)
 			end
 		end
 	end
@@ -103,7 +120,6 @@ end
 
 Loyalty.cooldowns = {}
 Loyalty.target = {}
-Loyalty.lastFocus = 110
 
 Loyalty.ignoreCooldowns = {
 	[82179] = 1
