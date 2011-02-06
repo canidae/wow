@@ -29,7 +29,7 @@ function Commodity:OnEvent(event, arg1, ...)
 					if line == "[/Commodity]" then
 						break
 					end
-					local _, _, item, stacksize, slots = string.find(line, "^%s*(.+)%s*[,=]%s*(%d*)%s*=%s*(%d+)")
+					local _, _, item, stacksize, slots = string.find(line, "^%s*([^,=]+)%s*[,=]?%s*(%d*)%s*=%s*(%d+)")
 					if not slots then
 						print("Unable to parse line: " .. line)
 					else
@@ -67,6 +67,62 @@ function Commodity:OnEvent(event, arg1, ...)
 	end
 end
 
+function Commodity:SortGuildBankTab()
+	local tab = GetCurrentGuildBankTab()
+	if not commodity_player.sortguildbank or not Commodity.tabs[tab] then
+		return
+	end
+	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+		local itemname, amount, priority, itemlevel, stacksize, slots = Commodity:GetItemData(tab, slot)
+		local lastslot2
+		if slots then
+			for slot2 in ipairs(slots) do
+				local itemname2, amount2, priority2, itemlevel2, stacksize2, slots2 = Commodity:GetItemData(tab, slot2)
+				if slot ~= slot2 and (not itemname2 or (priority > priority2 or (priority == priority2 and (itemlevel > itemlevel2 or (itemlevel == itemlevel2 and itemname <= itemname2))))) then
+					local moveamount
+					if itemname == itemname2 then
+						if slot > slot2 and amount2 < stacksize2 then
+							moveamount = math.min(stacksize2 - amount2, amount)
+						elseif slot < slot2 and amount > stacksize and amount2 < stacksize2 then
+							moveamount = math.min(amount - stacksize, stacksize2 - amount2)
+						end
+					elseif slot > slot2 and amount <= stacksize then
+						moveamount = amount
+					end
+					if moveamount then
+						ClearCursor()
+						SplitGuildBankItem(tab, slot, moveamount)
+						PickupGuildBankItem(tab, slot2)
+						print(moveamount, itemname, "from", slot, "to", slot2, "replacing", itemname2, ":", priority, priority2, "|", itemlevel, itemlevel2, "|", stacksize, stacksize2, "|", amount, amount2)
+						return
+					end
+				end
+				lastslot2 = slot2
+			end
+		end
+		if itemname and (not lastslot2 or lastslot2 < slot) then
+			-- item that may not belong in this slot, move it to another slot
+			local reserved = {}
+			for item, itemdata in pairs(Commodity.tabs[tab]) do
+				for slot in ipairs(itemdata.slots) do
+					reserved[slot] = 1
+				end
+			end
+			for slot2 = MAX_GUILDBANK_SLOTS_PER_TAB, slot, -1 do
+				if not reserved[slot] and not GetGuildBankItemInfo(tab, slot2) then
+					-- free slot, move item here
+					ClearCursor()
+					PickupGuildBankItem(tab, slot)
+					PickupGuildBankItem(tab, slot2)
+					wipe(reserved)
+					return
+				end
+			end
+			wipe(reserved)
+		end
+	end
+end
+
 function Commodity:GetItemData(tab, slot)
 	if not tab or not slot then
 		return
@@ -98,102 +154,6 @@ function Commodity:GetItemData(tab, slot)
 		slots = itemdata.slots
 	end
 	return itemname, amount, priority, itemlevel, stacksize, slots
-end
-
-function Commodity:SortGuildBankTab()
-	local tab = GetCurrentGuildBankTab()
-	if not commodity_player.sortguildbank or not Commodity.tabs[tab] then
-		return
-	end
-	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-		local itemname, amount, priority, itemlevel, stacksize, slots = Commodity:GetItemData(tab, slot)
-		if slots then
-			for slot2 in ipairs(slots) do
-				local itemname2, amount2, priority2, itemlevel2, stacksize2, slots2 = Commodity:GetItemData(tab, slot2)
-				if slot ~= slot2 and (not itemname2 or (priority > priority2 or (priority == priority2 and (itemlevel > itemlevel2 or (itemlevel == itemlevel2 and itemname <= itemname2))))) then
-					if slot2 > slot and amount > stacksize then
-					elseif slot2 < slot then
-					end
-					if not itemname2 or itemname == itemname2 then
-						ClearCursor()
-						if amount > stacksize2 then
-							SplitGuildBankItem(tab, slot, amount - stacksize2)
-						else
-							SplitGuildBankItem(tab, slot, math.min(stacksize - amount, amount2))
-						end
-						PickupGuildBankItem(tab, slot2)
-						print(itemname, "from", slot, "to", slot2, "replacing", itemname2, ":", priority, priority2, "|", itemlevel, itemlevel2, "|", stacksize, stacksize2, "|", amount, amount2)
-						return
-					end
-				end
-			end
-		elseif itemname then
-			-- item that may not belong in this slot, move it to another slot
-		end
-	end
-	-- sort: type, subtype, itemlevel, name
-	--[[
-	local items = {}
-	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-		local _, amount = GetGuildBankItemInfo(tab, slot)
-		local itemlink = GetGuildBankItemLink(tab, slot)
-		if amount and amount > 0 and itemlink then
-			local itemname, _, _, itemlevel, _, itemtype, itemsubtype, itemstackcount = GetItemInfo(itemlink)
-			local priority = math.min(Commodity.tabs[tab][itemname] or 666, Commodity.tabs[tab][itemtype] or 666, Commodity.tabs[tab][itemsubtype] or 666)
-			local item = {
-				type = itemtype,
-				subtype = itemsubtype,
-				level = itemlevel,
-				name = itemname,
-				priority = priority,
-				slot = slot
-			}
-			local addlast = 1
-			for index, item2 in ipairs(items) do
-				-- you're pretty clever if you understand the next line =)
-				if item.priority < item2.priority or (item.priority == item2.priority and (item.type < item2.type or (item.type == item2.type and (item.subtype < item2.subtype or (item.subtype == item2.subtype and (item.level > item2.level or (item.level == item2.level and (item.name < item2.name or (priority == 666 and item.name == item2.name))))))))) then
-					table.insert(items, index, item)
-					addlast = nil
-					break
-				end
-			end
-			if addlast then
-				table.insert(items, item)
-			end
-		end
-	end
-	local slot = 1
-	local slotinc = 1
-	for index, item in ipairs(items) do
-		if slotinc == 1 and item.priority == 666 then
-			-- reverse sorting, these items shouldn't be in this bank tab, place them in bottom right corner
-			slotinc = -1
-			slot = MAX_GUILDBANK_SLOTS_PER_TAB
-		elseif items[index - 1] and items[index - 1].name ~= item.name then
-			slot = slot + slotinc
-		end
-		local itemlink = GetGuildBankItemLink(tab, slot)
-		local itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
-		local _, itemamount = GetGuildBankItemInfo(tab, slot)
-		while item.slot ~= slot and itemname and itemname == item.name and itemamount == itemstackcount do
-			slot = slot + slotinc
-			itemlink = GetGuildBankItemLink(tab, slot)
-			itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
-			_, itemamount = GetGuildBankItemInfo(tab, slot)
-		end
-		if item.slot ~= slot then
-			local _, moveamount = GetGuildBankItemInfo(tab, item.slot)
-			if item.name == itemname then
-				moveamount = math.min(moveamount, itemstackcount - itemamount)
-			end
-			ClearCursor()
-			SplitGuildBankItem(tab, item.slot, moveamount)
-			PickupGuildBankItem(tab, slot)
-			break
-		end
-	end
-	wipe(items)
-	--]]
 end
 
 function Commodity:UpdateTabFingerprint()
