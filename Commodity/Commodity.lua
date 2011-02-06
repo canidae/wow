@@ -8,7 +8,7 @@ function Commodity:OnEvent(event, arg1, ...)
 			commodity_player = {}
 		end
 	elseif event == "GUILDBANK_TEXT_CHANGED" then
-		-- someone changed guild tab info, wipe data (will be read again the net time we visit the guild bank)
+		-- someone changed guild tab info, wipe data (will be read again the next time we visit the guild bank)
 		local tab = tonumber(arg1)
 		if Commodity.tabs[tab] then
 			wipe(Commodity.tabs[tab])
@@ -18,20 +18,32 @@ function Commodity:OnEvent(event, arg1, ...)
 		-- parse guild bank tab info
 		local tab = tonumber(arg1)
 		local text = GetGuildBankText(tab) or ""
-		local startpos, endpos = string.find(text, "%[Commodity%]")
+		local _, endpos = string.find(text, "%[Commodity%]")
 		if endpos then
 			if not Commodity.tabs[tab] then
 				Commodity.tabs[tab] = {}
 			end
-			local index = 1
-			for thing in string.gmatch(string.sub(text, endpos + 1), "[^\n]+") do
-				thing = strtrim(thing)
-				if thing ~= "" then
-					if thing == "[/Commodity]" then
+			for line in string.gmatch(string.sub(text, endpos + 1), "[^\n]+") do
+				line = strtrim(line)
+				if line ~= "" then
+					if line == "[/Commodity]" then
 						break
 					end
-					Commodity.tabs[tab][thing] = index
-					index = index + 1
+					local _, _, item, stacksize, slots = string.find(line, "^%s*(.+)%s*[,=]%s*(%d*)%s*=%s*(%d+)")
+					if not slots then
+						print("Unable to parse line: " .. line)
+					else
+						Commodity.tabs[tab][item] = {
+							slots = {},
+							stacksize = tonumber(stacksize)
+						}
+						local length = strlen(slots)
+						for start = 1, length, 2 do
+							local slot = tonumber(strsub(slots, start, start + 1))
+							table.insert(Commodity.tabs[tab][item].slots, slot)
+						end
+
+					end
 				end
 			end
 			-- and sort guild bank
@@ -55,38 +67,79 @@ function Commodity:OnEvent(event, arg1, ...)
 	end
 end
 
+function Commodity:GetItemData(tab, slot)
+	if not tab or not slot then
+		return
+	end
+	local _, amount = GetGuildBankItemInfo(tab, slot)
+	local itemlink = GetGuildBankItemLink(tab, slot)
+	if not amount or amount <= 0 or not itemlink then
+		return
+	end
+	local itemname, _, _, itemlevel, _, itemtype, itemsubtype, stacksize = GetItemInfo(itemlink)
+	local itemdata = Commodity.tabs[tab][itemname]
+	local priority = 4
+	if not itemdata then
+		itemdata = Commodity.tabs[tab][itemtype]
+		priority = 3
+		if not itemdata then
+			itemdata = Commodity.tabs[tab][itemsubtype]
+			priority = 2
+			if not itemdata then
+				priority = 1
+			end
+		end
+	end
+	local slots
+	if itemdata then
+		if itemdata.stacksize and itemdata.stacksize < stacksize then
+			stacksize = itemdata.stacksize
+		end
+		slots = itemdata.slots
+	end
+	return itemname, amount, priority, itemlevel, stacksize, slots
+end
+
 function Commodity:SortGuildBankTab()
 	local tab = GetCurrentGuildBankTab()
 	if not commodity_player.sortguildbank or not Commodity.tabs[tab] then
 		return
 	end
-	-- sort: Commodity.tabs, type, subtype, itemlevel, name
+	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+		local itemname, amount, priority, itemlevel, stacksize, slots = Commodity:GetItemData(tab, slot)
+		if slots then
+			for slot2 in ipairs(slots) do
+				local itemname2, amount2, priority2, itemlevel2, stacksize2, slots2 = Commodity:GetItemData(tab, slot2)
+				if slot ~= slot2 and (not itemname2 or (priority > priority2 or (priority == priority2 and (itemlevel > itemlevel2 or (itemlevel == itemlevel2 and itemname <= itemname2))))) then
+					if slot2 > slot and amount > stacksize then
+					elseif slot2 < slot then
+					end
+					if not itemname2 or itemname == itemname2 then
+						ClearCursor()
+						if amount > stacksize2 then
+							SplitGuildBankItem(tab, slot, amount - stacksize2)
+						else
+							SplitGuildBankItem(tab, slot, math.min(stacksize - amount, amount2))
+						end
+						PickupGuildBankItem(tab, slot2)
+						print(itemname, "from", slot, "to", slot2, "replacing", itemname2, ":", priority, priority2, "|", itemlevel, itemlevel2, "|", stacksize, stacksize2, "|", amount, amount2)
+						return
+					end
+				end
+			end
+		elseif itemname then
+			-- item that may not belong in this slot, move it to another slot
+		end
+	end
+	-- sort: type, subtype, itemlevel, name
+	--[[
 	local items = {}
-	-- grouping
-	local availableslots = MAX_GUILDBANK_SLOTS_PER_TAB
-	local groups = {
-		commodity = {},
-		type = {},
-		subtype = {},
-		name = {}
-	}
-	-- end grouping
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local _, amount = GetGuildBankItemInfo(tab, slot)
 		local itemlink = GetGuildBankItemLink(tab, slot)
 		if amount and amount > 0 and itemlink then
 			local itemname, _, _, itemlevel, _, itemtype, itemsubtype, itemstackcount = GetItemInfo(itemlink)
 			local priority = math.min(Commodity.tabs[tab][itemname] or 666, Commodity.tabs[tab][itemtype] or 666, Commodity.tabs[tab][itemsubtype] or 666)
-			-- grouping
-			if priority == 666 then
-				availableslots = availableslots - 1
-			else
-				groups.commodity[priority] = (groups.commodity[priority] or 0) + 1
-				groups.type[itemtype] = (groups.type[itemtype] or 0) + 1
-				groups.subtype[itemsubtype] = (groups.subtype[itemsubtype] or 0) + 1
-				groups.name[itemname] = (groups.name[itemname] or 0) + 1
-			end
-			-- end grouping
 			local item = {
 				type = itemtype,
 				subtype = itemsubtype,
@@ -109,45 +162,6 @@ function Commodity:SortGuildBankTab()
 			end
 		end
 	end
-	-- grouping
-	local namegrouprows = 0
-	for key, value in pairs(groups.name) do
-		namegrouprows = namegrouprows + math.ceil(value / 7)
-	end
-	local subtypegrouprows = 0
-	for key, value in pairs(groups.subtype) do
-		subtypegrouprows = subtypegrouprows + math.ceil(value / 7)
-	end
-	local commoditygrouprows = 0
-	for key, value in pairs(groups.commodity) do
-		commoditygrouprows = commoditygrouprows + math.ceil(value / 7)
-	end
-	local typegrouprows = 0
-	for key, value in pairs(groups.type) do
-		typegrouprows = typegrouprows + math.ceil(value / 7)
-	end
-	local availablerows = math.floor(availableslots / 7)
-	local groupmethod
-	local bestrowcount = 0
-	if namegrouprows <= availablerows and namegrouprows > bestrowcount then
-		groupmethod = "name"
-		bestrowcount = namegrouprows
-	end
-	if subtypegrouprows <= availablerows and subtypegrouprows > bestrowcount then
-		groupmethod = "subtype"
-		bestrowcount = subtypegrouprows
-	end
-	if commoditygrouprows <= availablerows and commoditygrouprows > bestrowcount then
-		groupmethod = "commodity"
-		bestrowcount = commoditygrouprows
-	end
-	if typegrouprows <= availablerows and typegrouprows > bestrowcount then
-		groupmethod = "type"
-		bestrowcount = typegrouprows
-	end
-	--print("Sort: " .. groupmethod .. ", " .. bestrowcount .. "/" .. availablerows)
-	--print(availableslots, availablerows, namegrouprows, subtypegrouprows, typegrouprows, commoditygrouprows)
-	-- end grouping
 	local slot = 1
 	local slotinc = 1
 	for index, item in ipairs(items) do
@@ -158,13 +172,6 @@ function Commodity:SortGuildBankTab()
 		elseif items[index - 1] and items[index - 1].name ~= item.name then
 			slot = slot + slotinc
 		end
-		-- grouping
-		if item.priority ~= 666 and items[index - 1] and groupmethod then
-			while items[index - 1][groupmethod] ~= item[groupmethod] and slot % 7 ~= 1 do
-				slot = slot + slotinc
-			end
-		end
-		-- end grouping
 		local itemlink = GetGuildBankItemLink(tab, slot)
 		local itemname, _, _, _, _, _, _, itemstackcount = GetItemInfo(itemlink or -1)
 		local _, itemamount = GetGuildBankItemInfo(tab, slot)
@@ -186,6 +193,7 @@ function Commodity:SortGuildBankTab()
 		end
 	end
 	wipe(items)
+	--]]
 end
 
 function Commodity:UpdateTabFingerprint()
