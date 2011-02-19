@@ -1,86 +1,38 @@
 Loyalty = CreateFrame("Frame")
+LoyaltyTooltip = CreateFrame("GameTooltip", "LoyaltyTooltip", nil, "GameTooltipTemplate")
+LoyaltyTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
 function Loyalty:OnUpdate(elapsed)
 	if not CombatText_AddMessage then
 		return
 	end
-	-- keep an eye on focus
-	local powermax = UnitPowerMax("player")
-	local power = UnitPower("player")
-	if not UnitIsDeadOrGhost("player") and (InCombatLockdown() or power < powermax) then
-		ReputationWatchStatusBarText:SetText(power .. " / " .. powermax)
-		ReputationWatchStatusBarText:Show()
-		ReputationWatchStatusBar:SetMinMaxValues(0, powermax)
-		ReputationWatchStatusBar:SetValue(power)
-		if power < 30 or power > powermax - 30 then
-			ReputationWatchStatusBar:SetStatusBarColor(0.9, 0.8, 0);
-		else
-			ReputationWatchStatusBar:SetStatusBarColor(0.2, 0.6, 0);
-		end
-		Loyalty.resetrepbar = 1
-	elseif Loyalty.resetrepbar then
-		HideWatchedReputationBarText()
-		ReputationWatchBar_Update()
-		Loyalty.resetrepbar = nil
-	end
-	-- keep an eye on pet
-	if UnitExists("pet") and not UnitIsDead("pet") then
-		local pethealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
-		local _, _, _, _, _, duration, expires, _, _, _, _ = UnitBuff("pet", "Mend Pet")
-		if not duration and pethealth < 80 and (InCombatLockdown() or pethealth < 50) then
-			-- pet is wounded and mend pet is not up, annoy hunter
-			PlaySound("igQuestFailed")
-		end
-	end
-	-- keep an eye on enemy
-	local time = GetTime()
-	if UnitExists("target") and not UnitIsDead("target") then -- and UnitCanAttack("player", "target") then
-		if UnitName("target") ~= Loyalty.target.name then
-			wipe(Loyalty.target)
-			Loyalty.target.name = UnitName("target")
-			Loyalty.target.buffs = {}
-			Loyalty.target.dispellCount = 0
-		end
-		local i = 1
-		local magicBuffs = 0
-		local enrages = 0
-		local buff, _, _, count, buffType, duration, expiration, _, _, _, buffId = UnitBuff("target", i)
-		while buff do
-			if buffType == "Magic" or buffType == "" then
-				-- "Enrage" seems to have blank buff type?
-				if not count or count == 0 then
-					-- it appears like count is set to 0 for buffs that doesn't stack
-					count = 1
-				end
-				if buffType == "" then
-					enrages = enrages + count
-				else
-					magicBuffs = magicBuffs + count
-				end
-				if not Loyalty.target.buffs[buffId] or Loyalty.target.buffs[buffId] ~= count then
-					Loyalty.target.dispellCount = 0
-				end
-				Loyalty.target.buffs[buffId] = count
+	local focus = UnitPower("player")
+	if focus ~= Loyalty.lastFocus then
+		Loyalty.lastFocus = focus
+		-- keep an eye on focus
+		local powermax = UnitPowerMax("player")
+		local power = UnitPower("player")
+		if not UnitIsDeadOrGhost("player") and (InCombatLockdown() or power < powermax) then
+			ReputationWatchStatusBarText:SetText(power .. " / " .. powermax)
+			ReputationWatchStatusBarText:Show()
+			ReputationWatchStatusBar:SetMinMaxValues(0, powermax)
+			ReputationWatchStatusBar:SetValue(power)
+			if power < 30 or power > powermax - 30 then
+				ReputationWatchStatusBar:SetStatusBarColor(0.9, 0.8, 0);
+			else
+				ReputationWatchStatusBar:SetStatusBarColor(0.2, 0.6, 0);
 			end
-			i = i + 1
-			buff, _, _, count, buffType, duration, expiration, _, _, _, buffId = UnitBuff("target", i)
-		end
-		local dispellCount = math.max(magicBuffs, enrages)
-		if Loyalty.target.dispellCount ~= dispellCount then
-			Loyalty.target.dispellCount = dispellCount
-			if dispellCount > 0 then
-				local g = 0.93
-				if enrages > 0 then
-					g = 0.0
-				end
-				CombatText_AddMessage("Tranquilize (" .. enrages .. "/" .. magicBuffs .. ")", COMBAT_TEXT_SCROLL_FUNCTION, 0.91, g, 0.0, nil, nil)
-			end
+			Loyalty.resetrepbar = 1
+		elseif Loyalty.resetrepbar then
+			HideWatchedReputationBarText()
+			ReputationWatchBar_Update()
+			Loyalty.resetrepbar = nil
 		end
 	end
 	-- keep an eye on cooldowns
 	for spellId, status in pairs(Loyalty.cooldowns) do
 		local start, duration, enabled = GetSpellCooldown(spellId)
-		local remaining = start + duration - time
+		local remaining = start + duration - GetTime()
 		if status == 1 then
 			if remaining < 3 then
 				Loyalty.cooldowns[spellId] = nil
@@ -102,7 +54,49 @@ function Loyalty:OnUpdate(elapsed)
 end
 
 function Loyalty:OnEvent(event, ...)
-	if event == "UNIT_SPELLCAST_SUCCEEDED" then
+	--print(GetTime(), event, ...)
+	if event == "ACTIONBAR_SLOT_CHANGED" then
+		local slot = ...
+		local text, spellId = GetActionInfo(slot)
+		if Loyalty.actionButtons[slot] ~= (text or "") .. (spellId or "") then
+			Loyalty:DetectAbilities()
+		end
+	elseif ((event == "UNIT_AURA" and ... == "target") or (event == "UNIT_TARGET" and ... == "player")) and Loyalty.spells[19801] then
+		-- keep an eye on enemy
+		if not UnitExists("target") or UnitIsDead("target") then -- or UnitCanAttack("player", "target") then
+			Loyalty:SetGlow(19801, 1)
+		else
+			local i = 1
+			local buff, _, _, count, buffType, duration, expiration, _, _, _, buffId = UnitBuff("target", i)
+			local hideGlow = 1
+			while buff do
+				if buffType == "Magic" or buffType == "" then
+					-- "Enrage" seems to have blank buff type?
+					hideGlow = nil
+					break
+				end
+				i = i + 1
+				buff, _, _, count, buffType, duration, expiration, _, _, _, buffId = UnitBuff("target", i)
+			end
+			Loyalty:SetGlow(19801, hideGlow)
+		end
+	elseif event == "UNIT_AURA" and ... == "player" then
+		if UnitAura("player", "Fire!") then
+			Loyalty:SetGlow(19434)
+		end
+	elseif event == "UNIT_HEALTH" then
+		if arg1 == "pet" then
+			-- keep an eye on pet
+			if not UnitIsDead("pet") then
+				local pethealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
+				local _, _, _, _, _, duration, expires, _, _, _, _ = UnitBuff("pet", "Mend Pet")
+				if not duration and pethealth < 80 and (InCombatLockdown() or pethealth < 50) then
+					-- pet is wounded and mend pet is not up, annoy hunter
+					PlaySound("igQuestFailed")
+				end
+			end
+		end
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local unit, spell, _, _, spellId = ...
 		if unit == "player" or unit == "pet" then
 			local ignore
@@ -118,8 +112,41 @@ function Loyalty:OnEvent(event, ...)
 	end
 end
 
+function Loyalty:SetGlow(spellId, off)
+	if Loyalty.spells[spellId] then
+		local button = _G["ActionButton" .. Loyalty.spells[spellId]]
+		if button and button:IsVisible() then
+			if off then
+				ActionButton_HideOverlayGlow(button)
+			else
+				ActionButton_ShowOverlayGlow(button)
+			end
+		end
+	end
+end
+
+function Loyalty:DetectAbilities()
+	wipe(Loyalty.spells)
+	for i = 1, NUM_ACTIONBAR_PAGES * NUM_ACTIONBAR_BUTTONS do
+		local button = _G["ActionButton" .. i]
+		if button and button:IsVisible() then
+			LoyaltyTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+			LoyaltyTooltip:SetAction(i)
+			local spellName, _, spellId = LoyaltyTooltip:GetSpell()
+			LoyaltyTooltip:Hide()
+			if spellId then
+				Loyalty.spells[spellId] = i
+			end
+			local text, spellId = GetActionInfo(i)
+			Loyalty.actionButtons[i] = (text or "") .. (spellId or "")
+		end
+	end
+end
+
 Loyalty.cooldowns = {}
-Loyalty.target = {}
+Loyalty.spells = {}
+Loyalty.lastFocus = 110
+Loyalty.actionButtons = {}
 
 Loyalty.ignoreCooldowns = {
 	[82179] = 1
@@ -127,4 +154,8 @@ Loyalty.ignoreCooldowns = {
 
 Loyalty:SetScript("OnUpdate", Loyalty.OnUpdate)
 Loyalty:SetScript("OnEvent", Loyalty.OnEvent)
+Loyalty:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+Loyalty:RegisterEvent("UNIT_AURA")
+Loyalty:RegisterEvent("UNIT_HEALTH")
+Loyalty:RegisterEvent("UNIT_TARGET")
 Loyalty:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
