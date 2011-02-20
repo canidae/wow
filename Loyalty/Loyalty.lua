@@ -83,17 +83,17 @@ function Loyalty:OnEvent(event, ...)
 	elseif event == "UNIT_AURA" and ... == "player" then
 		if UnitAura("player", "Fire!") then
 			Loyalty:SetGlow(19434)
+		elseif UnitAura("player", "Killing Streak") then
+			Loyalty:SetGlow(94007)
 		end
-	elseif event == "UNIT_HEALTH" then
-		if arg1 == "pet" then
-			-- keep an eye on pet
-			if not UnitIsDead("pet") then
-				local pethealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
-				local _, _, _, _, _, duration, expires, _, _, _, _ = UnitBuff("pet", "Mend Pet")
-				if not duration and pethealth < 80 and (InCombatLockdown() or pethealth < 50) then
-					-- pet is wounded and mend pet is not up, annoy hunter
-					PlaySound("igQuestFailed")
-				end
+	elseif event == "UNIT_HEALTH" and ... == "pet" then
+		-- keep an eye on pet
+		if not UnitIsDead("pet") then
+			local pethealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
+			local _, _, _, _, _, duration, expires, _, _, _, _ = UnitBuff("pet", "Mend Pet")
+			if not duration and pethealth < 80 and (InCombatLockdown() or pethealth < 50) then
+				-- pet is wounded and mend pet is not up, annoy hunter
+				PlaySound("igQuestFailed")
 			end
 		end
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
