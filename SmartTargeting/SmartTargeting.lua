@@ -8,8 +8,9 @@ function SmartTargeting:OnEvent(event, arg1, ...)
 		SmartTargeting:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 		KeyBindingFrameOkayButton:HookScript("OnClick", SmartTargeting.UpdateKeyBindings)
 		return
-	end
-	if not smarttargeting_pve_tne and not smarttargeting_pve_tnep then
+	elseif not GetCurrentBindingSet() then
+		return
+	elseif not smarttargeting_pve_tne and not smarttargeting_pve_tnep then
 		SmartTargeting:UpdateKeyBindings()
 	end
 	local pvpzone = SmartTargeting:InPvpZone()
@@ -18,7 +19,9 @@ function SmartTargeting:OnEvent(event, arg1, ...)
 	local ctne, ctnep = SmartTargeting:GetBindings()
 	if (tne and ctne ~= tne) or (tnep and ctnep ~= tnep) then
 		if not InCombatLockdown() and (not tne or SetBinding(tne, "TARGETNEARESTENEMY")) and (not tnep or SetBinding(tnep, "TARGETNEARESTENEMYPLAYER")) then
-			print("|cffc9a61b" .. (tnep or "<unbound>") .. "|r set to |cff00ccffenemy players|r, |cffc9a61b" .. (tne or "<unbound>") .. "|r set to |cff00ccffall enemies|r.")
+			if not smarttargeting_quiet then
+				print("|cffc9a61b" .. (tnep or "<unbound>") .. "|r set to |cff00ccffenemy players|r, |cffc9a61b" .. (tne or "<unbound>") .. "|r set to |cff00ccffall enemies|r.")
+			end
 			SaveBindings(GetCurrentBindingSet())
 			SmartTargeting:UnregisterEvent("PLAYER_REGEN_ENABLED")
 		else
@@ -29,7 +32,9 @@ end
 
 function SmartTargeting:UpdateKeyBindings()
 	smarttargeting_pve_tne, smarttargeting_pve_tnep = SmartTargeting:GetBindings(SmartTargeting:InPvpZone())
-	print("|cff23e523Key bindings for targeting nearest enemy/enemy player saved.|r")
+	if not smarttargeting_quiet then
+		print("|cff23e523Key bindings for targeting nearest enemy/enemy player saved.|r")
+	end
 end
 
 function SmartTargeting:InPvpZone()
