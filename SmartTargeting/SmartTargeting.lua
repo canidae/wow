@@ -8,7 +8,7 @@ function SmartTargeting:OnEvent(event, arg1, ...)
 		SmartTargeting:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 		KeyBindingFrameOkayButton:HookScript("OnClick", SmartTargeting.UpdateKeyBindings)
 		return
-	elseif not GetCurrentBindingSet() then
+	elseif GetCurrentBindingSet() ~= 1 and GetCurrentBindingSet() ~= 2 then
 		return
 	elseif not smarttargeting_pve_tne and not smarttargeting_pve_tnep then
 		SmartTargeting:UpdateKeyBindings()

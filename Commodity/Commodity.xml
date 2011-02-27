@@ -16,10 +16,10 @@
 				self.tooltip = "Automatically sort guild bank."
 			</OnLoad>
 			<OnShow>
-				self:SetChecked(commodity_player.sortguildbank)
+				self:SetChecked(commodity_player.sortGuildBank)
 			</OnShow>
 			<OnClick>
-				commodity_player.sortguildbank = self:GetChecked()
+				commodity_player.sortGuildBank = self:GetChecked()
 				Commodity:SortGuildBankTab()
 			</OnClick>
 		</Scripts>

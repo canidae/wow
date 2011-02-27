@@ -1,5 +1,101 @@
 Commodity = CreateFrame("Frame")
 
+-- slash handler
+SLASH_Commodity1 = "/commodity"
+function SlashCmdList.Commodity(msg)
+	local command, rest = msg:match("^%s*(%S+)%s*(.*)%s*$")
+	if command == "reserve" and rest then
+		Commodity.reserveStackSize, Commodity.reserving = rest:match("^%s*(%d*)%s*(.+)%s*$")
+		if Commodity.reserving then
+			if Commodity.reserveStackSize and Commodity.reserveStackSize ~= "" then
+				Commodity.reserveStackSize = tonumber(Commodity.reserveStackSize)
+				print("Reserving slots for", Commodity.reserving, "in stacks of", Commodity.reserveStackSize)
+			else
+				Commodity.reserveStackSize = nil
+				print("Reserving slots for", Commodity.reserving)
+			end
+			for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+				local index = math.fmod(slot, NUM_SLOTS_PER_GUILDBANK_GROUP)
+				if index == 0 then
+					index = NUM_SLOTS_PER_GUILDBANK_GROUP
+				end
+				local column = math.ceil((slot - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
+				local button = _G["GuildBankColumn" .. column .. "Button" .. index]
+				if not Commodity.reserving then
+					-- store original functions when we're reserving slots
+					Commodity["OnClick" .. slot] = button:GetScript("OnClick")
+					Commodity["OnDragStart" .. slot] = button:GetScript("OnDragStart")
+					Commodity["OnEnter" .. slot] = button:GetScript("OnEnter")
+					Commodity["OnMouseDown" .. slot] = button:GetScript("OnMouseDown")
+					Commodity["OnReceiveDrag" .. slot] = button:GetScript("OnReceiveDrag")
+					-- no point doing this more than once either
+					button:SetScript("OnMouseDown", function(...)
+						Commodity:Reserve(slot)
+					end)
+					button:SetScript("OnEnter", function(self, motion)
+						Commodity:Reserve(slot)
+					end)                                                                                                                                                                              
+					button:SetScript("OnClick", nil)                                                                                                                                                  
+					button:SetScript("OnDragStart", nil)
+					button:SetScript("OnReceiveDrag", nil)
+				end
+			end
+		end
+	elseif command == "done" then
+		for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+			local index = math.fmod(slot, NUM_SLOTS_PER_GUILDBANK_GROUP)
+			if index == 0 then
+				index = NUM_SLOTS_PER_GUILDBANK_GROUP                                                                                                                            
+			end
+			local column = math.ceil((slot - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
+			local button = _G["GuildBankColumn" .. column .. "Button" .. index]
+			button:SetScript("OnClick", Commodity["OnClick" .. slot])
+			button:SetScript("OnDragStart", Commodity["OnDragStart" .. slot])
+			button:SetScript("OnEnter", Commodity["OnEnter" .. slot])
+			button:SetScript("OnMouseDown", Commodity["OnMouseDown" .. slot])
+			button:SetScript("OnReceiveDrag", Commodity["OnReceiveDrag" .. slot])
+		end
+		Commodity.reserving = nil
+		Commodity.reserveStackSize = nil
+
+		-- update guild bank tab text
+		for tab, tabdata in pairs(Commodity.tabs) do
+			local text = ""
+			local tabtext = GetGuildBankText(tab) or ""
+			local pos = tabtext:find("%[Commodity%]\n")
+			if pos and pos > 1 then
+				text = tabtext:sub(1, pos - 1)
+			elseif not pos then
+				text = text .. tabtext
+			end
+			text = text .. "[Commodity]\n"
+			for item, itemdata in pairs(tabdata.items) do
+				text = text .. item
+				if itemdata.stackSize then
+					text = text .. "," .. itemdata.stackSize
+				end
+				text = text .. "="
+				for index, slot in ipairs(itemdata.slots) do
+					if slot < 10 then
+						text = text .. "0"
+					end
+					text = text .. slot
+				end
+				text = text .. "\n"
+			end
+			text = text .. "\n[/Commodity]"
+			_, pos = tabtext:find("%[/Commodity%]")
+			if pos then
+				text = text .. tabtext:sub(pos + 1)
+			end
+			SetGuildBankText(tab, text)
+		end
+	end
+end
+
+function Commodity:Reserve(slot)
+end
+
 function Commodity:OnEvent(event, arg1, ...)
 	--print(GetTime(), event, arg1, ...)
 	if event == "ADDON_LOADED" and arg1 == "Commodity" then
@@ -7,40 +103,56 @@ function Commodity:OnEvent(event, arg1, ...)
 		if not commodity_player then
 			commodity_player = {}
 		end
-	elseif event == "GUILDBANK_TEXT_CHANGED" then
-		-- someone changed guild tab info, wipe data (will be read again the next time we visit the guild bank)
-		local tab = tonumber(arg1)
-		if Commodity.tabs[tab] then
-			wipe(Commodity.tabs[tab])
-			Commodity.tabs[tab] = nil
+		hooksecurefunc(GameTooltip, "SetGuildBankItem", Commodity.UpdateTooltip)
+		for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+			index = math.fmod(slot, NUM_SLOTS_PER_GUILDBANK_GROUP)
+			if index == 0 then
+				index = NUM_SLOTS_PER_GUILDBANK_GROUP
+			end
+			local column = math.ceil((slot - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
+			local button = _G["GuildBankColumn" .. column .. "Button" .. index]
+			local overlaytext = button:CreateFontString("CommodityOverlayText" .. slot, "OVERLAY", "NumberFontNormal")
+			overlaytext:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
 		end
 	elseif event == "GUILDBANK_UPDATE_TEXT" then
 		-- parse guild bank tab info
 		local tab = tonumber(arg1)
 		local text = GetGuildBankText(tab) or ""
-		local _, endpos = string.find(text, "%[Commodity%]")
-		if endpos then
-			if not Commodity.tabs[tab] then
-				Commodity.tabs[tab] = {}
+		local _, pos = text:find("%[Commodity%]")
+		if pos then
+			if Commodity.tabs[tab] then
+				wipe(Commodity.tabs[tab])
 			end
-			for line in string.gmatch(string.sub(text, endpos + 1), "[^\n]+") do
+			Commodity.tabs[tab] = {
+				items = {},
+				slots = {}
+			}
+			for line in text:sub(pos + 1):gmatch("[^\n]+") do
 				line = strtrim(line)
 				if line ~= "" then
 					if line == "[/Commodity]" then
 						break
 					end
-					local _, _, item, stacksize, slots = string.find(line, "^%s*([^,=]+)%s*[,=]?%s*(%d*)%s*=%s*(%d+)")
+					local _, _, item, stackSize, slots = line:find("^%s*([^,=]+)%s*[,=]?%s*(%d*)%s*=%s*(%d+)")
 					if not slots then
 						print("Unable to parse line: " .. line)
 					else
-						Commodity.tabs[tab][item] = {
-							slots = {},
-							stacksize = tonumber(stacksize)
-						}
+						if not Commodity.tabs[tab].items[item] then
+							Commodity.tabs[tab].items[item] = {
+								slots = {},
+								stackSize = tonumber(stackSize)
+							}
+						end
 						local length = strlen(slots)
 						for start = 1, length, 2 do
 							local slot = tonumber(strsub(slots, start, start + 1))
-							table.insert(Commodity.tabs[tab][item].slots, slot)
+							if not Commodity.tabs[tab].slots[slot] then
+								Commodity.tabs[tab].slots[slot] = {
+									items = {}
+								}
+							end
+							table.insert(Commodity.tabs[tab].items[item].slots, slot)
+							table.insert(Commodity.tabs[tab].slots[slot].items, item)
 						end
 
 					end
@@ -51,6 +163,9 @@ function Commodity:OnEvent(event, arg1, ...)
 				Commodity:SortGuildBankTab()
 			end
 		end
+		for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+			Commodity:SetGuildBankSlotOverlay(tab, slot)
+		end
 	elseif event == "GUILDBANKBAGSLOTS_CHANGED" then
 		local tab = GetCurrentGuildBankTab()
 		if not Commodity.tabs[tab] then
@@ -58,9 +173,9 @@ function Commodity:OnEvent(event, arg1, ...)
 			QueryGuildBankText(tab)
 		else
 			-- only update when the tab is actually changed
-			local tabfingerprint = Commodity.tabfingerprint
+			local tabFingerprint = Commodity.tabFingerprint
 			Commodity:UpdateTabFingerprint()
-			if tabfingerprint ~= Commodity.tabfingerprint then
+			if tabFingerprint ~= Commodity.tabFingerprint then
 				Commodity:SortGuildBankTab()
 			end
 		end
@@ -69,47 +184,47 @@ end
 
 function Commodity:SortGuildBankTab()
 	local tab = GetCurrentGuildBankTab()
-	if not commodity_player.sortguildbank or not Commodity.tabs[tab] then
+	if not commodity_player.sortGuildBank or not Commodity.tabs[tab] then
 		return
 	end
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-		local itemname, amount, priority, itemlevel, stacksize, slots = Commodity:GetItemData(tab, slot)
+		local itemName, amount, priority, itemLevel, stackSize, slots = Commodity:GetItemData(tab, slot)
 		local lastslot2
 		if slots then
-			for slot2 in ipairs(slots) do
-				local itemname2, amount2, priority2, itemlevel2, stacksize2, slots2 = Commodity:GetItemData(tab, slot2)
-				if slot ~= slot2 and (not itemname2 or (priority > priority2 or (priority == priority2 and (itemlevel > itemlevel2 or (itemlevel == itemlevel2 and itemname <= itemname2))))) then
-					local moveamount
-					if itemname == itemname2 then
-						if slot > slot2 and amount2 < stacksize2 then
-							moveamount = math.min(stacksize2 - amount2, amount)
-						elseif slot < slot2 and amount > stacksize and amount2 < stacksize2 then
-							moveamount = math.min(amount - stacksize, stacksize2 - amount2)
+			for _, slot2 in ipairs(slots) do
+				local itemName2, amount2, priority2, itemLevel2, stackSize2, slots2 = Commodity:GetItemData(tab, slot2)
+				if slot ~= slot2 and (not itemName2 or (priority > priority2 or (priority == priority2 and (itemLevel > itemLevel2 or (itemLevel == itemLevel2 and itemName <= itemName2))))) then
+					local moveAmount
+					if itemName == itemName2 then
+						if slot > slot2 and amount2 < stackSize2 then
+							moveAmount = math.min(stackSize2 - amount2, amount)
+						elseif slot < slot2 and amount > stackSize and amount2 < stackSize2 then
+							moveAmount = math.min(amount - stackSize, stackSize2 - amount2)
 						end
-					elseif slot > slot2 and amount <= stacksize then
-						moveamount = amount
+					elseif slot > slot2 and amount <= stackSize then
+						moveAmount = amount
 					end
-					if moveamount then
+					if moveAmount then
 						ClearCursor()
-						SplitGuildBankItem(tab, slot, moveamount)
+						SplitGuildBankItem(tab, slot, moveAmount)
 						PickupGuildBankItem(tab, slot2)
-						print(moveamount, itemname, "from", slot, "to", slot2, "replacing", itemname2, ":", priority, priority2, "|", itemlevel, itemlevel2, "|", stacksize, stacksize2, "|", amount, amount2)
+						print(moveAmount, itemName, "from", slot, "to", slot2, "replacing", itemName2, ":", priority, priority2, "|", itemLevel, itemLevel2, "|", stackSize, stackSize2, "|", amount, amount2)
 						return
 					end
 				end
 				lastslot2 = slot2
 			end
 		end
-		if itemname and (not lastslot2 or lastslot2 < slot) then
+		if itemName and (not lastslot2 or lastslot2 < slot) then
 			-- item that may not belong in this slot, move it to another slot
 			local reserved = {}
-			for item, itemdata in pairs(Commodity.tabs[tab]) do
-				for slot in ipairs(itemdata.slots) do
+			for item, itemData in pairs(Commodity.tabs[tab].items) do
+				for _, slot in ipairs(itemData.slots) do
 					reserved[slot] = 1
 				end
 			end
 			for slot2 = MAX_GUILDBANK_SLOTS_PER_TAB, slot, -1 do
-				if not reserved[slot] and not GetGuildBankItemInfo(tab, slot2) then
+				if not reserved[slot2] and not GetGuildBankItemInfo(tab, slot2) then
 					-- free slot, move item here
 					ClearCursor()
 					PickupGuildBankItem(tab, slot)
@@ -128,49 +243,77 @@ function Commodity:GetItemData(tab, slot)
 		return
 	end
 	local _, amount = GetGuildBankItemInfo(tab, slot)
-	local itemlink = GetGuildBankItemLink(tab, slot)
-	if not amount or amount <= 0 or not itemlink then
+	local itemLink = GetGuildBankItemLink(tab, slot)
+	if not amount or amount <= 0 or not itemLink then
 		return
 	end
-	local itemname, _, _, itemlevel, _, itemtype, itemsubtype, stacksize = GetItemInfo(itemlink)
-	local itemdata = Commodity.tabs[tab][itemname]
+	local itemName, _, _, itemLevel, _, itemType, itemSubType, stackSize = GetItemInfo(itemLink)
+	local itemData = Commodity.tabs[tab].items[itemName]
 	local priority = 4
-	if not itemdata then
-		itemdata = Commodity.tabs[tab][itemtype]
+	if not itemData then
+		itemData = Commodity.tabs[tab].items[itemType]
 		priority = 3
-		if not itemdata then
-			itemdata = Commodity.tabs[tab][itemsubtype]
+		if not itemData then
+			itemData = Commodity.tabs[tab].items[itemSubType]
 			priority = 2
-			if not itemdata then
+			if not itemData then
 				priority = 1
 			end
 		end
 	end
 	local slots
-	if itemdata then
-		if itemdata.stacksize and itemdata.stacksize < stacksize then
-			stacksize = itemdata.stacksize
+	if itemData then
+		if itemData.stackSize and itemData.stackSize < stackSize then
+			stackSize = itemData.stackSize
 		end
-		slots = itemdata.slots
+		slots = itemData.slots
 	end
-	return itemname, amount, priority, itemlevel, stacksize, slots
+	return itemName, amount, priority, itemLevel, stackSize, slots
 end
 
 function Commodity:UpdateTabFingerprint()
 	local tab = GetCurrentGuildBankTab()
-	Commodity.tabfingerprint = ""
+	Commodity.tabFingerprint = ""
 	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local _, amount = GetGuildBankItemInfo(tab, slot)
-		local itemlink = GetGuildBankItemLink(tab, slot)
-		Commodity.tabfingerprint = Commodity.tabfingerprint .. (amount or "0") .. (itemlink or "nil")
+		local itemLink = GetGuildBankItemLink(tab, slot)
+		Commodity.tabFingerprint = Commodity.tabFingerprint .. (amount or "0") .. (itemLink or "nil")
+	end
+end
+
+function Commodity:SetGuildBankSlotOverlay(tab, slot)
+	local overlaytext = _G["CommodityOverlayText" .. slot]
+	if Commodity.tabs[tab] and Commodity.tabs[tab].slots[slot] then
+		local reservations = 0
+		for item, stackSize in pairs(Commodity.tabs[tab].slots[slot]) do
+			reservations = reservations + 1
+		end
+		overlaytext:SetText(reservations)
+	else
+		overlaytext:SetText("")
+	end
+end
+
+function Commodity:UpdateTooltip(tab, slot)
+	if Commodity.tabs[tab] and Commodity.tabs[tab].slots[slot] then
+		local headerAdded
+		for _, item in ipairs(Commodity.tabs[tab].slots[slot].items) do
+			if not headerAdded then
+				headerAdded = 1
+				GameTooltip:AddLine("Commodity reservations:")
+			end
+			GameTooltip:AddDoubleLine(item, Commodity.tabs[tab].items[item].stackSize, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0)
+		end
+		if headerAdded then
+			GameTooltip:Show()
+		end
 	end
 end
 
 Commodity.tabs = {}
-Commodity.tabfingerprint = ""
+Commodity.tabFingerprint = ""
 
 Commodity:SetScript("OnEvent", Commodity.OnEvent)
 Commodity:RegisterEvent("ADDON_LOADED")
-Commodity:RegisterEvent("GUILDBANK_TEXT_CHANGED")
 Commodity:RegisterEvent("GUILDBANK_UPDATE_TEXT")
 Commodity:RegisterEvent("GUILDBANKBAGSLOTS_CHANGED")
