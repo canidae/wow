@@ -5,14 +5,14 @@ SLASH_Commodity1 = "/commodity"
 function SlashCmdList.Commodity(msg)
 	local command, rest = msg:match("^%s*(%S+)%s*(.*)%s*$")
 	if command == "reserve" and rest then
-		Commodity.reserveStackSize, Commodity.reserving = rest:match("^%s*(%d*)%s*(.+)%s*$")
-		if Commodity.reserving then
-			if Commodity.reserveStackSize and Commodity.reserveStackSize ~= "" then
-				Commodity.reserveStackSize = tonumber(Commodity.reserveStackSize)
-				print("Reserving slots for", Commodity.reserving, "in stacks of", Commodity.reserveStackSize)
+		local stackSize, item = rest:match("^%s*(%d*)%s*(.+)%s*$")
+		if item then
+			if stackSize and stackSize ~= "" then
+				stackSize = tonumber(stackSize)
+				print("Reserving slots for", item, "in stacks of", stackSize)
 			else
-				Commodity.reserveStackSize = nil
-				print("Reserving slots for", Commodity.reserving)
+				stackSize = nil
+				print("Reserving slots for", item)
 			end
 			for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 				local index = math.fmod(slot, NUM_SLOTS_PER_GUILDBANK_GROUP)
@@ -28,20 +28,21 @@ function SlashCmdList.Commodity(msg)
 					Commodity["OnEnter" .. slot] = button:GetScript("OnEnter")
 					Commodity["OnMouseDown" .. slot] = button:GetScript("OnMouseDown")
 					Commodity["OnReceiveDrag" .. slot] = button:GetScript("OnReceiveDrag")
-					-- no point doing this more than once either
+					-- set up new functions
 					button:SetScript("OnMouseDown", function(...)
-						Commodity:Reserve(slot)
+						Commodity:Reserve(slot, item, stackSize)
 					end)
 					button:SetScript("OnEnter", function(self, motion)
-						Commodity:Reserve(slot)
+						Commodity:Reserve(slot, item, stackSize)
 					end)                                                                                                                                                                              
 					button:SetScript("OnClick", nil)                                                                                                                                                  
 					button:SetScript("OnDragStart", nil)
 					button:SetScript("OnReceiveDrag", nil)
 				end
 			end
+			Commodity.reserving = 1
 		end
-	elseif command == "done" then
+	elseif command == "done" and Commodity.reserving then
 		for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 			local index = math.fmod(slot, NUM_SLOTS_PER_GUILDBANK_GROUP)
 			if index == 0 then
@@ -56,7 +57,6 @@ function SlashCmdList.Commodity(msg)
 			button:SetScript("OnReceiveDrag", Commodity["OnReceiveDrag" .. slot])
 		end
 		Commodity.reserving = nil
-		Commodity.reserveStackSize = nil
 
 		-- update guild bank tab text
 		for tab, tabdata in pairs(Commodity.tabs) do
@@ -75,7 +75,7 @@ function SlashCmdList.Commodity(msg)
 					text = text .. "," .. itemdata.stackSize
 				end
 				text = text .. "="
-				for index, slot in ipairs(itemdata.slots) do
+				for slot, _ in pairs(itemdata.slots) do
 					if slot < 10 then
 						text = text .. "0"
 					end
@@ -93,7 +93,19 @@ function SlashCmdList.Commodity(msg)
 	end
 end
 
-function Commodity:Reserve(slot)
+function Commodity:Reserve(slot, item, stackSize)
+	local tab = GetCurrentGuildBankTab()
+	if not tab or not slot then
+		return
+	end
+	if IsMouseButtonDown("LeftButton") then
+		Commodity.tabs[tab].items[item].stackSize = stackSize
+		Commodity.tabs[tab].items[item].slots[slot] = 1
+		Commodity.tabs[tab].slots[slot].items[item] = 1
+	elseif IsMouseButtonDown("RightButton") then
+		Commodity.tabs[tab].items[item].slots[slot] = nil
+		Commodity.tabs[tab].slots[slot].items[item] = nil
+	end
 end
 
 function Commodity:OnEvent(event, arg1, ...)
@@ -151,8 +163,8 @@ function Commodity:OnEvent(event, arg1, ...)
 									items = {}
 								}
 							end
-							table.insert(Commodity.tabs[tab].items[item].slots, slot)
-							table.insert(Commodity.tabs[tab].slots[slot].items, item)
+							Commodity.tabs[tab].items[item].slots[slot] = 1
+							Commodity.tabs[tab].slots[slot].items[item] = 1
 						end
 
 					end
@@ -191,7 +203,7 @@ function Commodity:SortGuildBankTab()
 		local itemName, amount, priority, itemLevel, stackSize, slots = Commodity:GetItemData(tab, slot)
 		local lastslot2
 		if slots then
-			for _, slot2 in ipairs(slots) do
+			for slot2, _ in pairs(slots) do
 				local itemName2, amount2, priority2, itemLevel2, stackSize2, slots2 = Commodity:GetItemData(tab, slot2)
 				if slot ~= slot2 and (not itemName2 or (priority > priority2 or (priority == priority2 and (itemLevel > itemLevel2 or (itemLevel == itemLevel2 and itemName <= itemName2))))) then
 					local moveAmount
@@ -219,7 +231,7 @@ function Commodity:SortGuildBankTab()
 			-- item that may not belong in this slot, move it to another slot
 			local reserved = {}
 			for item, itemData in pairs(Commodity.tabs[tab].items) do
-				for _, slot in ipairs(itemData.slots) do
+				for slot, _ in pairs(itemData.slots) do
 					reserved[slot] = 1
 				end
 			end
@@ -271,6 +283,32 @@ function Commodity:GetItemData(tab, slot)
 	return itemName, amount, priority, itemLevel, stackSize, slots
 end
 
+function Commodity:SetItemData(tab, slot, item, stackSize)
+	if not tab or not slot or not item then
+		return
+	end
+	if not Commodity.tabs[tab] then
+		Commodity.tabs[tab] = {
+			slots = {},
+			items = {}
+		}
+	end
+	local tabdata = Commodity.tabs[tab]
+	if not tabdata.slots[slot] then
+		tabdata.slots[slot] = {
+			items = {}
+		}
+	end
+	if not tabdata.items[item] then
+		tabdata.items[item] = {
+			slots = {}
+		}
+	end
+	stackSize = tonumber(stackSize)
+	tabdata.slots[slot].items[item] = stackSize
+	tabdata.items[item].slots[slot] = stackSize
+end
+
 function Commodity:UpdateTabFingerprint()
 	local tab = GetCurrentGuildBankTab()
 	Commodity.tabFingerprint = ""
@@ -297,7 +335,7 @@ end
 function Commodity:UpdateTooltip(tab, slot)
 	if Commodity.tabs[tab] and Commodity.tabs[tab].slots[slot] then
 		local headerAdded
-		for _, item in ipairs(Commodity.tabs[tab].slots[slot].items) do
+		for item, _ in pairs(Commodity.tabs[tab].slots[slot].items) do
 			if not headerAdded then
 				headerAdded = 1
 				GameTooltip:AddLine("Commodity reservations:")
