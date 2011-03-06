@@ -48,6 +48,13 @@ function SRS:OnEvent(event, ...)
 	elseif event == "CHAT_MSG_LOOT" then
 		local msg = ...
 		local _, _, who, rollType, itemLink = msg:find("(.*) have selected (.*) for: (.*)")
+		if not itemLink then
+			_, _, who, rollType, itemLink = msg:find("(.*) has selected (.*) for: (.*)")
+		end
+		if not itemLink then
+			_, _, who, itemLink = msg:find("(.*) passed on: (.*)")
+			rollType = PASS
+		end
 		if itemLink and SRS.items[itemLink] then
 			local id = SRS.items[itemLink]
 			if who == "You" then
