@@ -114,20 +114,6 @@ function SlashCmdList.Commodity(msg)
 	end
 end
 
-function Commodity:Reserve(slot)
-	local tab = GetCurrentGuildBankTab()
-	if not tab or not slot then
-		return
-	end
-	if IsMouseButtonDown("LeftButton") then
-		Commodity:SetItemData(tab, slot, Commodity.reserveItem, Commodity.reserveStackSize)
-		Commodity:SetGuildBankSlotOverlay(tab, slot)
-	elseif IsMouseButtonDown("RightButton") then
-		Commodity:SetItemData(tab, slot, Commodity.reserveItem, nil)
-		Commodity:SetGuildBankSlotOverlay(tab, slot)
-	end
-end
-
 function Commodity:OnEvent(event, arg1, ...)
 	--print(GetTime(), event, arg1, ...)
 	if event == "ADDON_LOADED" and arg1 == "Commodity" then
@@ -289,6 +275,20 @@ function Commodity:GetItemData(tab, slot)
 	return itemName, amount, priority, itemLevel, stackSize, slots
 end
 
+function Commodity:Reserve(slot)
+	local tab = GetCurrentGuildBankTab()
+	if not tab or not slot then
+		return
+	end
+	if IsMouseButtonDown("LeftButton") then
+		Commodity:SetItemData(tab, slot, Commodity.reserveItem, Commodity.reserveStackSize)
+		Commodity:SetGuildBankSlotOverlay(tab, slot)
+	elseif IsMouseButtonDown("RightButton") then
+		Commodity:SetItemData(tab, slot, Commodity.reserveItem, nil)
+		Commodity:SetGuildBankSlotOverlay(tab, slot)
+	end
+end
+
 function Commodity:SetItemData(tab, slot, item, stackSize)
 	if not tab or not slot or not item then
 		return
@@ -314,16 +314,6 @@ function Commodity:SetItemData(tab, slot, item, stackSize)
 	tabdata.items[item].slots[slot] = stackSize
 end
 
-function Commodity:UpdateTabFingerprint()
-	local tab = GetCurrentGuildBankTab()
-	Commodity.tabFingerprint = ""
-	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-		local _, amount = GetGuildBankItemInfo(tab, slot)
-		local itemLink = GetGuildBankItemLink(tab, slot)
-		Commodity.tabFingerprint = Commodity.tabFingerprint .. (amount or "0") .. (itemLink or "nil")
-	end
-end
-
 function Commodity:SetGuildBankSlotOverlay(tab, slot)
 	local overlaytext = _G["CommodityOverlayText" .. slot]
 	local reservations = 0
@@ -336,6 +326,16 @@ function Commodity:SetGuildBankSlotOverlay(tab, slot)
 		overlaytext:SetText("")
 	else
 		overlaytext:SetText(reservations)
+	end
+end
+
+function Commodity:UpdateTabFingerprint()
+	local tab = GetCurrentGuildBankTab()
+	Commodity.tabFingerprint = ""
+	for slot = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+		local _, amount = GetGuildBankItemInfo(tab, slot)
+		local itemLink = GetGuildBankItemLink(tab, slot)
+		Commodity.tabFingerprint = Commodity.tabFingerprint .. (amount or "0") .. (itemLink or "nil")
 	end
 end
 
