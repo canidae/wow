@@ -1,6 +1,6 @@
-## Interface: 40000
+## Interface: 40100
 ## Title: Loyalty
 ## Notes: Hunter's second best friend
-## Version: 1.0
+## Version: 1.1
 ## Author: canidae
 Loyalty.lua

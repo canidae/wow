@@ -1,6 +1,6 @@
-## Interface: 40000
+## Interface: 40100
 ## Title: Graydor
 ## Notes: Automatically vendor gray items, simple as that
-## Version: 1.0
+## Version: 1.1
 ## Author: canidae
 Graydor.lua

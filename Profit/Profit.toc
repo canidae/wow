@@ -1,7 +1,7 @@
-## Interface: 40000
+## Interface: 40100
 ## Title: Profit
 ## Notes: Less hassle, more money
-## Version: 1.0
+## Version: 1.1
 ## Author: canidae
 ## SavedVariablesPerCharacter: profit_db
 ## Dependencies: Blizzard_AuctionUI

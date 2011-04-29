@@ -18,9 +18,9 @@ function Loyalty:OnUpdate(elapsed)
 			ReputationWatchStatusBar:SetMinMaxValues(0, powermax)
 			ReputationWatchStatusBar:SetValue(power)
 			if power < 30 or power > powermax - 30 then
-				ReputationWatchStatusBar:SetStatusBarColor(0.9, 0.8, 0);
+				ReputationWatchStatusBar:SetStatusBarColor(0.9, 0.8, 0)
 			else
-				ReputationWatchStatusBar:SetStatusBarColor(0.2, 0.6, 0);
+				ReputationWatchStatusBar:SetStatusBarColor(0.2, 0.6, 0)
 			end
 			Loyalty.resetrepbar = 1
 		elseif Loyalty.resetrepbar then
@@ -73,7 +73,11 @@ function Loyalty:OnEvent(event, ...)
 				if buffType == "Magic" or buffType == "" then
 					-- "Enrage" seems to have blank buff type?
 					hideGlow = nil
-					break
+					if buffType == "" or Loyalty.mustDispel[buffId] then
+						-- nasty buff we must dispel immediately
+						PlaySound("RaidWarning")
+						break
+					end
 				end
 				i = i + 1
 				buff, _, _, count, buffType, duration, expiration, _, _, _, buffId = UnitBuff("target", i)
@@ -86,15 +90,13 @@ function Loyalty:OnEvent(event, ...)
 		elseif UnitAura("player", "Killing Streak") then
 			Loyalty:SetGlow(94007)
 		end
-	elseif event == "UNIT_HEALTH" and ... == "pet" then
+	elseif event == "UNIT_HEALTH" and ... == "pet" and not UnitIsDead("pet") then
 		-- keep an eye on pet
-		if not UnitIsDead("pet") then
-			local pethealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
-			local _, _, _, _, _, duration, expires, _, _, _, _ = UnitBuff("pet", "Mend Pet")
-			if not duration and pethealth < 80 and (InCombatLockdown() or pethealth < 50) then
-				-- pet is wounded and mend pet is not up, annoy hunter
-				PlaySound("igQuestFailed")
-			end
+		local pethealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
+		local _, _, _, _, _, duration, expires, _, _, _, _ = UnitBuff("pet", "Mend Pet")
+		if not duration and pethealth < 80 and (InCombatLockdown() or pethealth < 50) then
+			-- pet is wounded and mend pet is not up, annoy hunter
+			PlaySound("igQuestFailed")
 		end
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local unit, spell, _, _, spellId = ...
@@ -148,6 +150,30 @@ Loyalty.spells = {}
 Loyalty.lastFocus = 110
 Loyalty.actionButtons = {}
 
+Loyalty.mustDispel = {
+	-- druid
+	[29166] = 1, -- innervate
+	-- mage
+	[543] = 1, -- mage ward
+	[1463] = 1, -- mana shield
+	[11426] = 1, -- ice barrier
+	[12042] = 1, -- arcane power
+	[12472] = 1, -- icy veins
+	[80353] = 1, -- time warp
+	-- paladin
+	[1044] = 1, -- hand of freedom
+	[6940] = 1, -- hand of sacrifice
+	-- priest
+	[10060] = 1, -- power infusion
+	[17] = 1, -- power word: shield
+	[6346] = 1, -- fear ward
+	-- shaman
+	[2825] = 1, -- bloodlust
+	[32182] = 1, -- heroism
+	[79206] = 1, -- spiritwalker's grace
+	-- warlock
+	[91711] = 1 -- nether ward
+}
 Loyalty.ignoreCooldowns = {
 	[82179] = 1
 }

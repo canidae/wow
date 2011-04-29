@@ -1,4 +1,4 @@
-## Interface: 40000
+## Interface: 40100
 ## Title: SmartTargeting
 ## Notes: Smarter targeting of enemy players/mobs
 ## Version: 1.9
