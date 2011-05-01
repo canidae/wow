@@ -3,8 +3,10 @@ IBGI = CreateFrame("Frame")
 -- localization
 IBGI.L = {
 	enabled = "Enabled",
-	leave = "Leave",
-	enter = "Enter"
+	join_as_group = "Join as group",
+	requeue_same = "Requeue same battleground",
+	enter = "Enter",
+	leave = "Leave"
 }
 
 function IBGI:OnEvent(event, ...)
@@ -15,7 +17,6 @@ function IBGI:OnEvent(event, ...)
 		-- setup config
 		if not ibgi_data then
 			ibgi_data = {
-				update_interval = 5000
 			}
 		end
 
@@ -23,21 +24,49 @@ function IBGI:OnEvent(event, ...)
 		IBGI.Original_MiniMapBattlefieldDropDown_Initialize = MiniMapBattlefieldDropDown_Initialize
 		MiniMapBattlefieldDropDown_Initialize = IBGI.MiniMapBattlefieldDropDown_Initialize
 		return
+	elseif event == "UPDATE_BATTLEFIELD_STATUS" then
+		IBGI:Update()
 	end
 end
 
-function IBGI:OnUpdate(elapsed)
-	IBGI.updateTime = IBGI.updateTime + elapsed
-	if IBGI.updateTime >= ibgi_data.update_interval then
-		for i = 1, MAX_BATTLEFIELD_QUEUES do
-			local status, name = GetBattlefieldStatus(i)
-			if status == "queued" and GetBattlefieldTimeWaited(i) > GetBattlefieldEstimatedWaitTime(i) then
+function IBGI:Update(hwEvent, force)
+	local canJoinBattleground = MAX_BATTLEFIELD_QUEUES
+	-- TODO: joinAsGroup
+	-- requeue battlegrounds
+	for i = 1, MAX_BATTLEFIELD_QUEUES do
+		local status, name = GetBattlefieldStatus(i)
+		if status == "queued" and (force or GetBattlefieldTimeWaited(i) > GetBattlefieldEstimatedWaitTime(i)) then
+			if hwEvent then
+				-- hardware event, we can requeue
+				local queue
+				if ibgi_data[RANDOM_BATTLEGROUND] then
+					queue = IBGI:GetBattlegroundIndex(RANDOM_BATTLEGROUND)
+					canJoinBattleground = 0
+				elseif ibgi_data.requeue_same then
+					queue = IBGI:GetBattlegroundIndex(name)
+					canJoinBattleground = canJoinBattleground - 1
+				else
+					-- TODO: find a random battleground
+				end
+				AcceptBattlefieldPort(i) -- leave queue
+				IBGI:JoinBattleground(queue)
+			else
+				-- flash minimap icon, user should requeue
 				BattlegroundShineFadeIn()
 			end
 		end
-
-		IBGI.updateTime = IBGI.updateTime - ibgi_data.update_interval
 	end
+	-- queue arena
+	-- TODO, and set canJoinBattleground = 0 if we queue
+	-- queue rated battleground
+	-- TODO, and set canJoinBattleground = 0 if we queue
+	-- queue battlegrounds
+	while canJoinBattleground > 0 do
+		-- TODO
+		canJoinBattleground = canJoinBattleground - 1
+	end
+	-- queue world pvp zones
+	-- TODO
 end
 
 function IBGI:JoinBattleground(index)
@@ -100,13 +129,28 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	info.func = function()
 		IBGI.enabled = not IBGI.enabled
 		if IBGI.enabled then
-			IBGI.updateTime = ibgi_data.update_interval
-			IBGI:SetScript("OnUpdate", IBGI.OnUpdate)
+			IBGI:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 		else
-			IBGI:SetScript("OnUpdate", nil)
+			IBGI:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS")
 		end
 	end
 	info.checked = IBGI.enabled
+	info.isNotRadio = 1
+	UIDropDownMenu_AddButton(info)
+	-- join as group
+	info = UIDropDownMenu_CreateInfo()
+	info.text = IBGI.L.join_as_group
+	info.colorCode = "|cff74e817"
+	info.func = function() ibgi_data.join_as_group = not ibgi_data.join_as_group end
+	info.checked = ibgi_data.join_as_group
+	info.isNotRadio = 1
+	UIDropDownMenu_AddButton(info)
+	-- requeue same battleground
+	info = UIDropDownMenu_CreateInfo()
+	info.text = IBGI.L.requeue_same
+	info.colorCode = "|cff74e817"
+	info.func = function() ibgi_data.requeue_same = not ibgi_data.requeue_same end
+	info.checked = ibgi_data.requeue_same
 	info.isNotRadio = 1
 	UIDropDownMenu_AddButton(info)
 
@@ -150,12 +194,12 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	end
 	-- random battlegrounds
 	for i = 1, GetNumBattlegroundTypes() do
-		if i == 1 or not ibgi_data[GetBattlegroundInfo(1)] then
+		local name = GetBattlegroundInfo(i)
+		if name == RANDOM_BATTLEGROUND or not ibgi_data[RANDOM_BATTLEGROUND] then
 			-- only add "Random Battleground" if that is checked,
 			-- otherwise add all battlegrounds
-			local name = GetBattlegroundInfo(i)
 			info = UIDropDownMenu_CreateInfo()
-			if i == 1 then
+			if name == RANDOM_BATTLEGROUND then
 				info.text = name
 				info.colorCode = "|cff557ff9"
 			else
