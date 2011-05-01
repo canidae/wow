@@ -1,7 +1,7 @@
 ## Interface: 40100
 ## Title: IBGI
 ## Notes: Improved Battleground Interface
-## Version: 1.0
+## Version: 1.0-beta1
 ## Author: canidae
 ## SavedVariablesPerCharacter: ibgi_data
 IBGI.lua

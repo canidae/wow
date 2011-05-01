@@ -4,7 +4,7 @@ IBGI = CreateFrame("Frame")
 IBGI.L = {
 	enabled = "Enabled",
 	join_as_group = "Join as group",
-	requeue_same = "Requeue same battleground",
+	requeue_same = "Requeue same BG",
 	enter = "Enter",
 	leave = "Leave"
 }
@@ -16,60 +16,191 @@ function IBGI:OnEvent(event, ...)
 
 		-- setup config
 		if not ibgi_data then
-			ibgi_data = {
-			}
+			ibgi_data = {}
 		end
+		IBGI.updateTime = 0.0
 
 		-- hooks
 		IBGI.Original_MiniMapBattlefieldDropDown_Initialize = MiniMapBattlefieldDropDown_Initialize
 		MiniMapBattlefieldDropDown_Initialize = IBGI.MiniMapBattlefieldDropDown_Initialize
+		-- don't hide battleground icon
+		MiniMapBattlefieldFrame:SetScript("OnHide", function() MiniMapBattlefieldFrame:Show() end)
+		-- left clicking battleground icon does magic stuff
+		MiniMapBattlefieldFrame:HookScript("OnClick", function(self, button)
+			if button == "LeftButton" then
+				IBGI.enabled = 1
+				IBGI:RegisterEvent("PLAYER_ENTERING_WORLD")
+				if not IBGI:InPvpZone() then
+					IBGI:SetScript("OnUpdate", IBGI.OnUpdate)
+					IBGI:Update(1, IsShiftKeyDown())
+				end
+			end
+		end)
+
+		-- show battleground icon
+		MiniMapBattlefieldFrame:Show()
 		return
-	elseif event == "UPDATE_BATTLEFIELD_STATUS" then
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		if IBGI:InPvpZone() then
+			-- in battleground, stop calling IBGI:Update()
+			IBGI:SetScript("OnUpdate", nil)
+		else
+			-- not in battleground, call IBGI:Update()
+			IBGI:SetScript("OnUpdate", IBGI.OnUpdate)
+		end
+	end
+end
+
+function IBGI:OnUpdate(elapsed)
+	IBGI.updateTime = IBGI.updateTime + elapsed
+	if IBGI.updateTime >= 5.0 then
 		IBGI:Update()
+		IBGI.updateTime = 0.0
 	end
 end
 
 function IBGI:Update(hwEvent, force)
 	local canJoinBattleground = MAX_BATTLEFIELD_QUEUES
-	-- TODO: joinAsGroup
-	-- requeue battlegrounds
+	local teamSize = math.max(GetRealNumPartyMembers() + 1, GetRealNumRaidMembers())
+	local already_queued = {}
+	local isLeader = IsRealPartyLeader() or IsRealRaidLeader()
+	local joinAsGroup
+	if hwEvent and teamSize > 1 then
+		if isLeader then
+			joinAsGroup = ibgi_data.join_as_group
+		elseif ibgi_data.join_as_group then
+			-- "join as group" checked and we're not leader, don't queue battlegrounds
+			canJoinBattleground = 0
+		end
+	end
+	-- requeue battlegrounds (and see what we're already queued to)
 	for i = 1, MAX_BATTLEFIELD_QUEUES do
-		local status, name = GetBattlefieldStatus(i)
+		local status, name, _, _, _, size = GetBattlefieldStatus(i)
+		if status and status ~= "none" then
+			if size == 0 and name then
+				already_queued[name] = 1
+				if name == RANDOM_BATTLEGROUND then
+					canJoinBattleground = 0
+				else
+					canJoinBattleground = canJoinBattleground - 1
+				end
+			elseif size > 0 then
+				already_queued[size] = 1
+			end
+		end
 		if status == "queued" and (force or GetBattlefieldTimeWaited(i) > GetBattlefieldEstimatedWaitTime(i)) then
 			if hwEvent then
 				-- hardware event, we can requeue
 				local queue
 				if ibgi_data[RANDOM_BATTLEGROUND] then
 					queue = IBGI:GetBattlegroundIndex(RANDOM_BATTLEGROUND)
-					canJoinBattleground = 0
 				elseif ibgi_data.requeue_same then
 					queue = IBGI:GetBattlegroundIndex(name)
-					canJoinBattleground = canJoinBattleground - 1
-				else
-					-- TODO: find a random battleground
 				end
 				AcceptBattlefieldPort(i) -- leave queue
-				IBGI:JoinBattleground(queue)
+				if queue then
+					IBGI:JoinBattleground(queue, joinAsGroup)
+				else
+					-- we didn't requeue for this battleground
+					already_queued[name] = nil
+				end
 			else
 				-- flash minimap icon, user should requeue
 				BattlegroundShineFadeIn()
 			end
 		end
 	end
+	-- check if we're queued up for world pvp zone already
+	for i = 1, MAX_WORLD_PVP_QUEUES do
+		local status, name= GetWorldPVPQueueStatus(i)
+		if status ~= "none" then
+			already_queued[name] = 1
+		end
+	end
 	-- queue arena
-	-- TODO, and set canJoinBattleground = 0 if we queue
+	if isLeader then
+		for i = 1, MAX_ARENA_TEAMS do
+			local name, size = GetArenaTeam(i)
+			if name and size == teamSize and not already_queued[size] then
+				local valid = 1
+				for j = 1, teamSize - 1 do
+					local found
+					for k = 1, size * 2 do
+						if UnitName("party" .. j) == GetArenaTeamRosterInfo(i, k) then
+							found = 1
+							break
+						end
+					end
+					if not found or not UnitIsConnected("party" .. j) then
+						valid = false
+						break
+					end
+				end
+				if valid then
+					canJoinBattleground = 0
+					JoinArena()
+					break
+				end
+			end
+		end
+	end
 	-- queue rated battleground
-	-- TODO, and set canJoinBattleground = 0 if we queue
+	local _, size = GetRatedBattleGroundInfo()
+	if isLeader and size == teamSize and not already_queued[size] then
+		canJoinBattleground = 0
+		JoinRatedBattlefield()
+	end
 	-- queue battlegrounds
 	while canJoinBattleground > 0 do
-		-- TODO
-		canJoinBattleground = canJoinBattleground - 1
+		if ibgi_data[RANDOM_BATTLEGROUND] then
+			IBGI:JoinBattleground(IBGI:GetBattlegroundIndex(RANDOM_BATTLEGROUND), joinAsGroup)
+			canJoinBattleground = 0
+		else
+			local canJoin = {}
+			local count = 0
+			for i = 1, GetNumBattlegroundTypes() do
+				local name = GetBattlegroundInfo(i)
+				if name ~= RANDOM_BATTLEGROUND and ibgi_data[name] then
+					canJoin[name] = i
+					count = count + 1
+				end
+			end
+			if count <= 0 then
+				-- can't join [any more] battlegrounds
+				break
+			end
+			local random = math.random(count)
+			for name, index in pairs(canJoin) do
+				random = random - 1
+				if random == 0 then
+					IBGI:JoinBattleground(index, joinAsGroup)
+					break
+				end
+			end
+			canJoinBattleground = canJoinBattleground - 1
+		end
 	end
 	-- queue world pvp zones
-	-- TODO
+	for i = 1, GetNumWorldPVPAreas() do
+		local pvpId, name, isActive, canQueue, _, canEnter = GetWorldPVPAreaInfo(i)
+		if canEnter and not already_queued[name] and (isActive or canQueue) then
+			BattlefieldMgrQueueRequest(pvpId)
+		end
+	end
 end
 
-function IBGI:JoinBattleground(index)
+function IBGI:InPvpZone()
+	local pvpType = GetZonePVPInfo()
+	if pvpType == "arena" or pvpType == "combat" then
+		return 1
+	end
+	local _, instanceType = IsInInstance()
+	if instanceType == "pvp" then
+		return 1
+	end
+end
+
+function IBGI:JoinBattleground(index, asGroup)
 	local battlegrounds = GetNumBattlegroundTypes()
 	if not index or index < 1 or index > battlegrounds then
 		return
@@ -107,7 +238,7 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 		if status == "confirm" then
 			spacer = 1
 			info = UIDropDownMenu_CreateInfo()
-			info.text = IBGI.L.leave .. " |r" .. name
+			info.text = IBGI.L.enter .. " |r" .. name
 			info.colorCode = "|cff00ff00"
 			info.func = function() BattlefieldMgrEntryInviteResponse(queueId, 1) end
 			info.notCheckable = 1
@@ -129,9 +260,14 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	info.func = function()
 		IBGI.enabled = not IBGI.enabled
 		if IBGI.enabled then
-			IBGI:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
+			IBGI:RegisterEvent("PLAYER_ENTERING_WORLD")
+			if not IBGI:InPvpZone() then
+				IBGI:SetScript("OnUpdate", IBGI.OnUpdate)
+				IBGI:Update(1)
+			end
 		else
-			IBGI:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS")
+			IBGI:UnregisterEvent("PLAYER_ENTERING_WORLD")
+			IBGI:SetScript("OnUpdate", nil)
 		end
 	end
 	info.checked = IBGI.enabled
@@ -156,21 +292,21 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 
 	-- 2v2
 	info = UIDropDownMenu_CreateInfo()
-	info.text = ARENA_2V2
+	info.text = ARENA .. " " .. ARENA_2V2
 	info.colorCode = "|cffc3ed01"
 	info.func = function() ibgi_data.arena_2v2 = not ibgi_data.arena_2v2 end
 	info.checked = ibgi_data.arena_2v2
 	UIDropDownMenu_AddButton(info)
 	-- 3v3
 	info = UIDropDownMenu_CreateInfo()
-	info.text = ARENA_3V3
+	info.text = ARENA .. " " .. ARENA_3V3
 	info.colorCode = "|cffc3ed01"
 	info.func = function() ibgi_data.arena_3v3 = not ibgi_data.arena_3v3 end
 	info.checked = ibgi_data.arena_3v3
 	UIDropDownMenu_AddButton(info)
 	-- 5v5
 	info = UIDropDownMenu_CreateInfo()
-	info.text = ARENA_5V5
+	info.text = ARENA .. " " .. ARENA_5V5
 	info.colorCode = "|cffc3ed01"
 	info.func = function() ibgi_data.arena_5v5 = not ibgi_data.arena_5v5 end
 	info.checked = ibgi_data.arena_5v5
