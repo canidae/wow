@@ -24,7 +24,7 @@ function IBGI:OnEvent(event, ...)
 		IBGI.Original_MiniMapBattlefieldDropDown_Initialize = MiniMapBattlefieldDropDown_Initialize
 		MiniMapBattlefieldDropDown_Initialize = IBGI.MiniMapBattlefieldDropDown_Initialize
 		-- don't hide battleground icon
-		MiniMapBattlefieldFrame:SetScript("OnHide", function() MiniMapBattlefieldFrame:Show() end)
+		MiniMapBattlefieldFrame:HookScript("OnHide", function() MiniMapBattlefieldFrame:Show() end)
 		-- left clicking battleground icon does magic stuff
 		MiniMapBattlefieldFrame:HookScript("OnClick", function(self, button)
 			if button == "LeftButton" then
@@ -74,39 +74,41 @@ function IBGI:Update(hwEvent, force)
 		end
 	end
 	-- requeue battlegrounds (and see what we're already queued to)
-	for i = 1, MAX_BATTLEFIELD_QUEUES do
-		local status, name, _, _, _, size = GetBattlefieldStatus(i)
-		if status and status ~= "none" then
-			if size == 0 and name then
-				already_queued[name] = 1
-				if name == RANDOM_BATTLEGROUND then
-					canJoinBattleground = 0
-				else
-					canJoinBattleground = canJoinBattleground - 1
+	if isLeader or teamSize <= 1 then
+		for i = 1, MAX_BATTLEFIELD_QUEUES do
+			local status, name, _, _, _, size = GetBattlefieldStatus(i)
+			if status and status ~= "none" then
+				if size == 0 and name then
+					already_queued[name] = 1
+					if name == RANDOM_BATTLEGROUND then
+						canJoinBattleground = 0
+					else
+						canJoinBattleground = canJoinBattleground - 1
+					end
+				elseif size > 0 then
+					already_queued[size] = 1
 				end
-			elseif size > 0 then
-				already_queued[size] = 1
 			end
-		end
-		if status == "queued" and (force or GetBattlefieldTimeWaited(i) > GetBattlefieldEstimatedWaitTime(i)) then
-			if hwEvent then
-				-- hardware event, we can requeue
-				local queue
-				if ibgi_data[RANDOM_BATTLEGROUND] then
-					queue = IBGI:GetBattlegroundIndex(RANDOM_BATTLEGROUND)
-				elseif ibgi_data.requeue_same then
-					queue = IBGI:GetBattlegroundIndex(name)
-				end
-				AcceptBattlefieldPort(i) -- leave queue
-				if queue then
-					IBGI:JoinBattleground(queue, joinAsGroup)
+			if status == "queued" and (force or GetBattlefieldTimeWaited(i) > GetBattlefieldEstimatedWaitTime(i)) then
+				if hwEvent then
+					-- hardware event, we can requeue
+					local queue
+					if ibgi_data[RANDOM_BATTLEGROUND] then
+						queue = IBGI:GetBattlegroundIndex(RANDOM_BATTLEGROUND)
+					elseif ibgi_data.requeue_same then
+						queue = IBGI:GetBattlegroundIndex(name)
+					end
+					AcceptBattlefieldPort(i) -- leave queue
+					if queue then
+						IBGI:JoinBattleground(queue, joinAsGroup)
+					else
+						-- we didn't requeue for this battleground
+						already_queued[name] = nil
+					end
 				else
-					-- we didn't requeue for this battleground
-					already_queued[name] = nil
+					-- flash minimap icon, user should requeue
+					BattlegroundShineFadeIn()
 				end
-			else
-				-- flash minimap icon, user should requeue
-				BattlegroundShineFadeIn()
 			end
 		end
 	end
@@ -118,10 +120,10 @@ function IBGI:Update(hwEvent, force)
 		end
 	end
 	-- queue arena
-	if isLeader then
+	if isLeader and teamSize > 1 then
 		for i = 1, MAX_ARENA_TEAMS do
 			local name, size = GetArenaTeam(i)
-			if name and size == teamSize and not already_queued[size] then
+			if name and size == teamSize and not already_queued[size] and ((size == 2 and ibgi_data.arena_2v2) or (size == 3 and ibgi_data.arena_3v3) or (size == 5 and ibgi_data.arena_5v5)) then
 				local valid = 1
 				for j = 1, teamSize - 1 do
 					local found
@@ -146,12 +148,12 @@ function IBGI:Update(hwEvent, force)
 	end
 	-- queue rated battleground
 	local _, size = GetRatedBattleGroundInfo()
-	if isLeader and size == teamSize and not already_queued[size] then
+	if isLeader and size == teamSize and not already_queued[size] and ibgi_data.rated_battleground then
 		canJoinBattleground = 0
 		JoinRatedBattlefield()
 	end
 	-- queue battlegrounds
-	while canJoinBattleground > 0 do
+	while canJoinBattleground > 0 and (isLeader or teamSize <= 1) do
 		if ibgi_data[RANDOM_BATTLEGROUND] then
 			IBGI:JoinBattleground(IBGI:GetBattlegroundIndex(RANDOM_BATTLEGROUND), joinAsGroup)
 			canJoinBattleground = 0
@@ -183,19 +185,15 @@ function IBGI:Update(hwEvent, force)
 	-- queue world pvp zones
 	for i = 1, GetNumWorldPVPAreas() do
 		local pvpId, name, isActive, canQueue, _, canEnter = GetWorldPVPAreaInfo(i)
-		if canEnter and not already_queued[name] and (isActive or canQueue) then
+		if canEnter and not already_queued[name] and (isActive or canQueue) and ibgi_data[name] then
 			BattlefieldMgrQueueRequest(pvpId)
 		end
 	end
 end
 
 function IBGI:InPvpZone()
-	local pvpType = GetZonePVPInfo()
-	if pvpType == "arena" or pvpType == "combat" then
-		return 1
-	end
 	local _, instanceType = IsInInstance()
-	if instanceType == "pvp" then
+	if instanceType == "pvp" or GetZonePVPInfo() == "arena" then
 		return 1
 	end
 end
