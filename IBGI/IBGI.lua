@@ -27,13 +27,8 @@ function IBGI:OnEvent(event, ...)
 		MiniMapBattlefieldFrame:HookScript("OnHide", function() MiniMapBattlefieldFrame:Show() end)
 		-- left clicking battleground icon does magic stuff
 		MiniMapBattlefieldFrame:HookScript("OnClick", function(self, button)
-			if button == "LeftButton" then
-				IBGI.enabled = 1
-				IBGI:RegisterEvent("PLAYER_ENTERING_WORLD")
-				if not IBGI:InPvpZone() then
-					IBGI:SetScript("OnUpdate", IBGI.OnUpdate)
-					IBGI:Update(1, IsShiftKeyDown())
-				end
+			if button == "LeftButton" and IBGI.enabled then
+				IBGI:Update(1, IsShiftKeyDown())
 			end
 		end)
 
@@ -65,7 +60,7 @@ function IBGI:Update(hwEvent, force)
 	local already_queued = {}
 	local isLeader = IsRealPartyLeader() or IsRealRaidLeader()
 	local joinAsGroup
-	if hwEvent and teamSize > 1 then
+	if teamSize > 1 then
 		if isLeader then
 			joinAsGroup = ibgi_data.join_as_group
 		elseif ibgi_data.join_as_group then
