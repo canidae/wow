@@ -1,6 +1,6 @@
 IBGI = CreateFrame("Frame")
 
--- localization
+-- localization (only english so far)
 IBGI.L = {
 	enabled = "Enabled",
 	join_as_group = "Join as group",
@@ -16,7 +16,10 @@ function IBGI:OnEvent(event, ...)
 
 		-- setup config
 		if not ibgi_data then
-			ibgi_data = {}
+			ibgi_data = {
+				join_as_group = 1,
+				requeue_same = 1
+			}
 		end
 		IBGI.updateTime = 0.0
 
@@ -48,7 +51,7 @@ end
 
 function IBGI:OnUpdate(elapsed)
 	IBGI.updateTime = IBGI.updateTime + elapsed
-	if IBGI.updateTime >= 5.0 then
+	if IBGI.updateTime >= 3.0 then
 		IBGI:Update()
 		IBGI.updateTime = 0.0
 	end
@@ -71,9 +74,11 @@ function IBGI:Update(hwEvent, force)
 	-- requeue battlegrounds (and see what we're already queued to)
 	if isLeader or teamSize <= 1 then
 		for i = 1, MAX_BATTLEFIELD_QUEUES do
-			local status, name, _, _, _, size = GetBattlefieldStatus(i)
+			local status, name, _, _, _, size, registeredMatch = GetBattlefieldStatus(i)
 			if status and status ~= "none" then
-				if size == 0 and name then
+				if arena then
+					already_queued.registeredMatch = 1
+				elseif size == 0 and name then
 					already_queued[name] = 1
 					if name == RANDOM_BATTLEGROUND then
 						canJoinBattleground = 0
@@ -115,10 +120,10 @@ function IBGI:Update(hwEvent, force)
 		end
 	end
 	-- queue arena
-	if isLeader and teamSize > 1 then
+	if not already_queued.registeredMatch and isLeader and teamSize > 1 then
 		for i = 1, MAX_ARENA_TEAMS do
 			local name, size = GetArenaTeam(i)
-			if name and size == teamSize and not already_queued[size] and ((size == 2 and ibgi_data.arena_2v2) or (size == 3 and ibgi_data.arena_3v3) or (size == 5 and ibgi_data.arena_5v5)) then
+			if name and size == teamSize and ((size == 2 and ibgi_data.arena_2v2) or (size == 3 and ibgi_data.arena_3v3) or (size == 5 and ibgi_data.arena_5v5)) then
 				local valid = 1
 				for j = 1, teamSize - 1 do
 					local found
@@ -143,7 +148,7 @@ function IBGI:Update(hwEvent, force)
 	end
 	-- queue rated battleground
 	local _, size = GetRatedBattleGroundInfo()
-	if isLeader and size == teamSize and not already_queued[size] and ibgi_data.rated_battleground then
+	if isLeader and size == teamSize and not already_queued.registeredMatch and ibgi_data.rated_battleground then
 		canJoinBattleground = 0
 		JoinRatedBattlefield()
 	end
