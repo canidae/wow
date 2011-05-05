@@ -58,6 +58,9 @@ function IBGI:OnUpdate(elapsed)
 end
 
 function IBGI:Update(hwEvent, force)
+	if IBGI:InPvpZone() then
+		return
+	end
 	local canJoinBattleground = MAX_BATTLEFIELD_QUEUES
 	local teamSize = math.max(GetRealNumPartyMembers() + 1, GetRealNumRaidMembers())
 	local already_queued = {}
@@ -216,6 +219,14 @@ function IBGI:GetBattlegroundIndex(battleground)
 	end
 end
 
+function IBGI:MiniMapBattlefieldIconClick(arg1)
+	if not arg1 then
+		return
+	end
+	ibgi_data[arg1] = not ibgi_data[arg1]
+	ToggleDropDownMenu(1, nil, MiniMapBattlefieldDropDown, "MiniMapBattlefieldFrame", 0, -5)
+end
+
 function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	-- enter
 	local spacer
@@ -275,7 +286,8 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	info = UIDropDownMenu_CreateInfo()
 	info.text = IBGI.L.join_as_group
 	info.colorCode = "|cff74e817"
-	info.func = function() ibgi_data.join_as_group = not ibgi_data.join_as_group end
+	info.func = IBGI.MiniMapBattlefieldIconClick
+	info.arg1 = "join_as_group"
 	info.checked = ibgi_data.join_as_group
 	info.isNotRadio = 1
 	UIDropDownMenu_AddButton(info)
@@ -283,7 +295,8 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	info = UIDropDownMenu_CreateInfo()
 	info.text = IBGI.L.requeue_same
 	info.colorCode = "|cff74e817"
-	info.func = function() ibgi_data.requeue_same = not ibgi_data.requeue_same end
+	info.func = IBGI.MiniMapBattlefieldIconClick
+	info.arg1 = "requeue_same"
 	info.checked = ibgi_data.requeue_same
 	info.isNotRadio = 1
 	UIDropDownMenu_AddButton(info)
@@ -292,28 +305,32 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	info = UIDropDownMenu_CreateInfo()
 	info.text = ARENA .. " " .. ARENA_2V2
 	info.colorCode = "|cffc3ed01"
-	info.func = function() ibgi_data.arena_2v2 = not ibgi_data.arena_2v2 end
+	info.func = IBGI.MiniMapBattlefieldIconClick
+	info.arg1 = "arena_2v2"
 	info.checked = ibgi_data.arena_2v2
 	UIDropDownMenu_AddButton(info)
 	-- 3v3
 	info = UIDropDownMenu_CreateInfo()
 	info.text = ARENA .. " " .. ARENA_3V3
 	info.colorCode = "|cffc3ed01"
-	info.func = function() ibgi_data.arena_3v3 = not ibgi_data.arena_3v3 end
+	info.func = IBGI.MiniMapBattlefieldIconClick
+	info.arg1 = "arena_3v3"
 	info.checked = ibgi_data.arena_3v3
 	UIDropDownMenu_AddButton(info)
 	-- 5v5
 	info = UIDropDownMenu_CreateInfo()
 	info.text = ARENA .. " " .. ARENA_5V5
 	info.colorCode = "|cffc3ed01"
-	info.func = function() ibgi_data.arena_5v5 = not ibgi_data.arena_5v5 end
+	info.func = IBGI.MiniMapBattlefieldIconClick
+	info.arg1 = "arena_5v5"
 	info.checked = ibgi_data.arena_5v5
 	UIDropDownMenu_AddButton(info)
 	-- rated battleground
 	info = UIDropDownMenu_CreateInfo()
 	info.text = PVP_RATED_BATTLEGROUND
 	info.colorCode = "|cfff39208"
-	info.func = function() ibgi_data.rated_battleground = not ibgi_data.rated_battleground end
+	info.func = IBGI.MiniMapBattlefieldIconClick
+	info.arg1 = "rated_battleground"
 	info.checked = ibgi_data.rated_battleground
 	UIDropDownMenu_AddButton(info)
 	-- pvp zones (wintergrasp, tol barad)
@@ -322,7 +339,8 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 		info = UIDropDownMenu_CreateInfo()
 		info.text = name
 		info.colorCode = "|cffd91dc5"
-		info.func = function() ibgi_data[name] = not ibgi_data[name] end
+		info.func = IBGI.MiniMapBattlefieldIconClick
+		info.arg1 = name
 		info.checked = ibgi_data[name]
 		UIDropDownMenu_AddButton(info)
 	end
@@ -339,7 +357,8 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 			else
 				info.text = "- |cff03c4c6" .. name
 			end
-			info.func = function() ibgi_data[name] = not ibgi_data[name] end
+			info.func = IBGI.MiniMapBattlefieldIconClick
+			info.arg1 = name
 			info.checked = ibgi_data[name]
 			UIDropDownMenu_AddButton(info)
 		end
