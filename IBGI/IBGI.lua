@@ -5,6 +5,7 @@ IBGI.L = {
 	enabled = "Enabled",
 	join_as_group = "Join as group",
 	requeue_same = "Requeue same BG",
+	set_raid_icons = "Set raid icons",
 	enter = "Enter",
 	leave = "Leave"
 }
@@ -26,8 +27,6 @@ function IBGI:OnEvent(event, ...)
 		-- hooks
 		IBGI.Original_MiniMapBattlefieldDropDown_Initialize = MiniMapBattlefieldDropDown_Initialize
 		MiniMapBattlefieldDropDown_Initialize = IBGI.MiniMapBattlefieldDropDown_Initialize
-		-- don't hide battleground icon
-		MiniMapBattlefieldFrame:HookScript("OnHide", function() MiniMapBattlefieldFrame:Show() end)
 		-- left clicking battleground icon does magic stuff
 		MiniMapBattlefieldFrame:HookScript("OnClick", function(self, button)
 			if button == "LeftButton" and IBGI.enabled then
@@ -35,6 +34,8 @@ function IBGI:OnEvent(event, ...)
 			end
 		end)
 
+		-- we don't want to hide battleground icon
+		MiniMapBattlefieldFrame:SetScript("OnHide", function() MiniMapBattlefieldFrame:Show() end)
 		-- show battleground icon
 		MiniMapBattlefieldFrame:Show()
 		return
@@ -59,9 +60,10 @@ end
 
 function IBGI:Update(hwEvent, force)
 	if IBGI:InPvpZone() then
+		-- this method shouldn't be called in pvp zones, but we keep this check just in case
 		return
 	end
-	local canJoinBattleground = MAX_BATTLEFIELD_QUEUES
+	local canQueueBattleground = MAX_BATTLEFIELD_QUEUES
 	local teamSize = math.max(GetRealNumPartyMembers() + 1, GetRealNumRaidMembers())
 	local already_queued = {}
 	local isLeader = IsRealPartyLeader() or IsRealRaidLeader()
@@ -71,7 +73,7 @@ function IBGI:Update(hwEvent, force)
 			joinAsGroup = ibgi_data.join_as_group
 		elseif ibgi_data.join_as_group then
 			-- "join as group" checked and we're not leader, don't queue battlegrounds
-			canJoinBattleground = 0
+			canQueueBattleground = 0
 		end
 	end
 	-- requeue battlegrounds (and see what we're already queued to)
@@ -84,9 +86,9 @@ function IBGI:Update(hwEvent, force)
 				elseif size == 0 and name then
 					already_queued[name] = 1
 					if name == RANDOM_BATTLEGROUND then
-						canJoinBattleground = 0
+						canQueueBattleground = 0
 					else
-						canJoinBattleground = canJoinBattleground - 1
+						canQueueBattleground = canQueueBattleground - 1
 					end
 				elseif size > 0 then
 					already_queued[size] = 1
@@ -112,6 +114,14 @@ function IBGI:Update(hwEvent, force)
 					-- flash minimap icon, user should requeue
 					BattlegroundShineFadeIn()
 				end
+			elseif status == "confirm" and ibgi_data.set_raid_icons and not UnitInRaid("player") and UnitIsPartyLeader("player") then
+				-- convert to raid and set raid icons
+				for i = 1, GetRealNumPartyMembers() do
+					SetRaidTarget("party" .. i, i)
+				end
+				SetRaidTarget("player", 8)
+				ConvertToRaid()
+				IBGI.convert_to_party = 1
 			end
 		end
 	end
@@ -142,7 +152,7 @@ function IBGI:Update(hwEvent, force)
 					end
 				end
 				if valid then
-					canJoinBattleground = 0
+					canQueueBattleground = 0
 					JoinArena()
 					break
 				end
@@ -152,14 +162,14 @@ function IBGI:Update(hwEvent, force)
 	-- queue rated battleground
 	local _, size = GetRatedBattleGroundInfo()
 	if isLeader and size == teamSize and not already_queued.registeredMatch and ibgi_data.rated_battleground then
-		canJoinBattleground = 0
+		canQueueBattleground = 0
 		JoinRatedBattlefield()
 	end
 	-- queue battlegrounds
-	while canJoinBattleground > 0 and (isLeader or teamSize <= 1) do
+	while canQueueBattleground > 0 and (isLeader or teamSize <= 1) do
 		if ibgi_data[RANDOM_BATTLEGROUND] then
 			IBGI:JoinBattleground(IBGI:GetBattlegroundIndex(RANDOM_BATTLEGROUND), joinAsGroup)
-			canJoinBattleground = 0
+			canQueueBattleground = 0
 		else
 			local canJoin = {}
 			local count = 0
@@ -182,7 +192,7 @@ function IBGI:Update(hwEvent, force)
 					break
 				end
 			end
-			canJoinBattleground = canJoinBattleground - 1
+			canQueueBattleground = canQueueBattleground - 1
 		end
 	end
 	-- queue world pvp zones
@@ -298,6 +308,15 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	info.func = IBGI.MiniMapBattlefieldIconClick
 	info.arg1 = "requeue_same"
 	info.checked = ibgi_data.requeue_same
+	info.isNotRadio = 1
+	UIDropDownMenu_AddButton(info)
+	-- convert to raid and set raid icons
+	info = UIDropDownMenu_CreateInfo()
+	info.text = IBGI.L.set_raid_icons
+	info.colorCode = "|cff74e817"
+	info.func = IBGI.MiniMapBattlefieldIconClick
+	info.arg1 = "set_raid_icons"
+	info.checked = ibgi_data.set_raid_icons
 	info.isNotRadio = 1
 	UIDropDownMenu_AddButton(info)
 
