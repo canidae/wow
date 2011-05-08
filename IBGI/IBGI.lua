@@ -52,7 +52,7 @@ end
 
 function IBGI:OnUpdate(elapsed)
 	IBGI.updateTime = IBGI.updateTime + elapsed
-	if IBGI.updateTime >= 3.0 then
+	if IBGI.updateTime >= 1.5 then
 		IBGI:Update()
 		IBGI.updateTime = 0.0
 	end
