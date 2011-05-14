@@ -5,7 +5,6 @@ IBGI.L = {
 	enabled = "Enabled",
 	join_as_group = "Join as group",
 	requeue_same = "Requeue same BG",
-	set_raid_icons = "Set raid icons",
 	enter = "Enter",
 	leave = "Leave"
 }
@@ -114,14 +113,6 @@ function IBGI:Update(hwEvent, force)
 					-- flash minimap icon, user should requeue
 					BattlegroundShineFadeIn()
 				end
-			elseif status == "confirm" and ibgi_data.set_raid_icons and not UnitInRaid("player") and UnitIsPartyLeader("player") then
-				-- convert to raid and set raid icons
-				for i = 1, GetRealNumPartyMembers() do
-					SetRaidTarget("party" .. i, i)
-				end
-				SetRaidTarget("player", 8)
-				ConvertToRaid()
-				IBGI.convert_to_party = 1
 			end
 		end
 	end
@@ -308,15 +299,6 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	info.func = IBGI.MiniMapBattlefieldIconClick
 	info.arg1 = "requeue_same"
 	info.checked = ibgi_data.requeue_same
-	info.isNotRadio = 1
-	UIDropDownMenu_AddButton(info)
-	-- convert to raid and set raid icons
-	info = UIDropDownMenu_CreateInfo()
-	info.text = IBGI.L.set_raid_icons
-	info.colorCode = "|cff74e817"
-	info.func = IBGI.MiniMapBattlefieldIconClick
-	info.arg1 = "set_raid_icons"
-	info.checked = ibgi_data.set_raid_icons
 	info.isNotRadio = 1
 	UIDropDownMenu_AddButton(info)
 
