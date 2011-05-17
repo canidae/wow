@@ -152,7 +152,7 @@ function IBGI:Update(hwEvent, force)
 	end
 	-- queue rated battleground
 	local _, size = GetRatedBattleGroundInfo()
-	if isLeader and size == teamSize and not already_queued.registeredMatch and ibgi_data.rated_battleground then
+	if isLeader and size == teamSize and not already_queued.registeredMatch and ibgi_data.rated_battleground and UnitLevel("player") >= SHOW_CONQUEST_LEVEL then
 		canQueueBattleground = 0
 		JoinRatedBattlefield()
 	end
@@ -165,8 +165,8 @@ function IBGI:Update(hwEvent, force)
 			local canJoin = {}
 			local count = 0
 			for i = 1, GetNumBattlegroundTypes() do
-				local name = GetBattlegroundInfo(i)
-				if name ~= RANDOM_BATTLEGROUND and ibgi_data[name] then
+				local name, canEnter = GetBattlegroundInfo(i)
+				if name ~= RANDOM_BATTLEGROUND and ibgi_data[name] and canEnter then
 					canJoin[name] = i
 					count = count + 1
 				end
@@ -302,10 +302,16 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	info.isNotRadio = 1
 	UIDropDownMenu_AddButton(info)
 
+	local colorCode
 	-- 2v2
+	if IsInArenaTeam() then
+		colorCode = "|cffc3ed01"
+	else
+		colorCode = "|cffa0a0a0"
+	end
 	info = UIDropDownMenu_CreateInfo()
 	info.text = ARENA .. " " .. ARENA_2V2
-	info.colorCode = "|cffc3ed01"
+	info.colorCode = colorCode
 	info.func = IBGI.MiniMapBattlefieldIconClick
 	info.arg1 = "arena_2v2"
 	info.checked = ibgi_data.arena_2v2
@@ -313,7 +319,7 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	-- 3v3
 	info = UIDropDownMenu_CreateInfo()
 	info.text = ARENA .. " " .. ARENA_3V3
-	info.colorCode = "|cffc3ed01"
+	info.colorCode = colorCode
 	info.func = IBGI.MiniMapBattlefieldIconClick
 	info.arg1 = "arena_3v3"
 	info.checked = ibgi_data.arena_3v3
@@ -321,25 +327,34 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	-- 5v5
 	info = UIDropDownMenu_CreateInfo()
 	info.text = ARENA .. " " .. ARENA_5V5
-	info.colorCode = "|cffc3ed01"
+	info.colorCode = colorCode
 	info.func = IBGI.MiniMapBattlefieldIconClick
 	info.arg1 = "arena_5v5"
 	info.checked = ibgi_data.arena_5v5
 	UIDropDownMenu_AddButton(info)
 	-- rated battleground
+	if UnitLevel("player") >= SHOW_CONQUEST_LEVEL then
+		colorCode = "|cfff39208"
+	else
+		colorCode = "|cffa0a0a0"
+	end
 	info = UIDropDownMenu_CreateInfo()
 	info.text = PVP_RATED_BATTLEGROUND
-	info.colorCode = "|cfff39208"
+	info.colorCode = colorCode
 	info.func = IBGI.MiniMapBattlefieldIconClick
 	info.arg1 = "rated_battleground"
 	info.checked = ibgi_data.rated_battleground
 	UIDropDownMenu_AddButton(info)
 	-- pvp zones (wintergrasp, tol barad)
 	for i = 1, GetNumWorldPVPAreas() do
-		local _, name = GetWorldPVPAreaInfo(i)
+		local _, name, _, _, _, canEnter = GetWorldPVPAreaInfo(i)
 		info = UIDropDownMenu_CreateInfo()
 		info.text = name
-		info.colorCode = "|cffd91dc5"
+		if canEnter then
+			info.colorCode = "|cffd91dc5"
+		else
+			info.colorCode = "|cffa0a0a0"
+		end
 		info.func = IBGI.MiniMapBattlefieldIconClick
 		info.arg1 = name
 		info.checked = ibgi_data[name]
@@ -347,7 +362,7 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 	end
 	-- random battlegrounds
 	for i = 1, GetNumBattlegroundTypes() do
-		local name = GetBattlegroundInfo(i)
+		local name, canEnter = GetBattlegroundInfo(i)
 		if name == RANDOM_BATTLEGROUND or not ibgi_data[RANDOM_BATTLEGROUND] then
 			-- only add "Random Battleground" if that is checked,
 			-- otherwise add all battlegrounds
@@ -355,8 +370,10 @@ function IBGI:MiniMapBattlefieldDropDown_Initialize()
 			if name == RANDOM_BATTLEGROUND then
 				info.text = name
 				info.colorCode = "|cff557ff9"
-			else
+			elseif canEnter then
 				info.text = "- |cff03c4c6" .. name
+			else
+				info.text = "- |cffa0a0a0" .. name
 			end
 			info.func = IBGI.MiniMapBattlefieldIconClick
 			info.arg1 = name
