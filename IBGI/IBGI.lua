@@ -34,10 +34,7 @@ function IBGI:OnEvent(event, ...)
 		end)
 
 		-- we don't want to hide battleground icon
-		MiniMapBattlefieldFrame:SetScript("OnHide", function() MiniMapBattlefieldFrame:Show() end)
-		-- show battleground icon
-		MiniMapBattlefieldFrame:Show()
-		return
+		MiniMapBattlefieldFrame:HookScript("OnHide", function() MiniMapBattlefieldFrame:Show() end)
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		if IBGI:InPvpZone() then
 			-- in battleground, stop calling IBGI:Update()
@@ -46,6 +43,8 @@ function IBGI:OnEvent(event, ...)
 			-- not in battleground, call IBGI:Update()
 			IBGI:SetScript("OnUpdate", IBGI.OnUpdate)
 		end
+		-- show battleground icon
+		MiniMapBattlefieldFrame:Show()
 	end
 end
 
