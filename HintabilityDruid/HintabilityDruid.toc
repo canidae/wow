@@ -1,0 +1,7 @@
+## Interface: 40100
+## Title: HintabilityDruid
+## Notes: Give druid hint on which abilities to use
+## Version: 1.0
+## Dependencies: Hintability
+## Author: canidae
+HintabilityDruid.lua

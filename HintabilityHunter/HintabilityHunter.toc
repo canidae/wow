@@ -1,0 +1,7 @@
+## Interface: 40100
+## Title: HintabilityHunter
+## Notes: Give hunter hint on which abilities to use
+## Version: 1.0
+## Dependencies: Hintability
+## Author: canidae
+HintabilityHunter.lua

@@ -1,0 +1,6 @@
+## Interface: 40100
+## Title: Hintability
+## Notes: Give hint on which abilities to use (core class, requires class/spec extension)
+## Version: 1.0
+## Author: canidae
+Hintability.lua
