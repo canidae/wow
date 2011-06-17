@@ -12,7 +12,7 @@ function HintabilityHunter:OnUpdate(elapsed)
 	local hostile = UnitCanAttack("player", "target")
 	local targetHealth = math.ceil(UnitHealth("target") * 100 / UnitHealthMax("target"))
 	Hintability:SetGlow(HintabilityHunter.killShot, not targetDead and hostile and targetHealth <= 20 and Hintability:GetCooldown(HintabilityHunter.killShot) < HintabilityHunter.reactionTime)
-	Hintability:SetGlow(HintabilityHunter.fervor, HintabilityHunter.fervorTalent == 1 and UnitPowerType("player") == 2 and UnitPower("player") < 40 and Hintability:GetCooldown(HintabilityHunter.fervor) < HintabilityHunter.reactionTime)
+	Hintability:SetGlow(HintabilityHunter.fervor, HintabilityHunter.fervorTalent == 1 and UnitPowerType("player") == 2 and UnitPower("player") < 40 and Hintability:GetCooldown(HintabilityHunter.fervor) <= 1.5)
 
 	local tranq
 	if not targetDead and hostile then
