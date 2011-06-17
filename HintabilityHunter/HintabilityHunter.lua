@@ -1,7 +1,7 @@
 HintabilityHunter = CreateFrame("Frame")
 
 function HintabilityHunter:OnEvent(event, ...)
-	if event == "PLAYER_ENTERING_WORLD" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
+	if event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
 		_, _, _, _, HintabilityHunter.improvedMendPetTalent = GetTalentInfo(1, 7)
 		_, _, _, _, HintabilityHunter.fervorTalent = GetTalentInfo(1, 9)
 	end
@@ -96,4 +96,4 @@ HintabilityHunter.mustDispel = {
 HintabilityHunter:SetScript("OnEvent", HintabilityHunter.OnEvent)
 HintabilityHunter:SetScript("OnUpdate", HintabilityHunter.OnUpdate)
 HintabilityHunter:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-HintabilityHunter:RegisterEvent("PLAYER_ENTERING_WORLD")
+HintabilityHunter:RegisterEvent("PLAYER_TALENT_UPDATE")

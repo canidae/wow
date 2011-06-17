@@ -1,7 +1,7 @@
 HintabilityDruid = CreateFrame("Frame")
 
 function HintabilityDruid:OnEvent(event, ...)
-	if event == "PLAYER_ENTERING_WORLD" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
+	if event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
 		_, _, _, _, HintabilityDruid.kotjTalent = GetTalentInfo(2, 8) -- king of the jungle
 	end
 end
@@ -39,4 +39,4 @@ HintabilityDruid.reactionTime = 0.2
 HintabilityDruid:SetScript("OnEvent", HintabilityDruid.OnEvent)
 HintabilityDruid:SetScript("OnUpdate", HintabilityDruid.OnUpdate)
 HintabilityDruid:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-HintabilityDruid:RegisterEvent("PLAYER_ENTERING_WORLD")
+HintabilityDruid:RegisterEvent("PLAYER_TALENT_UPDATE")
