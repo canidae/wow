@@ -2,7 +2,8 @@ HintabilityHunter = CreateFrame("Frame")
 
 function HintabilityHunter:OnEvent(event, ...)
 	if event == "PLAYER_ENTERING_WORLD" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
-		_, _, _, _, HintabilityHunter.improvedMendPet = GetTalentInfo(1, 7)
+		_, _, _, _, HintabilityHunter.improvedMendPetTalent = GetTalentInfo(1, 7)
+		_, _, _, _, HintabilityHunter.fervorTalent = GetTalentInfo(1, 9)
 	end
 end
 
@@ -11,6 +12,7 @@ function HintabilityHunter:OnUpdate(elapsed)
 	local hostile = UnitCanAttack("player", "target")
 	local targetHealth = math.ceil(UnitHealth("target") * 100 / UnitHealthMax("target"))
 	Hintability:SetGlow(HintabilityHunter.killShot, not targetDead and hostile and targetHealth <= 20 and Hintability:GetCooldown(HintabilityHunter.killShot) < HintabilityHunter.reactionTime)
+	Hintability:SetGlow(HintabilityHunter.fervor, HintabilityHunter.fervorTalent == 1 and UnitPowerType("player") == 2 and UnitPower("player") < 40 and Hintability:GetCooldown(HintabilityHunter.fervor) < HintabilityHunter.reactionTime)
 
 	local tranq
 	if not targetDead and hostile then
@@ -34,7 +36,7 @@ function HintabilityHunter:OnUpdate(elapsed)
 
 	local petDead = UnitIsDead("pet")
 	local petHealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
-	local _, _, _, _, _, _, expires = UnitBuff("pet", HintabilityHunter.abilities[HintabilityHunter.mendPet])
+	local _, _, _, _, _, _, expires = UnitBuff("pet", HintabilityHunter.buffs[HintabilityHunter.mendPet])
 	local remaining = (expires or 0) - GetTime()
 	Hintability:SetGlow(HintabilityHunter.revivePet, petDead)
 
@@ -47,7 +49,7 @@ function HintabilityHunter:OnUpdate(elapsed)
 		index = index + 1
 		_, _, _, _, dispellType, _, expires = UnitDebuff("pet", index)
 	end
-	Hintability:SetGlow(HintabilityHunter.mendPet, not petDead and ((dispellType and HintabilityHunter.improvedMendPet > 0) or (petHealth < 90 and remaining < HintabilityHunter.reactionTime)))
+	Hintability:SetGlow(HintabilityHunter.mendPet, not petDead and ((dispellType and HintabilityHunter.improvedMendPetTalent > 0) or (petHealth < 90 and remaining < HintabilityHunter.reactionTime)))
 end
 
 -- spell id of abilities
@@ -55,12 +57,10 @@ HintabilityHunter.mendPet = 136
 HintabilityHunter.revivePet = 982
 HintabilityHunter.tranquilizingShot = 19801
 HintabilityHunter.killShot = 53351
--- cache of ability names
-HintabilityHunter.abilities = {
-	[HintabilityHunter.mendPet] = GetSpellInfo(HintabilityHunter.mendPet),
-	[HintabilityHunter.revivePet] = GetSpellInfo(HintabilityHunter.mendPet),
-	[HintabilityHunter.tranquilizingShot] = GetSpellInfo(HintabilityHunter.tranquilizingShot),
-	[HintabilityHunter.killShot] = GetSpellInfo(HintabilityHunter.killShot)
+HintabilityHunter.fervor = 82726
+-- cache of ability buff names
+HintabilityHunter.buffs = {
+	[HintabilityHunter.mendPet] = GetSpellInfo(HintabilityHunter.mendPet)
 }
 
 -- other variables

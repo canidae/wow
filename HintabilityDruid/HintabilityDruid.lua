@@ -2,14 +2,14 @@ HintabilityDruid = CreateFrame("Frame")
 
 function HintabilityDruid:OnEvent(event, ...)
 	if event == "PLAYER_ENTERING_WORLD" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
-		_, _, _, _, HintabilityDruid.kotj = GetTalentInfo(2, 8) -- king of the jungle
+		_, _, _, _, HintabilityDruid.kotjTalent = GetTalentInfo(2, 8) -- king of the jungle
 	end
 end
 
 function HintabilityDruid:OnUpdate(elapsed)
 	local targetDead = UnitIsDead("target")
 	local hostile = UnitCanAttack("player", "target")
-	Hintability:SetGlow(HintabilityDruid.tigersFury, UnitPowerType("player") == 3 and UnitPower("player") + 20 * HintabilityDruid.kotj < UnitPowerMax("player") and Hintability:GetCooldown(HintabilityDruid.tigersFury) < HintabilityDruid.reactionTime)
+	Hintability:SetGlow(HintabilityDruid.tigersFury, HintabilityDruid.kotjTalent > 0 and UnitPowerType("player") == 3 and UnitPower("player") + 20 * HintabilityDruid.kotjTalent < UnitPowerMax("player") and Hintability:GetCooldown(HintabilityDruid.tigersFury) < HintabilityDruid.reactionTime)
 
 	local soothe
 	if not targetDead and hostile then
@@ -32,11 +32,6 @@ end
 -- spell id of abilities
 HintabilityDruid.soothe = 2908
 HintabilityDruid.tigersFury = 5217
--- cache of ability names
-HintabilityDruid.abilities = {
-	[HintabilityDruid.soothe] = GetSpellInfo(HintabilityDruid.soothe),
-	[HintabilityDruid.tigersFury] = GetSpellInfo(HintabilityDruid.tigersFury)
-}
 
 -- other variables
 HintabilityDruid.reactionTime = 0.2
