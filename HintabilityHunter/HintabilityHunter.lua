@@ -38,7 +38,6 @@ function HintabilityHunter:OnUpdate(elapsed)
 	local petHealth = math.ceil(UnitHealth("pet") * 100 / UnitHealthMax("pet"))
 	local _, _, _, _, _, _, expires = UnitBuff("pet", HintabilityHunter.buffs[HintabilityHunter.mendPet])
 	local remaining = (expires or 0) - GetTime()
-	Hintability:SetGlow(HintabilityHunter.revivePet, petDead)
 
 	local index = 1
 	local _, _, _, _, dispellType, _, expires = UnitDebuff("pet", index)
@@ -49,7 +48,7 @@ function HintabilityHunter:OnUpdate(elapsed)
 		index = index + 1
 		_, _, _, _, dispellType, _, expires = UnitDebuff("pet", index)
 	end
-	Hintability:SetGlow(HintabilityHunter.mendPet, not petDead and ((dispellType and HintabilityHunter.improvedMendPetTalent > 0) or (petHealth < 90 and remaining < HintabilityHunter.reactionTime)))
+	Hintability:SetGlow(HintabilityHunter.mendPet, not petDead and ((dispellType and HintabilityHunter.improvedMendPetTalent > 0) or petHealth < 90) and remaining < HintabilityHunter.reactionTime)
 end
 
 -- spell id of abilities
