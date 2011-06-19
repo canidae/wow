@@ -35,6 +35,7 @@ function IBGI:OnEvent(event, ...)
 
 		-- we don't want to hide battleground icon
 		MiniMapBattlefieldFrame:HookScript("OnHide", function() MiniMapBattlefieldFrame:Show() end)
+		MiniMapBattlefieldFrame:Show()
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		if IBGI:InPvpZone() then
 			-- in battleground, stop calling IBGI:Update()
@@ -75,43 +76,41 @@ function IBGI:Update(hwEvent, force)
 		end
 	end
 	-- requeue battlegrounds (and see what we're already queued to)
-	if isLeader or teamSize <= 1 then
-		for i = 1, MAX_BATTLEFIELD_QUEUES do
-			local status, name, _, _, _, size, registeredMatch = GetBattlefieldStatus(i)
-			if status and status ~= "none" then
-				if arena then
-					already_queued.registeredMatch = 1
-				elseif size == 0 and name then
-					already_queued[name] = 1
-					if name == RANDOM_BATTLEGROUND then
-						canQueueBattleground = 0
-					else
-						canQueueBattleground = canQueueBattleground - 1
-					end
-				elseif size > 0 then
-					already_queued[size] = 1
-				end
-			end
-			if status == "queued" and (force or GetBattlefieldTimeWaited(i) > GetBattlefieldEstimatedWaitTime(i)) then
-				if hwEvent then
-					-- hardware event, we can requeue
-					local queue
-					if ibgi_data[RANDOM_BATTLEGROUND] then
-						queue = IBGI:GetBattlegroundIndex(RANDOM_BATTLEGROUND)
-					elseif ibgi_data.requeue_same then
-						queue = IBGI:GetBattlegroundIndex(name)
-					end
-					AcceptBattlefieldPort(i) -- leave queue
-					if queue then
-						IBGI:JoinBattleground(queue, joinAsGroup)
-					else
-						-- we didn't requeue for this battleground
-						already_queued[name] = nil
-					end
+	for i = 1, MAX_BATTLEFIELD_QUEUES do
+		local status, name, _, _, _, size, registeredMatch = GetBattlefieldStatus(i)
+		if status and status ~= "none" then
+			if arena then
+				already_queued.registeredMatch = 1
+			elseif size == 0 and name then
+				already_queued[name] = 1
+				if name == RANDOM_BATTLEGROUND or status == "confirm" then
+					canQueueBattleground = 0
 				else
-					-- flash minimap icon, user should requeue
-					BattlegroundShineFadeIn()
+					canQueueBattleground = canQueueBattleground - 1
 				end
+			elseif size > 0 then
+				already_queued[size] = 1
+			end
+		end
+		if (isLeader or teamSize <= 1) and status == "queued" and (force or GetBattlefieldTimeWaited(i) > GetBattlefieldEstimatedWaitTime(i)) then
+			if hwEvent then
+				-- hardware event, we can requeue
+				local queue
+				if ibgi_data[RANDOM_BATTLEGROUND] then
+					queue = IBGI:GetBattlegroundIndex(RANDOM_BATTLEGROUND)
+				elseif ibgi_data.requeue_same then
+					queue = IBGI:GetBattlegroundIndex(name)
+				end
+				AcceptBattlefieldPort(i) -- leave queue
+				if queue then
+					IBGI:JoinBattleground(queue, joinAsGroup)
+				else
+					-- we didn't requeue for this battleground
+					already_queued[name] = nil
+				end
+			else
+				-- flash minimap icon, user should requeue
+				BattlegroundShineFadeIn()
 			end
 		end
 	end
@@ -165,7 +164,7 @@ function IBGI:Update(hwEvent, force)
 			local count = 0
 			for i = 1, GetNumBattlegroundTypes() do
 				local name, canEnter = GetBattlegroundInfo(i)
-				if name ~= RANDOM_BATTLEGROUND and ibgi_data[name] and canEnter then
+				if not already_queued[name] and name ~= RANDOM_BATTLEGROUND and ibgi_data[name] and canEnter then
 					canJoin[name] = i
 					count = count + 1
 				end
