@@ -25,8 +25,9 @@ function HintabilityHunter:OnUpdate(elapsed)
 				if dispellType == "" or HintabilityHunter.mustDispel[buffId] then
 					-- nasty buff we must dispel immediately
 					PlaySound("RaidWarning")
-					break
 				end
+				local buffFrame = _G["TargetFrameBuff" .. index .. "Stealable"]
+				buffFrame:Show()
 			end
 			index = index + 1
 			_, _, _, _, dispellType, _, expires, _, _, _, buffId = UnitBuff("target", index)

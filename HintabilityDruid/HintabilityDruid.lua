@@ -20,7 +20,8 @@ function HintabilityDruid:OnUpdate(elapsed)
 				-- enrage got dispellType ""
 				soothe = 1
 				PlaySound("RaidWarning")
-				break
+				local buffFrame = _G["TargetFrameBuff" .. index .. "Stealable"]
+				buffFrame:Show()
 			end
 			index = index + 1
 			_, _, _, _, dispellType, _, expires, _, _, _, buffId = UnitBuff("target", index)
