@@ -11,23 +11,7 @@ function HintabilityDruid:OnUpdate(elapsed)
 	local hostile = UnitCanAttack("player", "target")
 	Hintability:SetGlow(HintabilityDruid.tigersFury, HintabilityDruid.kotjTalent > 0 and UnitPowerType("player") == 3 and UnitPower("player") + 20 * HintabilityDruid.kotjTalent < UnitPowerMax("player") and Hintability:GetCooldown(HintabilityDruid.tigersFury) < HintabilityDruid.reactionTime)
 
-	local soothe
-	if not targetDead and hostile then
-		local index = 1
-		local _, _, _, _, dispellType, _, expires, _, _, _, buffId = UnitBuff("target", index)
-		while expires do
-			if dispellType == "" then
-				-- enrage got dispellType ""
-				soothe = 1
-				PlaySound("RaidWarning")
-				local buffFrame = _G["TargetFrameBuff" .. index .. "Stealable"]
-				buffFrame:Show()
-			end
-			index = index + 1
-			_, _, _, _, dispellType, _, expires, _, _, _, buffId = UnitBuff("target", index)
-		end
-	end
-	Hintability:SetGlow(HintabilityDruid.soothe, soothe)
+	Hintability:ShowDispel(HintabilityDruid.soothe, nil, 1)
 end
 
 -- spell id of abilities

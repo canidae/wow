@@ -48,8 +48,27 @@ function Hintability:DetectAbility(slot)
 	Hintability.slots[slot] = spellId
 end
 
+function Hintability:ShowDispel(spellId, magic, enrage)
+	local glowAbility
+	if not UnitIsDead("target") and UnitCanAttack("player", "target") then
+		local index = 1
+		local _, _, _, _, dispelType, _, expires, _, _, _, buffId = UnitBuff("target", index)
+		while expires do
+			if (magic and dispelType == "Magic") or (enrage and dispelType == "") then
+				-- enrage got dispelType ""
+				glowAbility = 1
+				local buffFrame = _G["TargetFrameBuff" .. index .. "Stealable"]
+				buffFrame:Show()
+			end
+			index = index + 1
+			_, _, _, _, dispelType, _, expires, _, _, _, buffId = UnitBuff("target", index)
+		end
+	end
+	Hintability:SetGlow(spellId, glowAbility)
+end
+
 function Hintability:SetGlow(spellId, on)
-	if Hintability.spells[spellId] then
+	if spellId and Hintability.spells[spellId] then
 		for slot, one in pairs(Hintability.spells[spellId]) do
 			local button = Hintability:GetButton(slot)
 			if button and button:IsVisible() then
