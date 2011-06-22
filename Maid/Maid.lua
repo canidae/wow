@@ -16,7 +16,7 @@ function Maid:OnEvent(event, arg1, ...)
 		zone = "pvp"
 	end
 
-	if not (Maid:Dress(GetSubZoneText()) or Maid:Dress(GetZoneText()) or Maid:Dress(GetRealZoneText())) then
+	if UnitIsPVP("player") or not (Maid:Dress(GetSubZoneText()) or Maid:Dress(GetZoneText()) or Maid:Dress(GetRealZoneText())) then
 		while zone and not Maid:Dress(zone) do
 			zone = Maid.order[zone]
 		end
