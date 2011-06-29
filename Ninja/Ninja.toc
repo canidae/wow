@@ -1,7 +1,7 @@
-## Interface: 40100
+## Interface: 40200
 ## Title: Ninja
 ## Notes: Makes it easier to ninja... I mean automatically roll on items
-## Version: 1.1
+## Version: 1.0
 ## Author: canidae
 ## SavedVariablesPerCharacter: ninja_db
 Ninja.xml

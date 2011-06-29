@@ -1,6 +1,6 @@
-## Interface: 40100
+## Interface: 40200
 ## Title: ShowRollSelection
 ## Notes: Show what people are going to roll on an item
-## Version: 1.1
+## Version: 1.0
 ## Author: canidae
 ShowRollSelection.lua

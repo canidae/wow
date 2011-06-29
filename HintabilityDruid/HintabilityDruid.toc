@@ -1,4 +1,4 @@
-## Interface: 40100
+## Interface: 40200
 ## Title: HintabilityDruid
 ## Notes: Give druid hint on which abilities to use
 ## Version: 1.0

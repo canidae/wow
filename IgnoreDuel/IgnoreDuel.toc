@@ -1,4 +1,4 @@
-## Interface: 40100
+## Interface: 40200
 ## Title: IgnoreDuel
 ## Notes: Hide the duel popup, preventing the person who challenged you to duel you or anyone else immediately again
 ## Version: 1.1
