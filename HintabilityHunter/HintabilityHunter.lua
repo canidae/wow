@@ -19,7 +19,7 @@ function HintabilityHunter:OnUpdate(elapsed)
 	local _, _, _, _, _, _, expires = UnitBuff("pet", HintabilityHunter.buffs[HintabilityHunter.mendPet])
 	local remaining = (expires or 0) - GetTime()
 
-	if petHealth < 90 and remaining < HintabilityHunter.reactionTime then
+	if petHealth > 90 and remaining < HintabilityHunter.reactionTime and HintabilityHunter.improvedMendPetTalent then
 		local index = 1
 		local _, _, _, _, dispelType, _, expires = UnitDebuff("pet", index)
 		while expires do
@@ -30,7 +30,12 @@ function HintabilityHunter:OnUpdate(elapsed)
 			_, _, _, _, dispelType, _, expires = UnitDebuff("pet", index)
 		end
 	end
-	Hintability:SetGlow(HintabilityHunter.mendPet, not petDead and ((dispelType and HintabilityHunter.improvedMendPetTalent > 0) or petHealth < 90) and remaining < HintabilityHunter.reactionTime)
+	if not petDead and (petHealth < 90 or dispelType) and remaining < HintabilityHunter.reactionTime then
+		PlaySound("igQuestFailed")
+		Hintability:SetGlow(HintabilityHunter.mendPet, 1)
+	else
+		Hintability:SetGlow(HintabilityHunter.mendPet)
+	end
 end
 
 -- spell id of abilities

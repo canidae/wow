@@ -29,14 +29,6 @@ function Ninja:OnEvent(event, arg1, arg2, ...)
 		if not ninja_db.codes then
 			ninja_db.codes = {}
 		end
-		if not ninja_db.rollorder then
-			-- 0: pass
-			-- 1: need
-			-- 2: greed
-			-- 3: disenchant
-			-- 4: don't roll (special value only used in Ninja)
-			ninja_db.rollorder = {4, 1, 2, 3, 0}
-		end
 		if not ninja_db.rolldelay then
 			ninja_db.rolldelay = 10
 		end
@@ -186,7 +178,7 @@ function Ninja:SaveSettings()
 	ninja_db.codes[1] = NinjaConfigNeedCodeFrameCode:GetText()
 	ninja_db.codes[2] = NinjaConfigGreedCodeFrameCode:GetText()
 	ninja_db.codes[3] = NinjaConfigDisenchantCodeFrameCode:GetText()
-	ninja_db.codes[4] = NinjaConfigNoneCodeFrameCode:GetText()
+	ninja_db.codes[4] = NinjaConfigManualCodeFrameCode:GetText()
 
 	-- test roll codes
 	local r = Ninja:GetItemData()
@@ -210,7 +202,7 @@ function Ninja:LoadSettings()
 	NinjaConfigNeedCodeFrameCode:SetText(ninja_db.codes[1] or "")
 	NinjaConfigGreedCodeFrameCode:SetText(ninja_db.codes[2] or "")
 	NinjaConfigDisenchantCodeFrameCode:SetText(ninja_db.codes[3] or "")
-	NinjaConfigNoneCodeFrameCode:SetText(ninja_db.codes[4] or "")
+	NinjaConfigManualCodeFrameCode:SetText(ninja_db.codes[4] or "")
 end
 
 function Ninja:Roll(rollid)
@@ -236,7 +228,7 @@ function Ninja:Roll(rollid)
 				if not roll then
 					roll = tmproll
 				elseif tmproll ~= roll then
-					for index, priorityroll in pairs(ninja_db.rollorder) do
+					for index, priorityroll in pairs(Ninja.rollorder) do
 						if roll == priorityroll then
 							break
 						elseif tmproll == priorityroll then
@@ -290,7 +282,7 @@ function Ninja:Roll(rollid)
 end
 
 function Ninja:Compare(rollitem, currentitem, test)
-	for index, roll in pairs(ninja_db.rollorder) do
+	for index, roll in pairs(Ninja.rollorder) do
 		if (roll ~= 1 or rollitem.need) and (roll ~= 2 or rollitem.greed) and (roll ~= 3 or rollitem.disenchant) then
 			local text = strtrim(ninja_db.codes[roll] or "")
 			if text ~= "" then
@@ -310,7 +302,7 @@ function Ninja:Compare(rollitem, currentitem, test)
 							elseif roll == 3 then
 								rolltype = "Disenchant"
 							else
-								rolltype = "None"
+								rolltype = "Manual"
 							end
 							_, _, errormessage = string.find(errormessage, ".*:1:(.*)$")
 							print("Invalid code: <" .. rolltype .. "> line " .. index .. ": \"" .. line .. "\" -", strtrim(errormessage))
@@ -475,6 +467,13 @@ Ninja.equiplocmap = {
 }
 Ninja.rolls = {}
 Ninja.rolled = {}
+
+-- 0: pass
+-- 1: need
+-- 2: greed
+-- 3: disenchant
+-- 4: don't roll (special value only used in Ninja)
+Ninja.rollorder = {4, 1, 2, 3, 0}
 
 Ninja:SetScript("OnEvent", Ninja.OnEvent)
 Ninja:RegisterEvent("ADDON_LOADED")

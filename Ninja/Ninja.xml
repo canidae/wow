@@ -16,7 +16,7 @@
 				<Scripts>
 					<OnLoad>
 						getglobal(self:GetName() .. "Text"):SetText("Enabled")
-						self.tooltip = "Automatically roll on items. Will also hide BoP/disenchant warning."
+						self.tooltip = "Automatically roll on items. When Ninja is enabled BoP/disenchant warnings will be hidden."
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
@@ -201,10 +201,10 @@
 			</EditBox>
 		</Frames>
 	</Frame>
-	<Frame name="NinjaConfigNoneCodeFrame" inherits="NinjaRollCodeFrameTemplate">
+	<Frame name="NinjaConfigManualCodeFrame" inherits="NinjaRollCodeFrameTemplate">
 		<Scripts>
 			<OnLoad>
-				self.name = "None"
+				self.name = "Manual"
 				self.parent = "Ninja"
 				self.okay = Ninja.SaveSettings
 				self.cancel = Ninja.LoadSettings
