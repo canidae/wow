@@ -31,7 +31,10 @@ function HintabilityHunter:OnUpdate(elapsed)
 		end
 	end
 	if not petDead and (petHealth < 90 or dispelType) and remaining < HintabilityHunter.reactionTime then
-		PlaySound("igQuestFailed")
+		if petHealth < 60 or UnitIsPVP("player") or Hintability:InPvpZone() then
+			-- only play sound when pet health is really low, we're flagged for PvP or we're in a PvP zone (won't be flagged for PvP in arena)
+			PlaySound("igQuestFailed")
+		end
 		Hintability:SetGlow(HintabilityHunter.mendPet, 1)
 	else
 		Hintability:SetGlow(HintabilityHunter.mendPet)

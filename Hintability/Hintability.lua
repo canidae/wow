@@ -105,6 +105,17 @@ function Hintability:GetCooldown(spellId)
 	return start + duration - GetTime()
 end
 
+function Hintability:InPvpZone()
+	local pvptype = GetZonePVPInfo()
+	if pvptype == "arena" or pvptype == "combat" then
+		return 1
+	end
+	local _, instancetype = IsInInstance()
+	if instancetype == "pvp" then
+		return 1
+	end
+end
+
 Hintability.spells = {}
 Hintability.slots = {}
 Hintability.cache = {}
