@@ -1,6 +1,6 @@
-## Interface: 40200
+## Interface: 50001
 ## Title: Maid
 ## Notes: Your very own private wardrobe assistant
-## Version: 1.3
+## Version: 1.4
 ## Author: canidae
 Maid.lua

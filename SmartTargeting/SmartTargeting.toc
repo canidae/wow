@@ -1,8 +1,12 @@
-## Interface: 40200
+## Interface: 50001
 ## Title: SmartTargeting
+## Author: canidae [Tarren Mill] <Flåklypa>
+## Maintainer: Hix [Trollbane] <Lingering>
 ## Notes: Smarter targeting of enemy players/mobs
-## Version: 1.10
-## Author: canidae
-## SavedVariablesPerCharacter: smarttargeting_pve_tne, smarttargeting_pve_tnep, smarttargeting_quiet
+## Version: 1.13
 ## Dependencies: Blizzard_BindingUI
+
+## SavedVariables: SmartTargeting_DB
+
+# Core
 SmartTargeting.lua

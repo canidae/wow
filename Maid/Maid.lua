@@ -35,11 +35,11 @@ function Maid:Dress(name)
 			role = "t"
 		end
 		name = strsub(name, 1, 16)
-		local specname = GetActiveTalentGroup() .. ":" .. strsub(name, 1, 14)
+		local specname = GetActiveSpecGroup() .. ":" .. strsub(name, 1, 14)
 		local specrolename = ""
 		local rolename = ""
 		if role then
-			specrolename = GetActiveTalentGroup() .. ":" .. role .. ":" .. strsub(name, 1, 12)
+			specrolename = GetActiveSpecGroup() .. ":" .. role .. ":" .. strsub(name, 1, 12)
 			rolename = role .. ":" .. strsub(name, 1, 14)
 		end
 		return (GetEquipmentSetInfoByName(specrolename) and Maid:Equip(specrolename)) or (GetEquipmentSetInfoByName(rolename) and Maid:Equip(rolename)) or (GetEquipmentSetInfoByName(specname) and Maid:Equip(specname)) or (GetEquipmentSetInfoByName(name) and Maid:Equip(name))
