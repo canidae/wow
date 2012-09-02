@@ -2,5 +2,5 @@
 ## Title: IgnoreDuel
 ## Notes: Hide the duel popup, preventing the person who challenged you to duel you or anyone else immediately again
 ## Version: 1.0
-## Author: canidae
+## Author: Haedus <Flåklypa> [EU - Tarren Mill]
 IgnoreDuel.lua

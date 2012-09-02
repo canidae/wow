@@ -2,5 +2,5 @@
 ## Title: Maid
 ## Notes: Your very own private wardrobe assistant
 ## Version: 1.4
-## Author: canidae
+## Author: Haedus <Flåklypa> [EU - Tarren Mill]
 Maid.lua

@@ -1,0 +1,7 @@
+## Interface: 50001
+## Title: IQI
+## Notes: Improved Queue Interface
+## Version: 1.0
+## Author: Haedus [Tarren Mill] <Flåklypa>
+## SavedVariablesPerCharacter: iqi_data
+IQI.lua

@@ -1,7 +1,7 @@
 ## Interface: 50001
 ## Title: SmartTargeting
-## Author: canidae [Tarren Mill] <Flåklypa>
-## Maintainer: Hix [Trollbane] <Lingering>
+## Author: Haedus <Flåklypa> [EU - Tarren Mill]
+## Maintainer: Hix <Lingering> [EU - Trollbane]
 ## Notes: Smarter targeting of enemy players/mobs
 ## Version: 1.13
 ## Dependencies: Blizzard_BindingUI
