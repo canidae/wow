@@ -47,6 +47,11 @@ function Maid:Dress(name)
 end
 
 function Maid:Equip(set)
+	if not Maid.currentset then
+		-- prevent switching gear upon login (which may cause disconnect, seemingly)
+		Maid.currentset = set
+		return 1
+	end
 	if set ~= Maid.currentset then
 		if not InCombatLockdown() then
 			print(Maid.msg, "Putting on set |cffd2cb0b" .. set .. "|r")

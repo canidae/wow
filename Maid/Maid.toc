@@ -1,6 +1,6 @@
-## Interface: 50001
+## Interface: 50100
 ## Title: Maid
 ## Notes: Your very own private wardrobe assistant
-## Version: 1.4
+## Version: 1.5
 ## Author: Haedus <Flåklypa> [EU - Tarren Mill]
 Maid.lua

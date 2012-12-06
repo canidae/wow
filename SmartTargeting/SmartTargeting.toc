@@ -1,9 +1,9 @@
-## Interface: 50001
+## Interface: 50100
 ## Title: SmartTargeting
 ## Author: Haedus <Flåklypa> [EU - Tarren Mill]
 ## Maintainer: Hix <Lingering> [EU - Trollbane]
 ## Notes: Smarter targeting of enemy players/mobs
-## Version: 1.13
+## Version: 1.14
 ## Dependencies: Blizzard_BindingUI
 
 ## SavedVariables: SmartTargeting_DB

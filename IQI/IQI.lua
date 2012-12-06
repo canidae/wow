@@ -6,7 +6,6 @@ IQI.L = {
 	join_as_group = "Join as group",
 	requeue_same = "Requeue same instance",
 	enter = "Enter",
-	leave = "Leave",
 	pvp = "Queue for PvP",
 	dungeon = "Queue for dungeon",
 	raid = "Queue for raid"
@@ -31,9 +30,9 @@ function IQI:OnEvent(event, ...)
 		end
 		IQI.updateTime = 0.0
 
-		-- populate LFDDungeonList
-		LFDQueueFrame_Update()
-		--LFDDungeonList = GetLFDChoiceOrder(LFDDungeonList)
+		-- populate LFDDungeonList & LFRRaidList
+		LFGDungeonList_Setup()
+		--LFDQueueFrame_Update() -- TODO: necessary? remove
 
 		-- replace update-function for QueueStatusMinimapButtonDropDown
 		UIDropDownMenu_Initialize(QueueStatusMinimapButtonDropDown, IQI.QueueStatusDropDown_Update, "MENU")
@@ -45,9 +44,16 @@ function IQI:OnEvent(event, ...)
 			end
 		end)
 
+		-- need to hook OnShow for QueueStatusFrame so we don't show it if it's empty
+		QueueStatusFrame:HookScript("OnShow", function()
+			if not QueueStatusMinimapButton.Eye:GetScript("OnUpdate") then
+				-- when OnUpdate got a function, we're animating the eye, meaning we're in a queue
+				QueueStatusFrame:Hide()
+			end
+		end)
+
 		-- we don't want to hide queue icon
 		QueueStatusMinimapButton:HookScript("OnHide", function()
-			-- TODO: hide QueueStatusFrame when we're not queued
 			QueueStatusMinimapButton:Show()
 		end)
 		QueueStatusMinimapButton:Show()
@@ -60,7 +66,6 @@ function IQI:OnEvent(event, ...)
 			-- not in battleground, call IQI:OnUpdate()
 			IQI:SetScript("OnUpdate", IQI.OnUpdate)
 		end
-		-- show queue icon
 		QueueStatusMinimapButton:Show()
 	end
 end
@@ -209,6 +214,13 @@ function IQI:Update(hwEvent, force)
 	end
 end
 
+function IQI:RGBToHex(r, g, b)
+	r = r <= 1 and r >= 0 and r or 0
+	g = g <= 1 and g >= 0 and g or 0
+	b = b <= 1 and b >= 0 and b or 0
+	return string.format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+end
+
 function IQI:InPvpZone()
 	local _, instanceType = IsInInstance()
 	if instanceType == "pvp" or GetZonePVPInfo() == "arena" then
@@ -243,7 +255,7 @@ function IQI:QueueStatusMinimapButton(arg1, arg2)
 end
 
 function IQI:QueueStatusDropDown_Update()
-	-- TODO: don't show settings if we left click, don't show enter/leave if we right-click
+	-- TODO: don't show settings if we left click, don't show enter/leave if we right-click?
 
 	-- enter
 	local spacer
@@ -296,21 +308,6 @@ function IQI:QueueStatusDropDown_Update()
 			UIDropDownMenu_AddButton(info)
 		end
 	end
-	--[[
-	if CanHearthAndResurrectFromArea() then
-		local name = GetRealZoneText()
-		info.text = "|cff19ff19"..name.."|r"
-		info.isTitle = 1
-		info.notCheckable = 1
-		UIDropDownMenu_AddButton(info)
-
-		info.text = format(LEAVE_ZONE, name)
-		info.isTitle = false
-		info.disabled = false
-		info.func = wrapFunc(HearthAndResurrectFromArea)
-		UIDropDownMenu_AddButton(info)
-	end
-	]]
 	-- spacer
 	if spacer then
 		local info = UIDropDownMenu_CreateInfo()
@@ -360,7 +357,7 @@ function IQI:QueueStatusDropDown_Update()
 	info.isNotRadio = 1
 	UIDropDownMenu_AddButton(info)
 
-	-- Dungeon
+	-- dungeon
 	info = UIDropDownMenu_CreateInfo()
 	info.text = IQI.L.dungeon
 	info.colorCode = "|cff74e817"
@@ -371,11 +368,10 @@ function IQI:QueueStatusDropDown_Update()
 	info.isNotRadio = 1
 	UIDropDownMenu_AddButton(info)
 	if iqi_data.settings.dungeon then
-		-- list dungeons in a pretty way
+		-- list random dungeons
 		for i = 1, GetNumRandomDungeons() do
 			local id, name = GetLFGRandomDungeonInfo(i)
-			local canEnter = IsLFGDungeonJoinable(id)
-			if canEnter then
+			if LFG_IsRandomDungeonDisplayable(id) and IsLFGDungeonJoinable(id) then
 				info = UIDropDownMenu_CreateInfo()
 				info.text = "- |cff557ff9" .. name
 				info.func = function()
@@ -398,17 +394,20 @@ function IQI:QueueStatusDropDown_Update()
 				UIDropDownMenu_AddButton(info)
 			end
 		end
+		-- list specific dungeons
 		local showFollowingDungeons
 		for i = 1, LFDGetNumDungeons() do
 			local id = LFDDungeonList[i]
-			local name, _, _, minLevel, maxLevel = GetLFGDungeonInfo(id)
+			local name, _, _, minLevel, maxLevel, recLevel = GetLFGDungeonInfo(id)
+			local colors = GetQuestDifficultyColor(recLevel or 1)
+			local color = IQI:RGBToHex(colors.r, colors.g, colors.b)
 			info = UIDropDownMenu_CreateInfo()
 			if minLevel and maxLevel and minLevel ~= maxLevel then
 				info.arg1 = "dungeon"
 				info.arg2 = id
 				info.func = IQI.QueueStatusMinimapButton
 				info.checked = iqi_data.dungeon[id]
-				info.text = "  - |cff03c4c6" .. name .. " (" .. minLevel .. "-" .. maxLevel .. ")"
+				info.text = "  - " .. color .. name .. " (" .. minLevel .. "-" .. maxLevel .. ")"
 				if showFollowingDungeons then
 					UIDropDownMenu_AddButton(info)
 				end
@@ -417,7 +416,7 @@ function IQI:QueueStatusDropDown_Update()
 				info.arg2 = id
 				info.func = IQI.QueueStatusMinimapButton
 				info.checked = iqi_data.dungeon[id]
-				info.text = "  - |cff03c4c6" .. name .. " (" .. minLevel .. ")"
+				info.text = "  - " .. color .. name .. " (" .. minLevel .. ")"
 				if showFollowingDungeons then
 					UIDropDownMenu_AddButton(info)
 				end
@@ -430,13 +429,6 @@ function IQI:QueueStatusDropDown_Update()
 						local randomId = GetLFGRandomDungeonInfo(j)
 						iqi_data.dungeon[randomId] = false
 					end
-					for j = 1, LFDGetNumDungeons() do
-						local dungeonId = LFDDungeonList[j]
-						local dungeonName, _, _, dungeonMinLevel = GetLFGDungeonInfo(dungeonId)
-						if not dungeonMinLevel and name ~= dungeonName then
-							iqi_data.settings[dungeonName] = false
-						end
-					end
 					IQI:QueueStatusMinimapButton("settings", name)
 				end
 				info.checked = iqi_data.settings[name]
@@ -448,7 +440,7 @@ function IQI:QueueStatusDropDown_Update()
 		end
 	end
 
-	-- Raid
+	-- raid
 	-- TODO
 	-- tip: /run local a, b = GetFullRaidList(); for c, d in ipairs(a) do local e, f = GetLFGDungeonInfo(d); print(e, f); for g, h in ipairs(b) do print(g, h) end end
 	info = UIDropDownMenu_CreateInfo()
@@ -460,8 +452,54 @@ function IQI:QueueStatusDropDown_Update()
 	info.checked = iqi_data.settings.raid
 	info.isNotRadio = 1
 	UIDropDownMenu_AddButton(info)
+	if iqi_data.settings.raid then
+		-- list specific raids
+		local showFollowingRaids
+		for i = 1, LFRGetNumDungeons() do
+			local id = LFRRaidList[i]
+			local name, _, _, minLevel, maxLevel, recLevel = GetLFGDungeonInfo(id)
+			local colors = GetQuestDifficultyColor(recLevel or 1)
+			local color = IQI:RGBToHex(colors.r, colors.g, colors.b)
+			info = UIDropDownMenu_CreateInfo()
+			if minLevel and maxLevel and minLevel ~= maxLevel then
+				info.arg1 = "raid"
+				info.arg2 = id
+				info.func = IQI.QueueStatusMinimapButton
+				info.checked = iqi_data.raid[id]
+				info.text = "  - " .. color .. name .. " (" .. minLevel .. "-" .. maxLevel .. ")"
+				if showFollowingRaids then
+					UIDropDownMenu_AddButton(info)
+				end
+			elseif minLevel then
+				info.arg1 = "raid"
+				info.arg2 = id
+				info.func = IQI.QueueStatusMinimapButton
+				info.checked = iqi_data.raid[id]
+				info.text = "  - " .. color .. name .. " (" .. minLevel .. ")"
+				if showFollowingRaids then
+					UIDropDownMenu_AddButton(info)
+				end
+			else
+				-- this is a "header" (i.e. "Cataclysm Raid (10)" or "Cataclysm Raid (25)")
+				-- it is listed before any of the specific raids
+				-- if it is checked, we'll list the following raids (showFollowingRaids = iqi_data.raid[name])
+				info.func = function() 
+					for j = 1, GetNumRandomDungeons() do
+						local randomId = GetLFGRandomDungeonInfo(j)
+						iqi_data.raid[randomId] = false
+					end
+					IQI:QueueStatusMinimapButton("settings", name)
+				end
+				info.checked = iqi_data.settings[name]
+				info.text = "- |cff557ff9" .. name
+				info.isNotRadio = 1
+				UIDropDownMenu_AddButton(info)
+				showFollowingRaids = iqi_data.settings[name]
+			end
+		end
+	end
 
-	-- PvP
+	-- pvp
 	info = UIDropDownMenu_CreateInfo()
 	info.text = IQI.L.pvp
 	info.colorCode = "|cff74e817"
@@ -532,7 +570,7 @@ function IQI:QueueStatusDropDown_Update()
 		-- random battlegrounds
 		for i = 1, GetNumBattlegroundTypes() do
 			local name, canEnter = GetBattlegroundInfo(i)
-			if name == RANDOM_BATTLEGROUND or not iqi_data.pvp[RANDOM_BATTLEGROUND] then
+			if name and (name == RANDOM_BATTLEGROUND or not iqi_data.pvp[RANDOM_BATTLEGROUND]) then
 				-- only add "Random Battleground" if that is checked,
 				-- otherwise add all battlegrounds
 				info = UIDropDownMenu_CreateInfo()
@@ -554,6 +592,21 @@ function IQI:QueueStatusDropDown_Update()
 
 	-- leave
 	spacer = nil
+	if CanHearthAndResurrectFromArea() then
+		-- we're in a world pvp zone, presumably fighting
+		-- spacer
+		info = UIDropDownMenu_CreateInfo()
+		info.isTitle = 1
+		info.notCheckable = 1
+		UIDropDownMenu_AddButton(info)
+		spacer = 1
+		info = UIDropDownMenu_CreateInfo()
+		info.text = format(LEAVE_ZONE, GetRealZoneText())
+		info.colorCode = "|cffff2424"
+		info.func = wrapFunc(HearthAndResurrectFromArea)
+		info.notCheckable = 1
+		UIDropDownMenu_AddButton(info)
+	end
 	for i = 1, GetMaxBattlefieldID() do
 		local status, name = GetBattlefieldStatus(i)
 		if status ~= "none" then

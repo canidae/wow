@@ -1,0 +1,288 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="LFP.lua" />
+	<!-- Templates -->
+	<Button name="LFPRosterButtonTemplate" virtual="true">
+		<Size>  
+			<AbsDimension x="299" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentStripe" setAllPoints="true" file="Interface\GuildFrame\GuildFrame" parentKey="stripe">
+					<TexCoords left="0.36230469" right="0.38183594" top="0.95898438" bottom="0.99804688"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBarTexture" hidden="true" file="Interface\TargetingFrame\UI-StatusBar" parentKey="barTexture">
+					<Size>  
+						<AbsDimension x="10" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="60" y="0"/>
+					</Anchors>
+					<Color r="0" g="1" b="0" a="0.1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes" parentKey="icon">
+					<Anchors>
+						<Anchor point="LEFT" x="36" y="0"/>
+					</Anchors>
+					<Size>  
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+				</Texture>
+				<FontString name="$parentString1" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string1">
+					<Size>  
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentString2" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string2">
+					<Size>  
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>                                                                                                                                                               
+				</FontString>
+				<FontString name="$parentString3" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string3">
+					<Size>  
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>                                                                                                                                                               
+				</FontString>
+				<FontString name="$parentString4" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string4">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentString5" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string5">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentString6" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string6">
+					<Size>
+						<AbsDimension x="10" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBarLabel" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT" hidden="true" parentKey="barLabel">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" x="146" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick function="LFPRosterButton_OnClick"/>
+			<OnEnter>
+				if ( self.online ) then
+				GameTooltip_AddNewbieTip(self, GUILD_MEMBER_OPTIONS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_GUILD_MEMBER_OPTIONS, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
+	</Button>
+	<Button name="LFPRosterColumnButtonTemplate" virtual="true">
+		<Size>  
+			<AbsDimension x="80" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>  
+						<AbsDimension x="5" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="53" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="4" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="LFPRoster.SortByColumn"/>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="8" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentLeft">
+					<Offset>
+						<AbsDimension x="-2" y="5"/>                                                                                                                                     
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight">
+					<Offset>
+						<AbsDimension x="2" y="-7"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<!-- Roster -->
+	<Frame name="LFPRoster" hidden="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackGroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5" />
+			</BackGroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Size>  
+			<AbsDimension x="600" y="400" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Frames>
+			<Frame name="LFPRosterMemberDropDown" inherits="UIDropDownMenuTemplate"/>
+			<Button name="LFPRosterColumnButton1" inherits="LFPRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="7" y="-68"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="LFPRosterColumnButton2" inherits="LFPRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFPRosterColumnButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>                                                                                                                               
+						</Offset>                                                                                                                                                          
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="LFPRosterColumnButton3" inherits="LFPRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFPRosterColumnButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="LFPRosterColumnButton4" inherits="LFPRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFPRosterColumnButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="LFPRosterColumnButton5" inherits="LFPRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFPRosterColumnButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="LFPRosterColumnButton6" inherits="LFPRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFPRosterColumnButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="LFPRosterColumnButton7" inherits="LFPRosterColumnButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LFPRosterColumnButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="LFPRosterContainer" inherits="HybridScrollFrameTemplate">
+				<Size x="302" y="300"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-27" y="-95"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="-12"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LFP_OnRosterLoad"/>
+			<OnShow function="LFP_UpdateRoster"/>
+		</Scripts>
+	</Frame>
+</Ui>
