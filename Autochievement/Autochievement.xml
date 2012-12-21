@@ -1,13 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-        <Script file="Autochievement.lua" />
-        <Frame name="AutochievementConfigFrame">
+	<Script file="Autochievement.lua" />
+	<Frame name="AutochievementConfigFrame">
 		<Layers>
 			<Layer level="BORDER">
 				<FontString name="AutochievementTrackAchievementsText" inherits="GameFontNormal" text="Track achievements in Objective Tracker:">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="AutochievementConfigFrame">
 							<Offset>
-								<AbsDimension x="10" y="-10" />
+								<AbsDimension x="10" y="-40" />
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -23,124 +23,141 @@
 				</FontString>
 			</Layer>
 		</Layers>
-                <Frames>
-                        <CheckButton name="AutochievementEnableContinentAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
-                                <Anchors>
-                                        <Anchor point="TOPLEFT" relativeTo="AutochievementTrackAchievementsText">
-                                                <Offset>
-                                                        <AbsDimension x="5" y="-15" />
-                                                </Offset>
-                                        </Anchor>
-                                </Anchors>
-                                <HitRectInsets>
-                                        <AbsInset left="0" right="-221" top="0" bottom="0"/>
-                                </HitRectInsets>
-                                <Scripts>
-                                        <OnLoad>
-                                                getglobal(self:GetName() .. "Text"):SetText("Achievements for current continent")
-                                                self.tooltip = "Very many achievements can be linked to a continent (Pandaria, Kalimdor, etc), such achievements will be shown if this checkbox is ticked (and since there are so many, this is disabled by default)."
-                                        </OnLoad>
-                                </Scripts>
-                        </CheckButton>
-                        <CheckButton name="AutochievementEnableZoneAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
-                                <Anchors>
-                                        <Anchor point="TOPLEFT" relativeTo="AutochievementEnableContinentAchievementsCheckButton">
-                                                <Offset>
-                                                        <AbsDimension x="0" y="-20" />
-                                                </Offset>
-                                        </Anchor>
-                                </Anchors>
-                                <HitRectInsets>
-                                        <AbsInset left="0" right="-216" top="0" bottom="0"/>
-                                </HitRectInsets>
-                                <Scripts>
-                                        <OnLoad>
-                                                getglobal(self:GetName() .. "Text"):SetText("Achievements for the current zone")
-                                                self.tooltip = "Some achievements can be linked to a zone (cities, maps, etc), such achievements will be shown if this checkbox is ticked."
-                                        </OnLoad>
-                                </Scripts>
-                        </CheckButton>
-                        <CheckButton name="AutochievementEnableSubZoneAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
-                                <Anchors>
-                                        <Anchor point="TOPLEFT" relativeTo="AutochievementEnableZoneAchievementsCheckButton">
-                                                <Offset>
-                                                        <AbsDimension x="0" y="-20" />
-                                                </Offset>
-                                        </Anchor>
-                                </Anchors>
-                                <HitRectInsets>
-                                        <AbsInset left="0" right="-236" top="0" bottom="0"/>
-                                </HitRectInsets>
-                                <Scripts>
-                                        <OnLoad>
-                                                getglobal(self:GetName() .. "Text"):SetText("Achievements for the current subzone")
-                                                self.tooltip = "Some achievements can be linked to a subzone (smaller areas within a city or a zone), such achievements will be shown if this checkbox is ticked."
-                                        </OnLoad>
-                                </Scripts>
-                        </CheckButton>
-                        <CheckButton name="AutochievementEnableHolidayAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
-                                <Anchors>
-                                        <Anchor point="TOPLEFT" relativeTo="AutochievementEnableSubZoneAchievementsCheckButton">
-                                                <Offset>
-                                                        <AbsDimension x="0" y="-20" />
-                                                </Offset>
-                                        </Anchor>
-                                </Anchors>
-                                <HitRectInsets>
-                                        <AbsInset left="0" right="-230" top="0" bottom="0"/>
-                                </HitRectInsets>
-                                <Scripts>
-                                        <OnLoad>
-                                                getglobal(self:GetName() .. "Text"):SetText("Achievements for any active holidays")
-                                                self.tooltip = "Some achievements can be linked to a holiday (Feast of Winter Veil, Children's Week, etc), such achievements will be shown if this checkbox is ticked."
-                                        </OnLoad>
-                                </Scripts>
-                        </CheckButton>
-                        <CheckButton name="AutochievementEnableUnitAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
-                                <Anchors>
-                                        <Anchor point="TOPLEFT" relativeTo="AutochievementShowTooltipText">
-                                                <Offset>
-                                                        <AbsDimension x="5" y="-15" />
-                                                </Offset>
-                                        </Anchor>
-                                </Anchors>
-                                <HitRectInsets>
-                                        <AbsInset left="0" right="-279" top="0" bottom="0"/>
-                                </HitRectInsets>
-                                <Scripts>
-                                        <OnLoad>
-                                                getglobal(self:GetName() .. "Text"):SetText("Achievements for unit beneath mouse cursor")
-                                                self.tooltip = "When hovering the mouse over a unit (thus showing the tooltip), add any unfinished achievements related to that unit."
-                                        </OnLoad>
-                                </Scripts>
-                        </CheckButton>
-                        <CheckButton name="AutochievementEnableItemAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
-                                <Anchors>
-                                        <Anchor point="TOPLEFT" relativeTo="AutochievementEnableUnitAchievementsCheckButton">
-                                                <Offset>
-                                                        <AbsDimension x="0" y="-20" />
-                                                </Offset>
-                                        </Anchor>
-                                </Anchors>
-                                <HitRectInsets>
-                                        <AbsInset left="0" right="-282" top="0" bottom="0"/>
-                                </HitRectInsets>
-                                <Scripts>
-                                        <OnLoad>
-                                                getglobal(self:GetName() .. "Text"):SetText("Achievements for item beneath mouse cursor")
-                                                self.tooltip = "When hovering the mouse over an item (thus showing the tooltip), add any unfinished achievements related to that item."
-                                        </OnLoad>
-                                </Scripts>
-                        </CheckButton>
-                </Frames>
-                <Scripts>
-                        <OnLoad>
-                                self.name = "Autochievement"
+		<Frames>
+			<Button name="AutochievementScanAchievementsButton" inherits="UIPanelButtonTemplate" text="Rescan achievements (may freeze game for some seconds)">
+				<Size>  
+					<AbsDimension x="400" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutochievementConfigFrame">
+						<Offset>
+							<AbsDimension x="10" y="-10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Autochievement:ScanAchievements()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<CheckButton name="AutochievementEnableContinentAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutochievementTrackAchievementsText">
+						<Offset>
+							<AbsDimension x="5" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-221" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName() .. "Text"):SetText("Achievements for current continent")
+						self.tooltip = "Very many achievements can be linked to a continent (Pandaria, Kalimdor, etc), such achievements will be shown if this checkbox is ticked (and since there are so many, this is disabled by default)."
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AutochievementEnableZoneAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutochievementEnableContinentAchievementsCheckButton">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-216" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName() .. "Text"):SetText("Achievements for the current zone")
+						self.tooltip = "Some achievements can be linked to a zone (cities, maps, etc), such achievements will be shown if this checkbox is ticked."
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AutochievementEnableSubZoneAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutochievementEnableZoneAchievementsCheckButton">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-236" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName() .. "Text"):SetText("Achievements for the current subzone")
+						self.tooltip = "Some achievements can be linked to a subzone (smaller areas within a city or a zone), such achievements will be shown if this checkbox is ticked."
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AutochievementEnableHolidayAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutochievementEnableSubZoneAchievementsCheckButton">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-230" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName() .. "Text"):SetText("Achievements for any active holidays")
+						self.tooltip = "Some achievements can be linked to a holiday (Feast of Winter Veil, Children's Week, etc), such achievements will be shown if this checkbox is ticked."
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AutochievementEnableUnitAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutochievementShowTooltipText">
+						<Offset>
+							<AbsDimension x="5" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-279" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName() .. "Text"):SetText("Achievements for unit beneath mouse cursor")
+						self.tooltip = "When hovering the mouse over a unit (thus showing the tooltip), add any unfinished achievements related to that unit."
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="AutochievementEnableItemAchievementsCheckButton" inherits="ChatConfigCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AutochievementEnableUnitAchievementsCheckButton">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-282" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName() .. "Text"):SetText("Achievements for item beneath mouse cursor")
+						self.tooltip = "When hovering the mouse over an item (thus showing the tooltip), add any unfinished achievements related to that item."
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.name = "Autochievement"
 				self.okay = Autochievement.SaveSettings
 				self.cancel = Autochievement.LoadSettings
 				self.default = Autochievement.DefaultSettings
-                                InterfaceOptions_AddCategory(self)
-                        </OnLoad>
-                </Scripts>
-        </Frame>
+				InterfaceOptions_AddCategory(self)
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -3,8 +3,10 @@ Autochievement = CreateFrame("Frame")
 function Autochievement:OnEvent(event, arg1, ...)
 	if event == "ADDON_LOADED" then
 		Autochievement:UnregisterEvent("ADDON_LOADED")
+		local doScan
 		if not Autochievement_DB then
 			Autochievement_DB = {}
+			doScan = true
 		end
 		if not Autochievement_DB.data then
 			Autochievement_DB.data = {}
@@ -20,6 +22,10 @@ function Autochievement:OnEvent(event, arg1, ...)
 		Autochievement.alreadyAdded = {}
 		GameTooltip:HookScript("OnTooltipSetUnit", Autochievement.UnitTooltip)
 		GameTooltip:HookScript("OnTooltipSetItem", Autochievement.ItemTooltip)
+		if doScan then
+			-- no database, scan for the first time (and let users manually rescan at their own leisure)
+			Autochievement:ScanAchievements()
+		end
 	else
 		Autochievement:UpdateObjectiveTracker()
 	end
@@ -213,7 +219,7 @@ function Autochievement:SaveSettings()
 	Autochievement_DB.config.holiday = AutochievementEnableHolidayAchievementsCheckButton:GetChecked()
 	Autochievement_DB.config.unit = AutochievementEnableUnitAchievementsCheckButton:GetChecked()
 	Autochievement_DB.config.item = AutochievementEnableItemAchievementsCheckButton:GetChecked()
-	UpdateObjectiveTracker()
+	Autochievement:UpdateObjectiveTracker()
 end
 
 function Autochievement:DefaultSettings()
@@ -225,7 +231,7 @@ function Autochievement:DefaultSettings()
 	Autochievement_DB.config.unit = false
 	Autochievement_DB.config.item = false
 	Autochievement:LoadSettings()
-	UpdateObjectiveTracker()
+	Autochievement:UpdateObjectiveTracker()
 end
 
 Autochievement:SetScript("OnEvent", Autochievement.OnEvent)
