@@ -1115,6 +1115,9 @@ function Genesis_MouseDropDownMenuButton_OnClick(arg1)
 		Genesis_data["mouse"] = {};
 	end
 	if (class == "none") then
+        if (not Genesis_data["mouse"][button]) then
+            Genesis_data["mouse"][button] = {};
+        end
 		Genesis_data["mouse"][button]["SpellOrClass"] = nil;
 		slider:Hide();
 	else
