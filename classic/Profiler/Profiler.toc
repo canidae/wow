@@ -1,0 +1,5 @@
+## Interface: 11100
+## Title: Profiler
+## Notes: Visualize how demanding other addons are
+## Author: canidae
+Profiler.xml

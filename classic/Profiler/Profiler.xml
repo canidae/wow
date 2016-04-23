@@ -1,0 +1,176 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="Profiler.lua"/>
+	<StatusBar name="ProfilerItemTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="160" y="14"/>
+		</Size>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontDarkGraySmall" justifyH="LEFT" text="I am the cheetah">
+					<Size>
+						<AbsDimension x="160" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<Color r="0.7" g="0.7" b="0.7"/>
+				</FontString>
+				<FontString name="$parentValue" inherits="GameFontDarkGraySmall" justifyH="RIGHT" text="0">
+					<Size>
+						<AbsDimension x="160" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetMinMaxValues(0, 15);
+				this:SetValue(0);
+				this:SetBackdropColor(0.7, 0.7, 0.7, 0.3);
+				getglobal(this:GetName() .. "BarTexture"):SetVertexColor(0.0, 1.0, 0.0, 0.5);
+			</OnLoad>
+		</Scripts>
+		<BarTexture name="$parentBarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarColor r="0.0" g="1.0" b="0.0"/>
+	</StatusBar>
+	<Frame name="Profiler" hidden="false">
+		<Size>
+			<AbsDimension x="160" y="280"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<StatusBar name="ProfilerItem1" inherits="ProfilerItemTemplate" movable="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseUp>
+						if (this.isMoving) then
+							this:StopMovingOrSizing();
+							this.isMoving = false;
+						end
+					</OnMouseUp>
+					<OnMouseDown>
+						if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton")) then
+							this:StartMoving();
+							this.isMoving = true;
+						end
+					</OnMouseDown>
+					<OnHide>
+						if (this.isMoving) then
+							this:StopMovingOrSizing();
+							this.isMoving = false;
+						end
+					</OnHide>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="ProfilerItem2" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem3" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem4" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem5" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem6" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem5" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem7" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem6" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem8" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem7" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem9" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem8" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem10" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem9" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem11" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem12" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem11" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem13" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem12" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem14" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem13" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem15" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem14" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem16" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem15" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem17" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem16" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem18" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem17" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem19" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem18" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="ProfilerItem20" inherits="ProfilerItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ProfilerItem19" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				Profiler_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,5047 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="localization-default.lua"/>
+	<Script file="localization-deDE.lua"/>
+	<Script file="localization-frFR.lua"/>
+	<!--<Script file="Healer_buffchecks.lua"/>-->
+	<Script file="Healer.lua"/>
+	<Frame name="Healer" hidden="false">
+		<Scripts>
+			<OnLoad>
+				Healer_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				Healer_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				Healer_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="HealerBar1" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="206" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="CastingBarFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="8" y="-2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size>
+						<AbsDimension x="195" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>		
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="HealerBar1Text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="198" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\CastingBar\UI-CastingBar-Border">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="HealerBar1Flash" hidden="true">
+				<Size>
+					<AbsDimension x="256" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="256" y="64"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar name="HealerBar1FrameStatusBar">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="HealerBar1Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	<Frame name="HealerBar2" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="206" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="CastingBarFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="-6" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size>
+						<AbsDimension x="195" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>		
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="HealerBar2Text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="198" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\CastingBar\UI-CastingBar-Border">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="HealerBar2Flash" hidden="true">
+				<Size>
+					<AbsDimension x="256" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="256" y="64"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar name="HealerBar2FrameStatusBar">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="HealerBar2Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	<Frame name="HealerBar3" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="206" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="HealerBar1" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size>
+						<AbsDimension x="195" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>		
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="HealerBar3Text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="198" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\CastingBar\UI-CastingBar-Border">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="HealerBar3Flash" hidden="true">
+				<Size>
+					<AbsDimension x="256" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="256" y="64"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar name="HealerBar3FrameStatusBar">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="HealerBar3Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	<Frame name="HealerBar4" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="206" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="HealerBar2" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size>
+						<AbsDimension x="195" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>		
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="HealerBar4Text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="198" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\CastingBar\UI-CastingBar-Border">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="HealerBar4Flash" hidden="true">
+				<Size>
+					<AbsDimension x="256" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="256" y="64"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar name="HealerBar4FrameStatusBar">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="HealerBar4Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	<Frame name="HealerBar5" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="206" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="HealerBar3" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size>
+						<AbsDimension x="195" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>		
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="HealerBar5Text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="198" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\CastingBar\UI-CastingBar-Border">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="HealerBar5Flash" hidden="true">
+				<Size>
+					<AbsDimension x="256" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="256" y="64"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar name="HealerBar5FrameStatusBar">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="HealerBar5Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	<Frame name="HealerBar6" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="206" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="HealerBar4" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size>
+						<AbsDimension x="195" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>		
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="HealerBar6Text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="198" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\CastingBar\UI-CastingBar-Border">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="HealerBar6Flash" hidden="true">
+				<Size>
+					<AbsDimension x="256" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="256" y="64"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar name="HealerBar6FrameStatusBar">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="HealerBar6Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	<Frame name="HealerBar7" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="206" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="HealerBar5" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Size>
+						<AbsDimension x="195" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>		
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="HealerBar7Text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="198" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture file="Interface\CastingBar\UI-CastingBar-Border">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="HealerBar7Flash" hidden="true">
+				<Size>
+					<AbsDimension x="256" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\CastingBar\UI-CastingBar-Flash" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="256" y="64"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar name="HealerBar7FrameStatusBar">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="HealerBar7Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	
+	<Slider name="HealerGUISliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnValueChanged>
+				local text = getglobal(this:GetName() .. "Value");
+				if (text) then
+					local min, max = this:GetMinMaxValues();
+					local value = this:GetValue();
+					local green = (value - min) / (max - min);
+					local red = (max - value) / (max - min);
+					text:SetVertexColor(red, green, "0.0");
+					if (string.find(this:GetName(), "HealPrioritySlider")) then
+						text:SetText(value .. "%");
+					elseif (string.find(this:GetName(), "PrioritySlider")) then
+						text:SetText(value);
+					else
+						text:SetText(value .. "%");
+					end
+				end
+				if (this:GetName() == "HealerGUIMaxOverhealSlider") then
+					HEALER_MAX_OVERHEAL = this:GetValue() / 100.0;
+				elseif (this:GetName() == "HealerGUIPlayerHealPrioritySlider") then
+					HEALER_PLAYER_PRI = this:GetValue() / 100.0;
+				elseif (this:GetName() == "HealerGUIPartyHealPrioritySlider") then
+					HEALER_PARTY_PRI = this:GetValue() / 100.0;
+				elseif (this:GetName() == "HealerGUIPartypetHealPrioritySlider") then
+					HEALER_PARTYPET_PRI = this:GetValue() / 100.0;
+				elseif (this:GetName() == "HealerGUIRaidHealPrioritySlider") then
+					HEALER_RAID_PRI = this:GetValue() / 100.0;
+				elseif (this:GetName() == "HealerGUIRaidpetHealPrioritySlider") then
+					HEALER_RAIDPET_PRI = this:GetValue() / 100.0;
+				elseif (string.find(this:GetName(), "HealerGUIHealPercentSlider")) then
+					local spell = getglobal("HealerGUIHealspellEntry" .. this:GetID() .. "Text"):GetText();
+					HEALER_HEAL_CLASSES[HEALER_CUR_HEAL_CLASS][spell] = this:GetValue() / 100.0;
+				elseif (string.find(this:GetName(), "HealerGUIBuffPrioritySlider")) then
+					local buff = getglobal("HealerGUIBuffspellEntry" .. this:GetID() .. "Text"):GetText();
+					HEALER_BUFF_CLASSES[HEALER_CUR_BUFF_CLASS][HEALER_CUR_UNIT_CLASS][buff] = this:GetValue() / 1.0;
+				elseif (string.find(this:GetName(), "HealerGUIDebuffPrioritySlider")) then
+					local unit = getglobal("HealerGUIDebuffUnitEntry" .. this:GetID() .. "Text"):GetText();
+					if (HEALER_DEBUFF_NEW[HEALER_CUR_DEBUFF]) then
+						HEALER_DEBUFF_NEW[HEALER_CUR_DEBUFF][unit] = this:GetValue() / 1.0;
+					elseif (HEALER_DEBUFF_LIST[HEALER_CUR_DEBUFF]) then
+						HEALER_DEBUFF_LIST[HEALER_CUR_DEBUFF][unit] = this:GetValue() / 1.0;
+					end
+				end
+			</OnValueChanged>
+			<OnLoad>
+				getglobal(this:GetName() .. "Text"):SetText();
+				getglobal(this:GetName() .. "High"):SetText();
+				getglobal(this:GetName() .. "Low"):SetText();
+				this:SetMinMaxValues(0, 100);
+				this:SetValueStep(1);
+			</OnLoad>
+		</Scripts>
+	</Slider>
+	<Button name="HealerGUITabTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="32"/>
+		</Size>
+		<NormalTexture inherits="DialogButtonNormalTexture"/>
+		<PushedTexture inherits="DialogButtonPushedTexture"/>
+		<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				local a = 1;
+				local frame = getglobal("HealerGUITabFrame" .. a);
+				while (frame) do
+					if ("HealerGUITab" .. a == this:GetName()) then
+						if (a == 3) then
+							HealerGUIDebuffListScrollBar_Update();
+						end
+						frame:Show();
+						getglobal("HealerGUITab" .. a):LockHighlight();
+					else
+						frame:Hide();
+						getglobal("HealerGUITab" .. a):UnlockHighlight();
+					end
+					a = a + 1;
+					frame = getglobal("HealerGUITabFrame" .. a);
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<CheckButton name="HealerGUIAutoHealclassCheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if (this:GetChecked()) then
+					for a = 1, 5 do
+						getglobal("HealerGUIAutoHealclassCheckButton" .. a):SetChecked(0);
+					end
+					getglobal("HealerGUIAutoHealclassCheckButton" .. this:GetID()):SetChecked(1);
+					HEALER_AUTOHEAL = getglobal("HealerGUIHealclassEntry" .. this:GetID() .. "Text"):GetText();
+				else
+					HEALER_AUTOHEAL = nil;
+				end
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Button name="HealerGUIHealclassScrollButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="104" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				HealerGUIHealclassScrollButton_Click();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="HealerGUIHealspellScrollButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="104" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				HealerGUIHealspellScrollButton_Click();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<CheckButton name="HealerGUIAutobuffclassCheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if (this:GetChecked()) then
+					for a = 1, 5 do
+						getglobal("HealerGUIAutobuffclassCheckButton" .. a):SetChecked(0);
+					end
+					getglobal("HealerGUIAutobuffclassCheckButton" .. this:GetID()):SetChecked(1);
+					HEALER_AUTOBUFF = getglobal("HealerGUIBuffclassEntry" .. this:GetID() .. "Text"):GetText();
+				else
+					HEALER_AUTOBUFF = nil;
+				end
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Button name="HealerGUIBuffclassScrollButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="104" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				HealerGUIBuffclassScrollButton_Click();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="HealerGUIBuffUnitScrollButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="104" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				HealerGUIBuffUnitScrollButton_Click();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="HealerGUIBuffspellScrollButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="104" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				HealerGUIBuffspellScrollButton_Click();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="HealerGUIDebuffListScrollButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="222" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				HealerGUIDebuffListScrollButton_Click();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="HealerGUIDebuffUnitScrollButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="104" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+		<Scripts>
+			<OnEnter>
+				HealerGUI_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				HealerGUIDebuffUnitScrollButton_Click();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="HealerGUI" movable="true" parent="UIParent" enableMouse="true" hidden="true" toplevel="true">
+		<Size>
+			<AbsDimension x="512" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop name="HealerGUIDebuffBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HealerGUITitle" justifyH="CENTER" justifyV="CENTER" inherits="GameFontNormal" text="HEALERGUI_TITLE">
+					<Size>
+						<AbsDimension x="416" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="HealerGUIButton">
+				<Size>
+					<AbsDimension x="96" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_CLOSE"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_CLOSE"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUI:Hide();
+						Healer_Save();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HealerGUITab1" inherits="HealerGUITabTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_HEAL"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_HEAL"/>
+			</Button>
+			<Button name="HealerGUITab2" inherits="HealerGUITabTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="HealerGUITab1" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_BUFF"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_BUFF"/>
+			</Button>
+			<Button name="HealerGUITab3" inherits="HealerGUITabTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="HealerGUITab2" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_DEBUFF"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_DEBUFF"/>
+			</Button>
+			<Button name="HealerGUITab4" inherits="HealerGUITabTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="HealerGUITab3" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_MISC"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_MISC"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames, "HealerGUI");
+			</OnLoad>
+			<OnMouseUp>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton")) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnShow>
+				HealerStatusHeal:Show();
+				HealerStatusBuff:Show();
+				HealerStatusDebuff:Show();
+			</OnShow>
+			<OnHide>
+				HealerStatusHeal:Hide();
+				HealerStatusBuff:Hide();
+				HealerStatusDebuff:Hide();
+
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="HealerGUITabFrame1" hidden="false" parent="HealerGUI">
+		<Size>
+			<AbsDimension x="512" y="448"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="HealerGUITitle" relativePoint="BOTTOMLEFT"/>
+		</Anchors>
+		<Backdrop name="HealerGUIHealBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HealerGUIAutoHealclass" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_AUTO">
+					<Size>
+						<AbsDimension x="48" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="4" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIHealclass" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_CLASSES">
+					<Size>
+						<AbsDimension x="120" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAutoHealclass" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIHealspell" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_SPELLS">
+					<Size>
+						<AbsDimension x="120" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIHealclass" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIHealPercent" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_PERCENT">
+					<Size>
+						<AbsDimension x="160" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIHealspell" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIHealPercentSlider1Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercent" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="164" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIHealPercentSlider2Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercentSlider1Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIHealPercentSlider3Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercentSlider2Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIHealPercentSlider4Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercentSlider3Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIHealPercentSlider5Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercentSlider4Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMaxOverheal" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_MAX_OVERHEAL">
+					<Size>
+						<AbsDimension x="128" y="32"/>
+					</Size>
+					<Color r="1.0" g="1.0" b="1.0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-216"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMaxOverhealSliderValue" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="40" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMaxOverheal" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="166" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUICooperativeHealing" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_COOPERATIVE_HEALING">
+					<Size>
+						<AbsDimension x="132" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMaxOverhealSliderValue" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIHealRaid" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_HEAL_RAID">
+					<Size>
+						<AbsDimension x="128" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMaxOverheal" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIShowHealbars" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_SHOW_HEALBARS">
+					<Size>
+						<AbsDimension x="102" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIHealRaid" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIShowOnlyMe" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_SHOW_ONLY_ME">
+					<Size>
+						<AbsDimension x="174" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIShowHealbars" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIPlayerPriority" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_PLAYER_PRIORITY">
+					<Size>
+						<AbsDimension x="128" y="32"/>
+					</Size>
+					<Color r="0.9" g="0.9" b="0.9"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIHealRaid" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIPartyPriority" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_PARTY_PRIORITY">
+					<Size>
+						<AbsDimension x="128" y="32"/>
+					</Size>
+					<Color r="0.1" g="0.2" b="0.9"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIPlayerPriority" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIPartypetPriority" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_PARTYPET_PRIORITY">
+					<Size>
+						<AbsDimension x="128" y="32"/>
+					</Size>
+					<Color r="0.1" g="0.2" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIPartyPriority" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIRaidPriority" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_RAID_PRIORITY">
+					<Size>
+						<AbsDimension x="128" y="32"/>
+					</Size>
+					<Color r="0.1" g="0.9" b="0.2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIPartypetPriority" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIRaidpetPriority" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_RAIDPET_PRIORITY">
+					<Size>
+						<AbsDimension x="128" y="32"/>
+					</Size>
+					<Color r="0.1" g="0.7" b="0.2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIRaidPriority" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIPlayerHealPrioritySliderValue" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="40" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIPlayerPriority" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="166" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIPartyHealPrioritySliderValue" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="40" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIPartyPriority" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="166" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIPartypetHealPrioritySliderValue" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="40" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIPartypetPriority" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="166" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIRaidHealPrioritySliderValue" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="40" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIRaidPriority" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="166" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIRaidpetHealPrioritySliderValue" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="40" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIRaidpetPriority" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="166" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMousekey1Healclass" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_MOUSEKEY_1">
+					<Size>
+						<AbsDimension x="166" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIPlayerPriority" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="206" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMousekey2Healclass" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_MOUSEKEY_2">
+					<Size>
+						<AbsDimension x="166" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIPartyPriority" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="206" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMousekey3Healclass" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_MOUSEKEY_3">
+					<Size>
+						<AbsDimension x="166" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIPartypetPriority" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="206" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMousekey4Healclass" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_MOUSEKEY_4">
+					<Size>
+						<AbsDimension x="166" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIRaidPriority" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="206" y="-22"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="HealerGUIAutoHealclassCheckButton1" inherits="HealerGUIAutoHealclassCheckButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutoHealclass" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutoHealclassCheckButton2" inherits="HealerGUIAutoHealclassCheckButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutoHealclassCheckButton1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutoHealclassCheckButton3" inherits="HealerGUIAutoHealclassCheckButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutoHealclassCheckButton2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutoHealclassCheckButton4" inherits="HealerGUIAutoHealclassCheckButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutoHealclassCheckButton3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutoHealclassCheckButton5" inherits="HealerGUIAutoHealclassCheckButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutoHealclassCheckButton4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<ScrollFrame name="HealerGUIHealclassScrollBar" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="100" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealclass" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						HealerGUIHealclassScrollBar_Update();
+					</OnShow>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(32, HealerGUIHealclassScrollBar_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="HealerGUIHealclassEntry1" inherits="HealerGUIHealclassScrollButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealclassScrollBar" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIHealclassEntry2" inherits="HealerGUIHealclassScrollButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealclassEntry1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIHealclassEntry3" inherits="HealerGUIHealclassScrollButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealclassEntry2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIHealclassEntry4" inherits="HealerGUIHealclassScrollButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealclassEntry3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIHealclassEntry5" inherits="HealerGUIHealclassScrollButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealclassEntry4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="HealerGUIHealspellScrollBar" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="100" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealspell" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						HealerGUIHealspellScrollBar_Update();
+					</OnShow>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(32, HealerGUIHealspellScrollBar_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="HealerGUIHealspellEntry1" inherits="HealerGUIHealspellScrollButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealspellScrollBar" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIHealspellEntry2" inherits="HealerGUIHealspellScrollButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealspellEntry1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIHealspellEntry3" inherits="HealerGUIHealspellScrollButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealspellEntry2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIHealspellEntry4" inherits="HealerGUIHealspellScrollButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealspellEntry3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIHealspellEntry5" inherits="HealerGUIHealspellScrollButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealspellEntry4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Slider name="HealerGUIHealPercentSlider1" inherits="HealerGUISliderTemplate" id="1">
+				<Size>
+					<AbsDimension x="160" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercent" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="HealerGUIHealPercentSlider2" inherits="HealerGUISliderTemplate" id="2">
+				<Size>
+					<AbsDimension x="160" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercentSlider1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Slider>
+			<Slider name="HealerGUIHealPercentSlider3" inherits="HealerGUISliderTemplate" id="3">
+				<Size>
+					<AbsDimension x="160" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercentSlider2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Slider>
+			<Slider name="HealerGUIHealPercentSlider4" inherits="HealerGUISliderTemplate" id="4">
+				<Size>
+					<AbsDimension x="160" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercentSlider3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Slider>
+			<Slider name="HealerGUIHealPercentSlider5" inherits="HealerGUISliderTemplate" id="5">
+				<Size>
+					<AbsDimension x="160" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealPercentSlider4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Slider>
+			<Button name="HealerGUICreateHealclassButton">
+				<Size>
+					<AbsDimension x="236" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-184"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_CREATE_HEALCLASS"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_CREATE_HEALCLASS"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIClassEditBox:SetText("");
+						HealerGUIClassText:SetText(HEALERGUI_NEW_HEALCLASS);
+						HealerGUIClass:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HealerGUIDeleteHealclassButton">
+				<Size>
+					<AbsDimension x="236" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUICreateHealclassButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_DELETE_HEALCLASS"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_DELETE_HEALCLASS"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (HEALER_HEAL_CLASSES and HEALER_CUR_HEAL_CLASS) then
+							HEALER_HEAL_CLASSES[HEALER_CUR_HEAL_CLASS] = nil;
+						end
+						HealerGUIHealclassScrollButton_Click();
+						HealerGUIHealclassScrollBar_Update();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Slider name="HealerGUIMaxOverhealSlider" inherits="HealerGUISliderTemplate">
+				<Size>
+					<AbsDimension x="158" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIMaxOverheal" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 100);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<CheckButton name="HealerGUIHealRaidCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIHealRaid" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_HEAL_RAID = 1;
+							HealerGUIRaidPriority:Show();
+							HealerGUIRaidHealPrioritySlider:Show();
+							HealerGUIRaidHealPrioritySlider:Show();
+							HealerGUIRaidHealPrioritySliderValue:Show();
+							HealerGUIRaidpetPriority:Show();
+							HealerGUIRaidpetHealPrioritySlider:Show();
+							HealerGUIRaidpetHealPrioritySlider:Show();
+							HealerGUIRaidpetHealPrioritySliderValue:Show();
+						else
+							HEALER_HEAL_RAID = nil;
+							HealerGUIRaidPriority:Hide();
+							HealerGUIRaidHealPrioritySlider:Hide();
+							HealerGUIRaidHealPrioritySlider:Hide();
+							HealerGUIRaidHealPrioritySliderValue:Hide();
+							HealerGUIRaidpetPriority:Hide();
+							HealerGUIRaidpetHealPrioritySlider:Hide();
+							HealerGUIRaidpetHealPrioritySlider:Hide();
+							HealerGUIRaidpetHealPrioritySliderValue:Hide();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUICooperativeHealingCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUICooperativeHealing" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_COOPERATIVE_HEALING = 1;
+						else
+							HEALER_COOPERATIVE_HEALING = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIShowHealbarsCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIShowHealbars" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_SHOW_HEALBARS = 1;
+							HealerGUIShowOnlyMeCheckButton:Show();
+							HealerGUIShowOnlyMe:Show();
+						else
+							HEALER_SHOW_HEALBARS = nil;
+							HealerGUIShowOnlyMeCheckButton:Hide();
+							HealerGUIShowOnlyMe:Hide();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIShowOnlyMeCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIShowOnlyMe" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_SHOW_ONLY_ME = 1;
+						else
+							HEALER_SHOW_ONLY_ME = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Slider name="HealerGUIPlayerHealPrioritySlider" inherits="HealerGUISliderTemplate">
+				<Size>
+					<AbsDimension x="158" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIPlayerPriority" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="HealerGUIPartyHealPrioritySlider" inherits="HealerGUISliderTemplate">
+				<Size>
+					<AbsDimension x="158" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIPartyPriority" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="HealerGUIPartypetHealPrioritySlider" inherits="HealerGUISliderTemplate">
+				<Size>
+					<AbsDimension x="158" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIPartypetPriority" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="HealerGUIRaidHealPrioritySlider" inherits="HealerGUISliderTemplate">
+				<Size>
+					<AbsDimension x="158" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIRaidPriority" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="HealerGUIRaidpetHealPrioritySlider" inherits="HealerGUISliderTemplate">
+				<Size>
+					<AbsDimension x="158" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIRaidpetPriority" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Button name="HealerGUIMousekey1HealclassButton">
+				<Size>
+					<AbsDimension x="166" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIMousekey1Healclass" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_NONE"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_NONE"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (HEALER_CUR_HEAL_CLASS) then
+							if (HEALER_MOUSE_HEALCLASSES[1] == HEALER_CUR_HEAL_CLASS) then
+								HEALER_MOUSE_HEALCLASSES[1] = nil;
+							else
+								HEALER_MOUSE_HEALCLASSES[1] = HEALER_CUR_HEAL_CLASS;
+							end
+						else
+							HEALER_MOUSE_NORMAL_HEALCLASS = nil;
+						end
+						if (HEALER_MOUSE_HEALCLASSES[1]) then
+							this:SetText(HEALER_MOUSE_HEALCLASSES[1]);
+						else
+							this:SetText(HEALERGUI_NONE);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HealerGUIMousekey2HealclassButton">
+				<Size>
+					<AbsDimension x="166" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIMousekey2Healclass" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_NONE"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_NONE"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (HEALER_CUR_HEAL_CLASS) then
+							if (HEALER_MOUSE_HEALCLASSES[2] == HEALER_CUR_HEAL_CLASS) then
+								HEALER_MOUSE_HEALCLASSES[2] = nil;
+							else
+								HEALER_MOUSE_HEALCLASSES[2] = HEALER_CUR_HEAL_CLASS;
+							end
+						else
+							HEALER_MOUSE_NORMAL_HEALCLASS = nil;
+						end
+						if (HEALER_MOUSE_HEALCLASSES[2]) then
+							this:SetText(HEALER_MOUSE_HEALCLASSES[2]);
+						else
+							this:SetText(HEALERGUI_NONE);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HealerGUIMousekey3HealclassButton">
+				<Size>
+					<AbsDimension x="166" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIMousekey3Healclass" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_NONE"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_NONE"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (HEALER_CUR_HEAL_CLASS) then
+							if (HEALER_MOUSE_HEALCLASSES[3] == HEALER_CUR_HEAL_CLASS) then
+								HEALER_MOUSE_HEALCLASSES[3] = nil;
+							else
+								HEALER_MOUSE_HEALCLASSES[3] = HEALER_CUR_HEAL_CLASS;
+							end
+						else
+							HEALER_MOUSE_NORMAL_HEALCLASS = nil;
+						end
+						if (HEALER_MOUSE_HEALCLASSES[3]) then
+							this:SetText(HEALER_MOUSE_HEALCLASSES[3]);
+						else
+							this:SetText(HEALERGUI_NONE);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HealerGUIMousekey4HealclassButton">
+				<Size>
+					<AbsDimension x="166" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIMousekey4Healclass" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_NONE"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_NONE"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (HEALER_CUR_HEAL_CLASS) then
+							if (HEALER_MOUSE_HEALCLASSES[4] == HEALER_CUR_HEAL_CLASS) then
+								HEALER_MOUSE_HEALCLASSES[4] = nil;
+							else
+								HEALER_MOUSE_HEALCLASSES[4] = HEALER_CUR_HEAL_CLASS;
+							end
+						else
+							HEALER_MOUSE_NORMAL_HEALCLASS = nil;
+						end
+						if (HEALER_MOUSE_HEALCLASSES[4]) then
+							this:SetText(HEALER_MOUSE_HEALCLASSES[4]);
+						else
+							this:SetText(HEALERGUI_NONE);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="HealerGUITabFrame2" hidden="true" parent="HealerGUI">
+		<Size>
+			<AbsDimension x="512" y="448"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="HealerGUITitle" relativePoint="BOTTOMLEFT"/>
+		</Anchors>
+		<Backdrop name="HealerGUIBuffBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HealerGUIAutobuffclass" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_AUTO">
+					<Size>
+						<AbsDimension x="48" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="4" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffclass" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_CLASSES">
+					<Size>
+						<AbsDimension x="120" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAutobuffclass" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffUnit" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_UNIT_CLASSES">
+					<Size>
+						<AbsDimension x="120" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffclass" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffspell" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_BUFFS">
+					<Size>
+						<AbsDimension x="120" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffUnit" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffPriority" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_PRIORITY">
+					<Size>
+						<AbsDimension x="70" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffspell" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffPrioritySlider1Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="30" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPriority" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="62" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffPrioritySlider2Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="30" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPrioritySlider1Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffPrioritySlider3Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="30" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPrioritySlider2Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffPrioritySlider4Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="30" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPrioritySlider3Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffPrioritySlider5Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="30" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPrioritySlider4Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffPets" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_BUFF_PETS">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-216"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIBuffRaid" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_BUFF_RAID">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPets" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAutobuffRaid" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_AUTOBUFF_RAID">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffRaid" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUICastBuffInBattle" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_CAST_BUFF_IN_BATTLE">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAutobuffRaid" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUICastSelfbuffInBattle" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_CAST_SELFBUFF_IN_BATTLE">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUICastBuffInBattle" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAutobuffTarget" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_AUTOBUFF_TARGET">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUICastSelfbuffInBattle" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="HealerGUIAutobuffclassCheckButton1" inherits="HealerGUIAutobuffclassCheckButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutobuffclass" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutobuffclassCheckButton2" inherits="HealerGUIAutobuffclassCheckButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutobuffclassCheckButton1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutobuffclassCheckButton3" inherits="HealerGUIAutobuffclassCheckButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutobuffclassCheckButton2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutobuffclassCheckButton4" inherits="HealerGUIAutobuffclassCheckButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutobuffclassCheckButton3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutobuffclassCheckButton5" inherits="HealerGUIAutobuffclassCheckButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutobuffclassCheckButton4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</CheckButton>
+			<ScrollFrame name="HealerGUIBuffclassScrollBar" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="100" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffclass" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						HealerGUIBuffclassScrollBar_Update();
+					</OnShow>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(32, HealerGUIBuffclassScrollBar_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="HealerGUIBuffclassEntry1" inherits="HealerGUIBuffclassScrollButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffclassScrollBar" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffclassEntry2" inherits="HealerGUIBuffclassScrollButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffclassEntry1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffclassEntry3" inherits="HealerGUIBuffclassScrollButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffclassEntry2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffclassEntry4" inherits="HealerGUIBuffclassScrollButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffclassEntry3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffclassEntry5" inherits="HealerGUIBuffclassScrollButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffclassEntry4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="HealerGUIBuffUnitScrollBar" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="100" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffUnit" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						HealerGUIBuffUnitScrollBar_Update();
+					</OnShow>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(32, HealerGUIBuffUnitScrollBar_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="HealerGUIBuffUnitEntry1" inherits="HealerGUIBuffUnitScrollButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffUnitScrollBar" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffUnitEntry2" inherits="HealerGUIBuffUnitScrollButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffUnitEntry1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffUnitEntry3" inherits="HealerGUIBuffUnitScrollButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffUnitEntry2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffUnitEntry4" inherits="HealerGUIBuffUnitScrollButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffUnitEntry3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffUnitEntry5" inherits="HealerGUIBuffUnitScrollButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffUnitEntry4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="HealerGUIBuffspellScrollBar" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="100" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffspell" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						HealerGUIBuffspellScrollBar_Update();
+					</OnShow>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(32, HealerGUIBuffspellScrollBar_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="HealerGUIBuffspellEntry1" inherits="HealerGUIBuffspellScrollButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffspellScrollBar" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffspellEntry2" inherits="HealerGUIBuffspellScrollButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffspellEntry1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffspellEntry3" inherits="HealerGUIBuffspellScrollButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffspellEntry2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffspellEntry4" inherits="HealerGUIBuffspellScrollButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffspellEntry3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIBuffspellEntry5" inherits="HealerGUIBuffspellScrollButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffspellEntry4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Slider name="HealerGUIBuffPrioritySlider1" inherits="HealerGUISliderTemplate" id="1">
+				<Size>
+					<AbsDimension x="58" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPriority" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 9);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Slider name="HealerGUIBuffPrioritySlider2" inherits="HealerGUISliderTemplate" id="2">
+				<Size>
+					<AbsDimension x="58" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPrioritySlider1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 9);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Slider name="HealerGUIBuffPrioritySlider3" inherits="HealerGUISliderTemplate" id="3">
+				<Size>
+					<AbsDimension x="58" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPrioritySlider2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 9);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Slider name="HealerGUIBuffPrioritySlider4" inherits="HealerGUISliderTemplate" id="4">
+				<Size>
+					<AbsDimension x="58" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPrioritySlider3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 9);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Slider name="HealerGUIBuffPrioritySlider5" inherits="HealerGUISliderTemplate" id="5">
+				<Size>
+					<AbsDimension x="58" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPrioritySlider4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 9);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Button name="HealerGUICreateBuffclassButton">
+				<Size>
+					<AbsDimension x="236" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-184"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_CREATE_BUFFCLASS"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_CREATE_BUFFCLASS"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIClassEditBox:SetText("");
+						HealerGUIClassText:SetText(HEALERGUI_NEW_BUFFCLASS);
+						HealerGUIClass:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HealerGUIDeleteBuffclassButton">
+				<Size>
+					<AbsDimension x="236" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUICreateBuffclassButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_DELETE_BUFFCLASS"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_DELETE_BUFFCLASS"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (HEALER_BUFF_CLASSES and HEALER_CUR_BUFF_CLASS) then
+							HEALER_BUFF_CLASSES[HEALER_CUR_BUFF_CLASS] = nil;
+						end
+						HealerGUIBuffclassScrollBar_Update();
+						HealerGUIBuffclassScrollButton_Click();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<CheckButton name="HealerGUIBuffPetsCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffPets" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_BUFF_PETS = 1;
+						else
+							HEALER_BUFF_PETS = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIBuffRaidCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIBuffRaid" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_BUFF_RAID = 1;
+							HealerGUIAutobuffRaidCheckButton:Show();
+							HealerGUIAutobuffRaid:Show();
+						else
+							HEALER_BUFF_RAID = nil;
+							HealerGUIAutobuffRaidCheckButton:Hide();
+							HealerGUIAutobuffRaid:Hide();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutobuffRaidCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutobuffRaid" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_AUTOBUFF_RAID = 1;
+						else
+							HEALER_AUTOBUFF_RAID = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUICastBuffInBattleCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUICastBuffInBattle" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_CAST_BUFF_IN_BATTLE = 1;
+						else
+							HEALER_CAST_BUFF_IN_BATTLE = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUICastSelfbuffInBattleCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUICastSelfbuffInBattle" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_CAST_SELFBUFF_IN_BATTLE = 1;
+						else
+							HEALER_CAST_SELFBUFF_IN_BATTLE = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutobuffTargetCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutobuffTarget" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_AUTOBUFF_TARGET = 1;
+						else
+							HEALER_AUTOBUFF_TARGET = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="HealerGUITabFrame3" hidden="true" parent="HealerGUI">
+		<Size>
+			<AbsDimension x="512" y="448"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="HealerGUITitle" relativePoint="BOTTOMLEFT"/>
+		</Anchors>
+		<Backdrop name="HealerGUIDebuffBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HealerGUIDebuffList" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_DEBUFF">
+					<Size>
+						<AbsDimension x="238" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="8" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIDebuffUnit" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_UNIT_CLASSES">
+					<Size>
+						<AbsDimension x="120" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffList" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIDebuffPriority" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_PRIORITY">
+					<Size>
+						<AbsDimension x="100" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffUnit" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIDebuffPrioritySlider1Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPriority" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="104" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIDebuffPrioritySlider2Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPrioritySlider1Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIDebuffPrioritySlider3Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPrioritySlider2Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIDebuffPrioritySlider4Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPrioritySlider3Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIDebuffPrioritySlider5Value" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="60" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPrioritySlider4Value" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIDebuffPets" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_DEBUFF_PETS">
+					<Size>
+						<AbsDimension x="84" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-216"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAutodebuff" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_AUTODEBUFF">
+					<Size>
+						<AbsDimension x="84" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPets" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIDebuffRaid" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_DEBUFF_RAID">
+					<Size>
+						<AbsDimension x="92" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAutodebuff" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAutodebuffRaid" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_AUTODEBUFF_RAID">
+					<Size>
+						<AbsDimension x="108" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffRaid" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="HealerGUIDebuffListScrollBar" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="218" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffList" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						HealerGUIDebuffListScrollBar_Update();
+					</OnShow>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(32, HealerGUIDebuffListScrollBar_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="HealerGUIDebuffListEntry1" inherits="HealerGUIDebuffListScrollButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffListScrollBar" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIDebuffListEntry2" inherits="HealerGUIDebuffListScrollButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffListEntry1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIDebuffListEntry3" inherits="HealerGUIDebuffListScrollButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffListEntry2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIDebuffListEntry4" inherits="HealerGUIDebuffListScrollButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffListEntry3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIDebuffListEntry5" inherits="HealerGUIDebuffListScrollButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffListEntry4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="HealerGUIDebuffUnitScrollBar" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="100" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffUnit" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						HealerGUIDebuffUnitScrollBar_Update();
+					</OnShow>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(32, HealerGUIDebuffUnitScrollBar_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="HealerGUIDebuffUnitEntry1" inherits="HealerGUIDebuffUnitScrollButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffUnitScrollBar" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIDebuffUnitEntry2" inherits="HealerGUIDebuffUnitScrollButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffUnitEntry1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIDebuffUnitEntry3" inherits="HealerGUIDebuffUnitScrollButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffUnitEntry2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIDebuffUnitEntry4" inherits="HealerGUIDebuffUnitScrollButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffUnitEntry3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="HealerGUIDebuffUnitEntry5" inherits="HealerGUIDebuffUnitScrollButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffUnitEntry4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Slider name="HealerGUIDebuffPrioritySlider1" inherits="HealerGUISliderTemplate" id="1">
+				<Size>
+					<AbsDimension x="100" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPriority" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 20);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Slider name="HealerGUIDebuffPrioritySlider2" inherits="HealerGUISliderTemplate" id="2">
+				<Size>
+					<AbsDimension x="100" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPrioritySlider1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 20);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Slider name="HealerGUIDebuffPrioritySlider3" inherits="HealerGUISliderTemplate" id="3">
+				<Size>
+					<AbsDimension x="100" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPrioritySlider2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 20);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Slider name="HealerGUIDebuffPrioritySlider4" inherits="HealerGUISliderTemplate" id="4">
+				<Size>
+					<AbsDimension x="100" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPrioritySlider3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 20);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Slider name="HealerGUIDebuffPrioritySlider5" inherits="HealerGUISliderTemplate" id="5">
+				<Size>
+					<AbsDimension x="100" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPrioritySlider4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(1, 20);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Button name="HealerGUISaveDebuffButton">
+				<Size>
+					<AbsDimension x="208" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-184"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_SAVE_DEBUFF"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_SAVE_DEBUFF"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (HEALER_CUR_DEBUFF and HEALER_DEBUFF_NEW[HEALER_CUR_DEBUFF]) then
+							HEALER_DEBUFF_LIST[HEALER_CUR_DEBUFF] = HEALER_DEBUFF_NEW[HEALER_CUR_DEBUFF];
+							HEALER_DEBUFF_NEW[HEALER_CUR_DEBUFF] = nil;
+							HealerGUIDebuffListScrollBar_Update();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<CheckButton name="HealerGUIDebuffPetsCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffPets" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_DEBUFF_PETS = 1;
+						else
+							HEALER_DEBUFF_PETS = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutodebuffCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutodebuff" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_AUTODEBUFF = 1;
+						else
+							HEALER_AUTODEBUFF = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIDebuffRaidCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIDebuffRaid" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_DEBUFF_RAID = 1;
+							HealerGUIAutodebuffRaidCheckButton:Show();
+							HealerGUIAutodebuffRaid:Show();
+						else
+							HEALER_DEBUFF_RAID = nil;
+							HealerGUIAutodebuffRaidCheckButton:Hide();
+							HealerGUIAutodebuffRaid:Hide();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAutodebuffRaidCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAutodebuffRaid" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_AUTODEBUFF_RAID = 1;
+						else
+							HEALER_AUTODEBUFF_RAID = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="HealerGUITabFrame3Internal" hidden="false" parent="HealerGUITabFrame3">
+		<Size>
+			<AbsDimension x="512" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="HealerGUITabFrame3" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop name="HealerGUIDebuffInternalBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HealerGUIMacroHowto" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_MACRO_HOWTO">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto1" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO1">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto2" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO2">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto1" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto3" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO3">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto2" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto4" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO4">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto3" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto5" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO5">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto4" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto50" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO50">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto5" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto51" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO51">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto50" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto52" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO52">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto51" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto53" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO53">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto52" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto54" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO54">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto53" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto6" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO6">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto54" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIMacroHowto7" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_MACRO_HOWTO7">
+					<Size>
+						<AbsDimension x="512" y="16"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIMacroHowto6" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="HealerGUITabFrame4" hidden="true" parent="HealerGUI">
+		<Size>
+			<AbsDimension x="512" y="448"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="HealerGUITitle" relativePoint="BOTTOMLEFT"/>
+		</Anchors>
+		<Backdrop name="HealerGUIMiscBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HealerGUIAnnounceAutocasting" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_ANNOUNCE_AUTOCASTING">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceAction" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_ANNOUNCE_ACTION">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceAutocasting" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceActionAll" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_ALL">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceAction" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceActionSelf" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_SELF">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceActionAll" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceOverhealing" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_ANNOUNCE_OVERHEALING">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceAction" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceOverhealingAll" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_ALL">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOverhealing" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceOverhealingSelf" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_SELF">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOverhealingAll" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceOOM" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_ANNOUNCE_OOM">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOverhealing" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceOOMAll" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_ALL">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOOM" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceOOMSelf" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_SELF">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOOMAll" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceNotReady" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_ANNOUNCE_NOT_READY">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOOM" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceNotReadyAll" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_ALL">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNotReady" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceNotReadySelf" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_SELF">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNotReadyAll" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceGotBuff" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_ANNOUNCE_GOT_BUFF">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNotReady" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceGotBuffAll" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_ALL">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceGotBuff" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceGotBuffSelf" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_SELF">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceGotBuffAll" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceOutOfReach" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_ANNOUNCE_OUT_OF_REACH">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceGotBuff" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceOutOfReachAll" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_ALL">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOutOfReach" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceOutOfReachSelf" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_SELF">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOutOfReachAll" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceNobodyNeeds" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_ANNOUNCE_NOBODY_NEEDS">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOutOfReach" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceNobodyNeedsAll" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_ALL">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNobodyNeeds" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAnnounceNobodyNeedsSelf" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_SELF">
+					<Size>
+						<AbsDimension x="96" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNobodyNeedsAll" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIShowDOTbars" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_SHOW_DOTBARS">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNobodyNeeds" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIAvoidSpiritTap" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_AVOID_SPIRIT_TAP">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIShowDOTbars" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIShowWhoClickMinimap" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_SHOW_WHO_CLICK_MINIMAP">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIAvoidSpiritTap" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIShowStatusBars" inherits="GameFontNormal" justifyH="RIGHT" text="HEALERGUI_STATUS_BAR">
+					<Size>
+						<AbsDimension x="192" y="32"/>
+					</Size>
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIShowWhoClickMinimap" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIStatusBarBuff" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_STATUS_BAR_BUFFS">
+					<Size>
+						<AbsDimension x="64" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIShowStatusBars" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIStatusBarDebuff" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_STATUS_BAR_DEBUFFS">
+					<Size>
+						<AbsDimension x="64" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIStatusBarBuff" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="HealerGUIStatusBarOverheal" inherits="GameFontNormal" justifyH="LEFT" text="HEALERGUI_STATUS_BAR_OVERHEAL">
+					<Size>
+						<AbsDimension x="64" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="HealerGUIStatusBarDebuff" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="32" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="HealerGUIAnnounceActionAllCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceAction" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceActionSelfCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_ACTION = 1;
+						else
+							HEALER_ANNOUNCE_ACTION = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceActionSelfCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceActionAll" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceActionAllCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_ACTION = 2;
+						else
+							HEALER_ANNOUNCE_ACTION = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceAutocastingCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceAutocasting" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_AUTOCASTING = 1;
+						else
+							HEALER_ANNOUNCE_AUTOCASTING = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceOverhealingAllCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOverhealing" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceOverhealingSelfCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_OVERHEALING = 1;
+						else
+							HEALER_ANNOUNCE_OVERHEALING = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceOverhealingSelfCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOverhealingAll" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceOverhealingAllCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_OVERHEALING = 2;
+						else
+							HEALER_ANNOUNCE_OVERHEALING = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceOOMAllCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOOM" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceOOMSelfCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_OOM = 1;
+						else
+							HEALER_ANNOUNCE_OOM = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceOOMSelfCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOOMAll" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceOOMAllCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_OOM = 2;
+						else
+							HEALER_ANNOUNCE_OOM = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceNotReadyAllCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNotReady" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceNotReadySelfCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_NOT_READY = 1;
+						else
+							HEALER_ANNOUNCE_NOT_READY = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceNotReadySelfCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNotReadyAll" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceNotReadyAllCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_NOT_READY = 2;
+						else
+							HEALER_ANNOUNCE_NOT_READY = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceGotBuffAllCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceGotBuff" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceGotBuffSelfCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_GOT_BUFF = 1;
+						else
+							HEALER_ANNOUNCE_GOT_BUFF = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceGotBuffSelfCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceGotBuffAll" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceGotBuffAllCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_GOT_BUFF = 2;
+						else
+							HEALER_ANNOUNCE_GOT_BUFF = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceOutOfReachAllCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOutOfReach" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceOutOfReachSelfCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_OUT_OF_REACH = 1;
+						else
+							HEALER_ANNOUNCE_OUT_OF_REACH = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceOutOfReachSelfCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceOutOfReachAll" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceOutOfReachAllCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_OUT_OF_REACH = 2;
+						else
+							HEALER_ANNOUNCE_OUT_OF_REACH = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceNobodyNeedsAllCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNobodyNeeds" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceNobodyNeedsSelfCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_NOBODY_NEEDS = 1;
+						else
+							HEALER_ANNOUNCE_NOBODY_NEEDS = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAnnounceNobodyNeedsSelfCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAnnounceNobodyNeedsAll" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIAnnounceNobodyNeedsAllCheckButton:SetChecked(0);
+						if (this:GetChecked()) then
+							HEALER_ANNOUNCE_NOBODY_NEEDS = 2;
+						else
+							HEALER_ANNOUNCE_NOBODY_NEEDS = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIShowDOTbarsCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIShowDOTbars" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_SHOW_DOTBARS = 1;
+						else
+							HEALER_SHOW_DOTBARS = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIAvoidSpiritTapCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIAvoidSpiritTap" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_AVOID_SPIRIT_TAP = 1;
+						else
+							HEALER_AVOID_SPIRIT_TAP = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIShowWhoClickMinimapCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIShowWhoClickMinimap" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_SHOW_WHO_CLICK_MINIMAP = 1;
+						else
+							HEALER_SHOW_WHO_CLICK_MINIMAP = nil;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIShowStatusBarsBuffCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIShowStatusBars" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_STATUS_BAR_HIDE_BUFFS = false;
+						else
+							HEALER_STATUS_BAR_HIDE_BUFFS = true;
+						end
+						Healer_Save();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIShowStatusBarsDebuffCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIStatusBarBuff" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_STATUS_BAR_HIDE_DEBUFFS = false;
+						else
+							HEALER_STATUS_BAR_HIDE_DEBUFFS = true;
+						end
+						Healer_Save();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="HealerGUIShowStatusBarsOverhealCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIStatusBarDebuff" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (this:GetChecked()) then
+							HEALER_STATUS_BAR_HIDE_OVERHEAL = false;
+						else
+							HEALER_STATUS_BAR_HIDE_OVERHEAL = true;
+						end
+						Healer_Save();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="HealerGUIClass" movable="true" parent="UIParent" enableMouse="true" hidden="true" toplevel="true">
+		<Size>
+			<AbsDimension x="256" y="112"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop name="HealerGUIClassBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\DialogFrame\UI-DialogBox-Background">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HealerGUIClassText" inherits="GameFontNormal" justifyH="CENTER" text="HEALERGUI_NEW_HEALCLASS">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Color r="1.0" g="1.0" b="1.0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="HealerGUIClassEditBox" letters="128" historyLines="0" multiline="false" autoFocus="true" numeric="false">
+				<Size>
+					<AbsDimension x="224" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerGUIClassText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size>
+								<AbsDimension x="120" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size>
+								<AbsDimension x="120" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</EditBox>
+			<Button name="HealerGUIClassOK">
+				<Size>
+					<AbsDimension x="96" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_OK"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_OK"/>
+				<Scripts>
+					<OnClick>
+						local text = string.lower(HealerGUIClassEditBox:GetText());
+						if (HealerGUIClassText:GetText() == HEALERGUI_NEW_HEALCLASS) then
+							if (not HEALER_HEAL_CLASSES) then
+								HEALER_HEAL_CLASSES = {};
+							end
+							if (not HEALER_HEAL_CLASSES[text]) then
+								HEALER_HEAL_CLASSES[text] = {};
+							end
+							HealerGUIHealclassScrollBar_Update();
+						elseif (HealerGUIClassText:GetText() == HEALERGUI_NEW_BUFFCLASS) then
+							if (not HEALER_BUFF_CLASSES) then
+								HEALER_BUFF_CLASSES = {};
+							end
+							if (not HEALER_BUFF_CLASSES[text]) then
+								HEALER_BUFF_CLASSES[text] = {};
+							end
+							HealerGUIBuffclassScrollBar_Update();
+						elseif (HealerGUIClassText:GetText() == NUKERGUI_NEW_NUKECLASS) then
+							if (not NUKER_NUKE_CLASSES) then
+								NUKER_NUKE_CLASSES = {};
+							end
+							if (not NUKER_NUKE_CLASSES[text]) then
+								local start, stop, nukeclass, a, b, c = string.find(text, "^(.+) %- (.+) %- (.+) %- (.+)$");
+								if (not nukeclass) then
+									start, stop, nukeclass, a, b = string.find(text, "^(.+) %- (.+) %- (.+)$");
+								end
+								if (not nukeclass) then
+									start, stop, nukeclass, a = string.find(text, "^(.+) %- (.+)$");
+								end
+								if (nukeclass and a and b and NUKER_NUKE_CLASSES[nukeclass .. " - " .. a .. " - " .. b]) then
+									-- ooh, copy the abilities from the parent
+									NUKER_NUKE_CLASSES[text] = {};
+									for priority, data in NUKER_NUKE_CLASSES[nukeclass .. " - " .. a .. " - " .. b] do
+										NUKER_NUKE_CLASSES[text][priority] = data;
+									end
+								elseif (nukeclass and a and NUKER_NUKE_CLASSES[nukeclass .. " - " .. a]) then
+									-- ooh, copy the abilities from the parent
+									NUKER_NUKE_CLASSES[text] = {};
+									for priority, data in NUKER_NUKE_CLASSES[nukeclass .. " - " .. a] do
+										NUKER_NUKE_CLASSES[text][priority] = data;
+									end
+								elseif (nukeclass and NUKER_NUKE_CLASSES[nukeclass]) then
+									-- ooh, copy the abilities from the parent
+									NUKER_NUKE_CLASSES[text] = {};
+									for priority, data in NUKER_NUKE_CLASSES[nukeclass] do
+										NUKER_NUKE_CLASSES[text][priority] = data;
+									end
+								end
+							end
+							NukerGUINukeclass:SetText(text);
+							NukerGUI_SetUp();
+						end
+						HealerGUIClass:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="HealerGUIClassCancel">
+				<Size>
+					<AbsDimension x="96" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_CANCEL"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_CANCEL"/>
+				<Scripts>
+					<OnClick>
+						HealerGUIClass:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames, "HealerGUI");
+			</OnLoad>
+			<OnMouseUp>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton")) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="NukerGUI" movable="true" parent="UIParent" enableMouse="true" hidden="true" toplevel="true">
+		<Size>
+			<AbsDimension x="512" y="442"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop name="NukerGUIDebuffBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="NukerGUITitle" justifyH="CENTER" justifyV="CENTER" inherits="GameFontNormal" text="NUKERGUI_TITLE">
+					<Size>
+						<AbsDimension x="416" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="NukerGUIButton">
+				<Size>
+					<AbsDimension x="96" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="HEALERGUI_CLOSE"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="HEALERGUI_CLOSE"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						NukerGUI:Hide();
+						Healer_Save();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames, "NukerGUI");
+			</OnLoad>
+			<OnMouseUp>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton")) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="NukerGUIInternal1" hidden="false" parent="NukerGUI">
+		<Size>
+			<AbsDimension x="512" y="410"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="NukerGUITitle" relativePoint="BOTTOMLEFT"/>
+		</Anchors>
+		<Backdrop name="NukerGUIInternal1Backdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="NukerGUINukeclass" inherits="GameFontNormal" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="224" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="NukerGUIPreviousNukeclassButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="NukerGUINukeclass" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnClick>
+						local curclass = NukerGUINukeclass:GetText();
+						local lastclass;
+						for nukeclass, data in NUKER_NUKE_CLASSES do
+							if (nukeclass == curclass and lastclass) then
+								NukerGUINukeclass:SetText(lastclass);
+								NukerGUI_SetUp();
+								return;
+							end
+							lastclass = nukeclass;
+						end
+						NukerGUINukeclass:SetText(lastclass);
+						NukerGUI_SetUp();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="NukerGUICreateNukeclassButton">
+				<Size>
+					<AbsDimension x="96" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="NukerGUIPreviousNukeclassButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="NUKERGUI_CREATE_NUKECLASS"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="NUKERGUI_CREATE_NUKECLASS"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						HealerGUIClassEditBox:SetText("");
+						HealerGUIClassText:SetText(NUKERGUI_NEW_NUKECLASS);
+						HealerGUIClass:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="NukerGUINextNukeclassButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="NukerGUINukeclass" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnClick>
+						local curclass = NukerGUINukeclass:GetText();
+						local nextclass;
+						local picknext;
+						for nukeclass, data in NUKER_NUKE_CLASSES do
+							if (not nextclass or picknext) then
+								nextclass = nukeclass;
+								picknext = nil;
+							end
+							if (curclass == nukeclass) then
+								picknext = 1;
+							end
+						end
+						NukerGUINukeclass:SetText(nextclass);
+						NukerGUI_SetUp();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="NukerGUIDeleteNukeclassButton">
+				<Size>
+					<AbsDimension x="96" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="NukerGUINextNukeclassButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="DialogButtonNormalText" text="NUKERGUI_DELETE_NUKECLASS"/>
+				<HighlightText inherits="DialogButtonHighlightText" text="NUKERGUI_DELETE_NUKECLASS"/>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						if (NUKER_NUKE_CLASSES and NukerGUINukeclass:GetText() and NUKER_NUKE_CLASSES[NukerGUINukeclass:GetText()]) then
+							NUKER_NUKE_CLASSES[NukerGUINukeclass:GetText()] = nil;
+							NukerGUINukeclass:SetText();
+						end
+						NukerGUI_SetUp();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="NukerGUIInternal2" hidden="false" parent="NukerGUI">
+		<Size>
+			<AbsDimension x="512" y="44"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="NukerGUINukeclass" relativePoint="BOTTOM"/>
+		</Anchors>
+		<Backdrop name="NukerGUIInternal1Backdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="NukerGUIAbility" inherits="GameFontNormal" justifyH="CENTER" text="NUKERGUI_ABILITY">
+					<Size>
+						<AbsDimension x="192" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="NukerGUICheckDebuff" inherits="GameFontNormal" justifyH="CENTER" text="NUKERGUI_CHECK_DEBUFF">
+					<Size>
+						<AbsDimension x="128" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="NukerGUIDelay" inherits="GameFontNormal" justifyH="CENTER" text="NUKERGUI_DELAY">
+					<Size>
+						<AbsDimension x="192" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="NukerGUICheckDebuff" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+		</Frames>
+	</Frame>
+	<Frame name="NukerGUIAbilityTemplate" enableMouse="true" virtual="true">
+		<Size>
+			<AbsDimension x="512" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentAbility" inherits="GameFontNormal" justifyH="LEFT" text="" hidden="true">
+					<Size>
+						<AbsDimension x="150" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="42" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDelaySliderValue" inherits="GameFontNormal" justifyH="LEFT" text="" hidden="true">
+					<Size>
+						<AbsDimension x="48" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="460" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentIcon">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentTexture"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnMouseDown>
+						if (not Nuker_DropSpell()) then
+							Nuker_PickupAbility();
+						end
+					</OnMouseDown>
+				</Scripts>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>
+			<CheckButton name="$parentDebuffCheckButton" inherits="UICheckButtonTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="240" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						NukerGUIAbilityDebuffCheckButtonOnClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Slider name="$parentDelaySlider" inherits="OptionsSliderTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="136" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="320" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						HealerGUI_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						NukerGUIAbilityDelaySliderOnValueChanged();
+					</OnValueChanged>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						this:SetMinMaxValues(0, 71);
+						this:SetValueStep(1);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				Nuker_DropSpell();
+			</OnMouseDown>
+			<OnReceiveDrag>
+				Nuker_DropSpell();
+			</OnReceiveDrag>
+		</Scripts>
+	</Frame>
+	<Frame name="NukerGUIInternal3" hidden="false" parent="NukerGUI">
+		<Size>
+			<AbsDimension x="512" y="370"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="NukerGUINukeclass" relativePoint="BOTTOM"/>
+		</Anchors>
+		<Backdrop name="NukerGUIInternal1Backdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<Frame name="NukerGUIAbility1" inherits="NukerGUIAbilityTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-44"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="NukerGUIAbility2" inherits="NukerGUIAbilityTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="NukerGUIAbility3" inherits="NukerGUIAbilityTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="NukerGUIAbility4" inherits="NukerGUIAbilityTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="NukerGUIAbility5" inherits="NukerGUIAbilityTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="NukerGUIAbility6" inherits="NukerGUIAbilityTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="NukerGUIAbility7" inherits="NukerGUIAbilityTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="NukerGUIAbility8" inherits="NukerGUIAbilityTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="NukerGUIAbility9" inherits="NukerGUIAbilityTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="NukerGUIAbility10" inherits="NukerGUIAbilityTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerGUIAbility9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+	<StatusBar name="NukerAbilityTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="128" y="14"/>
+		</Size>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontDarkGraySmall" text="I am the cheetah">
+					<Size>
+						<AbsDimension x="128" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<Color r="0" g="1.0" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() - 1);
+				this:SetBackdropColor(0.7, 0.7, 0.7, 0.3);
+				getglobal(this:GetName() .. "BarTexture"):SetVertexColor(0.0, 1.0, 0.0, 0.5);
+			</OnLoad>
+		</Scripts>
+		<BarTexture name="$parentBarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarColor r="0.0" g="1.0" b="0.0"/>
+	</StatusBar>
+	<Frame name="NukerAbilities" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="128" y="140"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<StatusBar name="NukerAbility1" inherits="NukerAbilityTemplate" movable="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseUp>
+						if (this.isMoving) then
+							this:StopMovingOrSizing();
+							this.isMoving = false;
+						end
+					</OnMouseUp>
+					<OnMouseDown>
+						if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton")) then
+							this:StartMoving();
+							this.isMoving = true;
+						end
+					</OnMouseDown>
+					<OnHide>
+						if (this.isMoving) then
+							this:StopMovingOrSizing();
+							this.isMoving = false;
+						end
+					</OnHide>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="NukerAbility2" inherits="NukerAbilityTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerAbility1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="NukerAbility3" inherits="NukerAbilityTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerAbility2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="NukerAbility4" inherits="NukerAbilityTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerAbility3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="NukerAbility5" inherits="NukerAbilityTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerAbility4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="NukerAbility6" inherits="NukerAbilityTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerAbility5" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="NukerAbility7" inherits="NukerAbilityTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerAbility6" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="NukerAbility8" inherits="NukerAbilityTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerAbility7" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="NukerAbility9" inherits="NukerAbilityTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerAbility8" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="NukerAbility10" inherits="NukerAbilityTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NukerAbility9" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+	</Frame>
+
+	<Frame name="HealerStatus" parent="UIParent" hidden="false">
+		<Size>
+			<AbsDimension x="128" y="140"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<StatusBar name="HealerStatusBuff" inherits="NukerAbilityTemplate" movable="true" enableMouse="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseUp>
+						if (this.isMoving) then
+							this:StopMovingOrSizing();
+							this.isMoving = false;
+						end
+					</OnMouseUp>
+					<OnMouseDown>
+						if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton")) then
+							this:StartMoving();
+							this.isMoving = true;
+						end
+					</OnMouseDown>
+					<OnHide>
+						if (this.isMoving) then
+							this:StopMovingOrSizing();
+							this.isMoving = false;
+						end
+					</OnHide>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="HealerStatusDebuff" inherits="NukerAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerStatusBuff" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="HealerStatusHeal" inherits="NukerAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealerStatusDebuff" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</StatusBar>
+
+		</Frames>
+	</Frame>
+
+</Ui>

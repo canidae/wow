@@ -1,0 +1,10 @@
+[b]Healer/Nuker 6.6 -- 2006.07.16[/b]
+[ul]
+[li]Fixed error triggered by healing bandaged target (line 4115 error).  Not thoroughly tested.
+[li]Fixed error in Healer_PrintBuffsNeeded that occured when a printed spell didn't have a rank.
+[li]Updated toc to 1.11
+[li]Modified remove debuff to remove unselected debuffs out of battle (like it originally did).  In other words, if a debuff is deselected in the GUI, it will not be removed during battle.
+[li]Added a check in UpdatePlayerDataWrapper in case time some how wraps around.  [i]Might[/i] help buffing over and over problem.
+[li]Fixed German translation of Dampen Magic (thanks Tamaron)
+[li]Updated to latest version of the C-addon.
+[/ul]

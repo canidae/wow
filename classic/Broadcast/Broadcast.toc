@@ -1,0 +1,6 @@
+## Interface: 11100
+## Title: Broadcast
+## Notes: This addon simplifies broadcasting messages to other clients
+## Author: canidae
+## SavedVariablesPerCharacter: Broadcast_channel
+Broadcast.xml

@@ -1,0 +1,488 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="VisibleTargets.lua"/>
+	<Script file="localization-gui-default.lua"/>
+	<Frame name="VisibleTargets" hidden="false">
+		<Scripts>
+			<OnEvent>
+				VT_OnEvent();
+			</OnEvent>
+			<OnLoad>
+				VT_OnLoad();
+			</OnLoad>
+			<OnUpdate>
+				VT_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="VT_CheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="175" y="31"/>
+		</Size>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCheckButtonText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="">
+					<Size>
+						<AbsDimension x="143" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentCheckButton" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						VT_UpdateSetting();
+					</OnClick>
+					<OnEnter>
+						VT_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				VT_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="VT_SliderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="175" y="31"/>
+		</Size>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Slider name="$parentSlider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="165" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-2.5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						VT_ShowTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						VT_UpdateSetting();
+					</OnValueChanged>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText();
+						getglobal(this:GetName() .. "Low"):SetText();
+						getglobal(this:GetName() .. "High"):SetText();
+						this:SetMinMaxValues(0, 1);
+						this:SetValueStep(0.01);
+					</OnLoad>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				VT_ShowTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="VT_TargetTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="128" y="31"/>
+		</Size>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="">
+					<Size>
+						<AbsDimension x="118" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="5" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentBar" hidden="false">
+				<Size>
+					<AbsDimension x="118" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture name="$parentTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentText" inherits="GameFontDarkGraySmall" text="VT target">
+							<Size>
+								<AbsDimension x="118" y="9"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Texture"):SetVertexColor(0.0, 1.0, 0.0, 0.6);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				-- target this target
+				if (this.target) then
+					TargetUnit(this.target);
+				end
+			</OnMouseDown>
+		</Scripts>
+	</Frame>
+	<Frame name="VT_GUI" inherits="OptionFrameBoxTemplate" hidden="true" parent="UIParent" enableMouse="true" movable="true" toplevel="true" frameStrata="BACKGROUND">
+		<Size>
+			<AbsDimension x="210" y="232"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop name="VTGUIBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="275" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="VT_GUITitle" inherits="GameFontNormal" text="VT_GUI_title">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="VT_GUI">
+							<Offset>
+								<AbsDimension x="0" y="-1" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="Genesis_GUICloseButton" inherits="UIPanelCloseButton" frameStrata="DIALOG">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="VT_GUIShowDead" inherits="VT_CheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "CheckButtonText"):SetText(VT_GUI_show_dead);
+						getglobal(this:GetName() .. "CheckButton").variable = "VT_data[\"show_dead\"]";
+					</OnLoad>
+					<OnShow>
+						getglobal(this:GetName() .. "CheckButton"):SetChecked(VT_data["show_dead"]);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="VT_GUIShowFriendly" inherits="VT_CheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="VT_GUIShowDead" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "CheckButtonText"):SetText(VT_GUI_show_friendly);
+						getglobal(this:GetName() .. "CheckButton").variable = "VT_data[\"show_friendly\"]";
+					</OnLoad>
+					<OnShow>
+						getglobal(this:GetName() .. "CheckButton"):SetChecked(VT_data["show_friendly"]);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="VT_GUIReverseSort" inherits="VT_CheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="VT_GUIShowFriendly" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "CheckButtonText"):SetText(VT_GUI_reverse_sort);
+						getglobal(this:GetName() .. "CheckButton").variable = "VT_data[\"reverse_sort\"]";
+					</OnLoad>
+					<OnShow>
+						getglobal(this:GetName() .. "CheckButton"):SetChecked(VT_data["reverse_sort"]);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="VT_GUIFrameAmount" inherits="VT_SliderTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="VT_GUIReverseSort" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "SliderLow"):SetText(VT_GUI_frame_amount);
+						getglobal(this:GetName() .. "Slider").variable = "VT_data[\"frame_amount\"]";
+						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 10);
+						getglobal(this:GetName() .. "Slider"):SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+						getglobal(this:GetName() .. "Slider"):SetValue(VT_data["frame_amount"]);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="VT_GUISortAlgorithm" inherits="VT_SliderTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="VT_GUIFrameAmount" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "SliderLow"):SetText(VT_GUI_sort_algorithm);
+						getglobal(this:GetName() .. "Slider").variable = "VT_data[\"sort_algorithm\"]";
+						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 2);
+						getglobal(this:GetName() .. "Slider"):SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+						getglobal(this:GetName() .. "Slider"):SetValue(VT_data["sort_algorithm"]);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="VT_GUIUpdateInterval" inherits="VT_SliderTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="VT_GUISortAlgorithm" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "SliderLow"):SetText(VT_GUI_update_interval);
+						getglobal(this:GetName() .. "Slider").variable = "VT_data[\"update_interval\"]";
+						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 5);
+						getglobal(this:GetName() .. "Slider"):SetValueStep(0.1);
+					</OnLoad>
+					<OnShow>
+						getglobal(this:GetName() .. "Slider"):SetValue(VT_data["update_interval"]);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames, "VT_GUI");
+			</OnLoad>
+			<OnMouseUp>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if ((not this.isLocked or this.isLocked == 0) and arg1 == "LeftButton") then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="VT_Target1" inherits="VT_TargetTemplate" movable="true" enableMouse="true">
+		<Anchors>
+			<Anchors point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnMouseUp>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if ((not this.isLocked or this.isLocked == 0) and (arg1 == "LeftButton") and VT_GUI:IsVisible()) then
+					this:StartMoving();
+					this.isMoving = true;
+				else
+					-- target this target
+					if (this.target) then
+						TargetUnit(this.target);
+					end
+				end
+			</OnMouseDown>
+			<OnHide>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="VT_Target2" inherits="VT_TargetTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="VT_Target1" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension y="5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="VT_Target3" inherits="VT_TargetTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="VT_Target2" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension y="5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="VT_Target4" inherits="VT_TargetTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="VT_Target3" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension y="5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="VT_Target5" inherits="VT_TargetTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="VT_Target4" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension y="5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="VT_Target6" inherits="VT_TargetTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="VT_Target5" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension y="5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="VT_Target7" inherits="VT_TargetTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="VT_Target6" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension y="5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="VT_Target8" inherits="VT_TargetTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="VT_Target7" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension y="5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="VT_Target9" inherits="VT_TargetTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="VT_Target8" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension y="5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="VT_Target10" inherits="VT_TargetTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="VT_Target9" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension y="5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+</Ui>

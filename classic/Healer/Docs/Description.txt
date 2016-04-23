@@ -1,0 +1,210 @@
+[b]The Healer add-on was originally written by Canidae.  It is currently maintained here by pilardi.[/b]
+
+[big]Main purpose of this addon[/big]
+* Heal
+* Debuff
+* Buff
+
+The healing portion of this add-on has been rewritten by the original author (canidae) and is available [link='http://ui.worldofwar.net/ui.php?id=755']on a different page[/link].  The buffing, debuffing, and 'nuking' parts are still maintained here by me (pilardi).
+
+This addon got more secrets than what the name implies and despite its name this addon can be most useful even for the classes without a single healing spell. Read on, and you'll discover what i spend most of my time doing when i'm not working or playing :)  
+Since this addon now consist of healing ('Healer') and damage dealing ('Nuker') i'll explain the healing part first, then the damage dealing part.
+
+[b][big]Healer[/big][/b]
+[big]In the beginning...[/big]
+I guess you could say this addon really started out as a simple macro of about 230 characters. It simply iterated through the partymembers and healed the first member with less than 75% hp left, because picking the one with least hp by just using a macro proved to be most dificult. So i went on to find an addon to do this for me. Disappointed in the alternatives, i decided to make my own. And the addon you're looking at now is the result of very many hours of coding and debugging.
+
+[big]Localization[/big]
+The addon should work for english clients, german clients require a bit more translation.
+
+[big]How to heal with this addon[/big]
+This addon has two different 'modes' when it comes to healing. One i'll refer to as 'target healing' and the other i'll refer to as 'most wounded healing'. You can also heal by keeping the mouse over someone and click on a button (preferably a mousebutton), but this healing simply use 'target healing' and 'normal healing' (which is 'most wounded healing except the addon will believe the most wounded player is the one you clicked on).
+
+[big]Target healing[/big]
+When you got a friendly player as your target the addon will enter the target healing mode. In this mode there's two 'sub modes' depending on whether your target is in your party/raid or not.
+If your target is in your party/raid the addon will always use the best rank of the healing spell with the lowest 'percent' value in the healclass you use that you can afford to cast. The addon consider that player to be a tank or someone that may take alot of damage within a short timespan. If the addon was to start healing when it sees this player needs healing that player would be dead before the spellcasting finish.
+If your target isn't in your party/raid the addon will use a healing spell that's strong enough to barely restore that players hp, but nothing more.
+
+[big]Most wounded healing[/big]
+If you got a hostile target or no target at all the addon will enter the most wounded healing mode. This mode is fairly simple, it'll figure out who's most wounded in your party/raid and heal that person.
+
+[big]Mouse healing[/big]
+As of version 4.0 you can now heal people by keeping the mouse pointer over your player frame (top left corner), party frame (below your player frame), 'raid pullout frame' (those you can drag out to the game field from the raid overview) or on characters in the game field (except your own character) by clicking on a key you've specified in 'key bindings'.
+You also have to associate a healclass with the buttons as well as certain key bindings are 'tank healing' while others are 'normal healing'.
+Since this is fairly hard to explain only using text i suggest you take a look at the movie i made about healing. However, here's how you generally do it:
+[ol]
+[li]Press 'escape' to get up the game menu. Click on 'Key Bindings' and scroll down until you find the 'Healer' section.
+[li]Bind a button (can be both mousebutton and a keybutton, but i suggest you use a mousebutton) to 'Mousekey 1', 'Mousekey 2', 'Mousekey 3' and/or 'Mousekey 4'.
+[li]Write '/healer' to get up the GUI for the addon.
+[/ol]
+
+Select a healclass and click on the button below 'Healclass mousekey 1' so it changes text from 'None' to the name of the healclass you suggested. Do the same for the other buttons below.
+
+[big]WhisperBuff[/big]
+This feature makes it possible to let your party members to choose their own buffs.  This is quite useful when you, for example, have a druid as offtank (no 'blessing of salvation') and still want to buff the other druids with 'blessing of salvation'.  Its usage is actually very simple, just tell your partymembers to whisper you what buffs they want and don't want and the addon will sort the rest.  To use, a player whispers to you a buff_shortcut (see below), from then on, Healer will cast that buff on the player when needed.  Note: for this feature to work, a buffclass must exist in the GUI and set to 'Auto'.
+
+[i]Here are the whisper related commands:[/i]
+/healer wchelp -- prints help page for whisper commands
+/healer wclistbuffs -- lists all accepted whisper buff_shortcuts.
+/healer wclist -- list all current whisper overrides.
+/healer wcblacklist buff_shortcut -- adds spell to the blacklist
+/healer wcwhitelist buff_shortcut -- removes spell from the blacklist
+/healer wcblacklist -- lists all spells on blacklist
+/healer wcsetbuffoverride [name] [buff_shortcut] -- overrides buffclass and casts [buff_shortcut] on [name]
+/healer wcreset -- clears overrides and blacklist
+/healer wcdisable -- disable whisper feature
+/healer wcenable -- enable whisper feature
+
+[i]Here are some example whispers:[/i]
+might -- This will start casting 'Blessing of Might' on the person who whispered.
+no thorns -- This will no longer cast 'Thorns' on the person who whispered.
+default -- This will restore the default buffs for the person who whispered.
+listbuffs -- This will whisper a list of accepted whisper buff_shortcuts to that person.
+
+Auto healing/buffing/debuffing
+This addon is capable of healing/buffing/debuffing with a single keypress.
+
+[big]Commands[/big]
+'/healer' - shows the GUI.
+'/healer help' - lists all available commands.
+'/healer set <player/party/pet/raid/raidpet> <0.0-1.0>' - set healing priority of a unit, 0 means no healing
+'/healer overheal <1-100>' - max overhealing allowed when using autocancel
+'/healer join <channel>' - join a healing channel
+'/healer broadcast' - broadcast the healing channel
+'/healer autoheal [healclass]' - heal while moving (can only be instant spells in healclass)
+'/healer autobuff [buffclass]' - buff while moving
+'/healer autodebuff <on/off>' - debuff while moving
+'/healer tank' - set a tank to always heal (don't use unless you know what it does)
+'/healer party' - only heal party
+'/healer raid' - heal entire raid
+
+[i]/healer set <player/party/pet/raid/raidpet> <0.0-1.0>[/i]
+Change the priority of a member in the group. This priority only works on healing, and the value you set should never exceed 1.0. Setting the value to 0 of a party member means the addon never will heal that kind of party members.
+
+[i]/healer overheal[/i]
+Set the max allowed overhealing done before the autocancel feature interrupts the healing. This value defaults to 35%. This means that if you're healing someone that need 1000 hp restored with a spell that restores 1000 hp, then the spellcasting won't be interrupted before someone else heals the player for 350 hp or more (35% or more of your spellcasting would then go to waste). If you want to change this, then keep these numbers in your mind:
+1%-5% max overhealing: dangerous, possibly genocide. not recommended.
+5%-15% max overhealing: risky, but very manasaving. not recommended either.
+15%-40% max overhealing: fairly safe, fairly manasaving. recommended.
+40%-100% max overhealing: stupidity. max lifesaving, but mana will burn.
+
+[i]/healer join <channel>[/i]
+Sets the channel used for cooperative healing and showing healbars.
+
+[i]/healer broadcast[/i]
+Broadcasts the channel you're in for cooperative healing & showing healbars. You need to do this every time you join a party/raid (remember to set a channel first with '/healer join <channel>' if you haven't already).
+
+[i]/healer autoheal [healclass][/i]
+[i]/healer autobuff [buffclass][/i]
+[i]/healer autodebuff <on/off>[/i]
+Sets up which tasks will be executed when Healer Autocast is called.  Healer Autocast can be called via macro (Healer_AutoCast()) or keybinding.
+
+[i]/healer tank[/i]
+Sets your current target as a 'tank'. This means that the addon will _only_ heal this person unless you target another friendly target. This can come in handy when you're at a tough boss who use alot of fear or if you need to attack and heal one specific player at the same time. To turn 'tank mode' off make sure you don't have a friendly target and write '/healer tank' again. I recommend you make a macro for this, and remember to turn it off when you don't need it anymore.
+
+[i]/healer party[/i]
+Makes the addon only heal your party and not the entire raid.
+
+[i]/healer raid[/i]
+Will make the addon heal the entire raid and not just your party.
+
+[big]Macros[/big]
+This addon requires the user to create macros. To see how you should create the macros, open the GUI ('/healer'), click on the 'Debuff' tab and read how to do it there.  It is also very important that you write the capitalization correct. For example, if you write 'healer_heal' instead of 'Healer_Heal' you will get an error.
+
+[big]Movies[/big]
+Since this addon is a bit more advanced than the most common addons i've made a couple movies to show how to do the different stuff you can do with this addon. These movies are unedited and encoded with xvid (won't play in windows media player 'out-of-the-box', if you need a player i suggest you try 'vlc' which you can get for free here: [link='http://www.videolan.org/']http://www.videolan.org/[/link]). The quality is not great, but i hope it's good enough to see what's going on.
+[link='http://exent.net/~canidae/wow/movies/healer/healer-heal.avi']Healing[/link] (28 minutes & 29 seconds long. 104MB. low quality to keep the size down).
+[link='http://exent.net/~canidae/wow/movies/healer/healer-buff.avi']Buffing[/link] (9 minutes & 45 seconds long. 72MB. medium quality. rearranged some buttons after i made this movie).
+[link='http://exent.net/~canidae/wow/movies/healer/healer-debuff.avi']Debuffing[/link] (12 minutes & 48 seconds long. 94MB. medium quality. rearranged some buttons after i made this movie. the little fight in there was not a show of power, if you want to see a power show off then go talk to a lock/mage/rogue, not a druid :p)
+
+[big]Feedback[/big]
+I'm most interested in feedback (suggestions, bugreports and comments are welcome), but please use this forum and don't send me private messages. 
+
+[big]Thanks[/big]
+Several people have helped with this addon:
+[b]canidae[/b] - created and maintained the add-on.
+pilardi - created the WhisperBuff feature and maintained the add-on from version 5.6 up.
+Screamerka, Kreea, Hybbe, Manix, Meneaer, Forestelf - people in 'Heroes of Beer' on Dragonmaw (Europe) who've contributed alot with testing and suggestions.
+Soulkeeper, moopy, Azure, JohnnieV, cacatua, trankillity, Umberto Brisas, kinetikui, Gamca - for great feedback and suggestions.
+Ogaroth - for fixing the weapon buff bug.
+Kilrogg, Fenjor, Hitmaster, wendano - for a german localization, feedback and suggestions.
+jebemtimater, Meretseger - french localization.
+Abrielle, SaneMadman - code fixes.
+many, many other people for making suggestions in the comments section.
+
+__________________________________________________
+
+[b][big]Nuker[/big][/b]
+[big]What is it?[/big]
+I recently started a new character (hunter) that i've been playing for a while. it's most fun to play, but i noticed that i always used the same sequence of spells when i attacked and thought 'hmm, why do i have to play great balls of fire on my keyboard for every mob i kill?', so i decided to waste alot more hours on making an addon that lets me simply click 1 button to use the spells i always use.
+
+[big]How do i use it?[/big]
+Like Healer, this addon require some manual work to set up, but it's not as advanced as healer by far.
+Since it's late, i'm tired and school has been going straight to hell the last couple months i'll only make a simple 'step-by-step' list here for now:
+[ol]
+[li]write '/nuker' in your chatwindow
+[li]open your spellbook
+[li]pick up & drop or drag a spell/ability from your spellbook to the gui of nuker
+[li]repeat step 3 until you got all the spells/abilities you want to use listed in the gui
+[li]sort your spells/abilities in the order you want them to be used
+[li]for those spells/abilities that puts a debuff of the same on your target i suggest you make sure the 'check for debuff' box is marked (this will make the addon use this spell again if the target lose the debuff)
+[li]if you don't want to use a spell/ability again before a certain time has passed then you can set the delay slider to a desired value. if you've checked the 'check for debuff' and set a delay value the spell/ability will be used when the delay is over even if the target got a debuff (this is useful if you're in a party with other players of the same class who's using the same spells)
+[li]create a macro and write this in the macro: /script Nuker_Attack('default');
+[li]drag your macro to your action bar, target an enemy and click on your macro
+[/ol]
+
+[big]Overriding a nukeclass[/big]
+With Nuker 1.0 you can now create a nukeclass that can override another nukeclass. There's 3 different settings you can use to override a nukeclass:
+- target type (beast, dragonkin, elemental, humanoid...)
+- target class (warrior, shaman, mage...)
+- target name ('young jungle stalker', 'ragnaros'... does not have to be npc's, players works as well)
+To override another nukeclass you have to create a new nukeclass that got the same name as the nukeclass you want to override followed by the type/class/name. If you create a newclass that starts with the same name as another nukeclass the addon will copy the spells/abilties from that nukeclass to the new nukeclass. Let's say you got a nukeclass named 'range', here are some examples how you can override that nukeclass:
+'range - elemental' - whenever you use nukeclass 'range' and are fighting elementals the addon will use nukeclass 'range - elemental' instead and the abilities/spells listed there.
+'range - rumbling exile' - if you're fighting a mob named 'rumbling exile' the addon will use nukeclass 'range - rumbling exile' whenever you use nukeclass 'range'.
+
+[big]Override combinations[/big]
+Here are the different combinations you can use to override a nukeclass ranked after what order they will be used. #1, #2 and #3 are in reality useless as 'target name' tends to be unique, but there's an exception when a player is named the same as a npc. If a player is named 'Ragnaros' and you got a nukeclass made especially for 'Ragnaros' (the mc boss), but you don't want to use that class against player 'Ragnaros' you can override your '[nukeclass] - Ragnaros' with '[nukeclass] - Humanoid - Ragnaros' (Ragnaros is 'elemental', players are 'humanoid' (druids might appear as 'beast' when shapeshifted)).
+[ol]
+[li][nukeclass] - [target type] - [target class] - [target name]
+[li][nukeclass] - [target type] - [target name]
+[li][nukeclass] - [target class] - [target name]
+[li][nukeclass] - [target name]
+[li][nukeclass] - [target type] - [target class]
+[li][nukeclass] - [target type]
+[li][nukeclass] - [target class]
+[/ol]
+
+[big]Notes[/big]
+What you write in the macro is case sensitive. If you write 'nuker_attack' instead of 'Nuker_Attack' IT WILL NOT WORK.
+If you create another nukeclass than the default you'll have to change the macro accordingly, that is, replace 'default' with the name of your class. For example: /script Nuker_Attack('imba');
+
+[big]What's up with that weird bar on my screen?[/big]
+This is to easier see which spells/abilities are ready and which will be used next. There's a bar that shows how long it is until the ability/spell is ready and each spell/ability got a certain color. So far these colors are:
+White: spell/ability is ready and is the next spell/ability that will be used the next time you hit the macro
+Green: spell/ability is ready
+Red: spell/ability is not ready
+Blue: target seems to be immune to this spell/ability
+Gray: this ability/spell is ready, but we won't use it yet (target got debuff or there's still some time left before we want to use the spell/ability)
+
+[big]What issues are there?[/big]
+- Spells/Abilities that require a certain event to happen (for example: mongoose bite (require player to dodge an attack)) doesn't work because the addon will always see such spells/abilities as 'ready' even though they aren't. However, if you only got 1 of these abilities you can add it last in a nukeclass and it will be used if you get that special event and spam the macro.
+- Spells/Abilities that occurs on next melee hit does confuse the addon, but they still seem to work.
+
+__________________________________________________
+
+[b]TODO list[/b]
+[ul]
+[li]Add Priest's Shadowguard.
+[li]Autobuff/debuff raid should also affect buff/debuff status bars. (UnitInParty)
+[li]Add checks for other shields when casting priest shield.
+[li]Make Healer GUI much more compact.  Use smaller fonts and less spacing between lines in the scroll list.  Alphabetize list.
+[/ul]
+
+[b]Things to look into:[/b]
+[ul]
+[li]allow self buffs in Nuker.
+[li]Need help with German and French localization files.  Any volunteers?
+[li]Split nuker and healer into two add-ons.
+[li]Remove self-only buffs from non-self lists.
+[li]Range check in Nuker
+[/ul]

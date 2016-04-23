@@ -1,0 +1,8 @@
+## Interface: 11100
+## Title: Shut The Fuck Up
+## Notes: Very simple addon that removes duplicate lines
+## Author: canidae
+## Dependencies: C
+## SavedVariables: STFU_block_whispers_message
+STFU.xml
+..\C\C_Print.lua

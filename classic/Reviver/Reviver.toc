@@ -1,0 +1,12 @@
+## Interface: 11100
+## Title: Reviver
+## Notes: A simple tool to get your party/raid up & running as fast as possible
+## Author: canidae
+## Dependencies: C
+## OptionalDeps: Broadcast
+..\C\C_ClearTooltip.lua
+..\C\C_Error.lua
+..\C\C_GetSpellData.lua
+..\C\C_GetUnitID.lua
+..\C\C_Print.lua
+Reviver.xml

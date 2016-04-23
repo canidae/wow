@@ -1,0 +1,35 @@
+[i]/healer[/i] -  shows the GUI.
+[i]/healer help[/i] -  lists all available commands.
+[i]/healer set <player/party/pet/raid/raidpet> <0.0-1.0>[/i] -  set healing priority of a unit, 0 means no healing
+[i]/healer overheal <1-100>[/i] -  max overhealing allowed when using autocancel
+[i]/healer join <channel>[/i] -  join a healing channel
+[i]/healer broadcast[/i] -  broadcast the healing channel
+[i]/healer autoheal [healclass][/i] -  heal while moving (can only be instant spells in healclass)
+[i]/healer autobuff [buffclass][/i] -  buff while moving
+[i]/healer autodebuff <on/off>[/i] -  debuff while moving
+[i]/healer tank[/i] -  set a tank to always heal (don't use unless you know what it does)
+[i]/healer party[/i] -  only heal party
+[i]/healer raid[/i] -  heal entire raid
+[i]/healer set <player/party/pet/raid/raidpet> <0.0-1.0>[/i] -- Change the priority of a member in the group.
+[i]/healer overheal[/i] -- Set the max allowed overhealing done before the autocancel feature interrupts the healing. 
+[i]/healer join <channel>[/i] -- Sets the channel used for cooperative healing and showing healbars.
+[i]/healer broadcast[/i] -- Broadcasts the channel you're in for cooperative healing & showing healbars. 
+[i]/healer autoheal [healclass][/i] -- automatically cast a healing spell on the one who needs it the most while you move. 
+[i]/healer autobuff [buffclass][/i] -- Automatically cast the buffs in the given buffclass while you move. 
+[i]/healer autodebuff <on/off>[/i] -- Automatically debuff people as you move
+[i]/healer tank[/i] -- Sets your current target as a 'tank'. The addon will [i]only[/i] heal this person
+[i]/healer party[/i] -- Makes the addon only heal your party and not the entire raid.
+[i]/healer raid[/i] -- Will make the addon heal the entire raid and not just your party.
+
+Whisper related commands:
+[i]/healer wchelp[/i] -- prints help page for whisper commands
+[i]/healer wclistbuffs[/i] -- lists all accepted whisper buff_shortcuts.
+[i]/healer wclist[/i] -- list all current whisper overrides.
+[i]/healer wcblacklist buff_shortcut[/i] -- adds spell to the blacklist
+[i]/healer wcwhitelist buff_shortcut[/i] -- removes spell from the blacklist
+[i]/healer wcblacklist[/i] -- lists all spells on blacklist
+[i]/healer wcsetbuffoverride [name] [buff_shortcut][/i] -- overrides buffclass and casts [buff_shortcut] on [name]
+[i]/healer wcreset[/i] -- clears overrides and blacklist
+[i]/healer wcdisable[/i] -- disable whisper feature
+[i]/healer wcenable[/i] -- enable whisper feature
+

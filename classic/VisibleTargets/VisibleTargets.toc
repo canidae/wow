@@ -1,0 +1,6 @@
+## Interface: 11100
+## Title: Visible Targets
+## Notes: Shows a list of different targets people in your party/raid have
+## Author: canidae
+## SavedVariablesPerCharacter: VT_data
+VisibleTargets.xml

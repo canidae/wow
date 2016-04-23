@@ -1,0 +1,355 @@
+[b]Healer/Nuker 6.5 -- 2006.06.08[/b]
+[ul]
+[li]Status bars now show total number of buffs/debuffs needed instead of number of people who need buffs/debuffs.
+[li]Added option to turn off status bars on misc page of GUI.
+[li]Hide buff status bar when mounted.
+[li]Added function: Healer_PrintBuffsNeeded() which prints out who needs buffs. 
+[li]Can now buff targeted pets outside group.
+[li]Now using Canidae's C-add-on for buff/debuff checks.  Much more efficient.
+[li]Rewrote sections of code to increase efficiency.
+[li]Significantly reduced memory 'leaks'.
+[li]Updated German/French localization files (thanks carti, Tamaron, matida, papydba, makrin, anita).
+[/ul]
+
+[b]Healer/Nuker 6.4 -- 2006.04.02[/b]
+[ul]
+[li]Fixed accented characters in paladin section of German localization. (thanks Tamaron)
+[li]Added new ranks for divine spirit.
+[li]Added Priests' Prayers of Spirit and Shadow Protection.
+[li]Added overheal status bar.
+[li]Calling Healer_Heal will cancel overheal if detected.
+[li]Added Healer_CancelIfOverheal().
+[li]Added key binding for Healer_AutoCast().
+[li]Buff indicator will no longer disappear during cooldown less than 2 seconds.
+[/ul]
+
+[b]Healer/Nuker 6.3 -- 2006.04.01[/b]
+[ul]
+[li]All ranks of Renew *should* work now.
+[/ul]
+
+[b]Healer/Nuker 6.2 -- 2006.03.31[/b]
+[ul]
+[li]Another attempt to fix Regrowth and Rejuv.  This time it seems to work.
+[/ul]
+
+[b]Healer/Nuker 6.1 -- 2006.03.30[/b]
+[ul]
+[li]Fix for Druid Regrowth and Rejuvenation spells  (thanks Validor).
+[/ul]
+
+[b]Healer/Nuker 6.0 -- 2006.03.29[/b]
+[ul]
+[li]Removed autocasting on movement. (Must call Healer_AutoCast() instead.)
+[li]Fixed tooltip issue that broke Healer_GotBuff.
+[li]Remove auto cancel healing spells.
+[li]Pops up status bar when buff or remove debuff needed.
+[li]Updated HOWTO on debuff tab.
+[li]Updated French localization (thanks Faerian).
+[li]Updated TOC to 11000
+[li]Went back to Canidae's original version numbering.
+[/ul]
+
+[b]Healer/Nuker pi7 -- 2006.03.14[/b]
+[ul]
+[li]Updated Paladin section German localization (thanks Anita).
+[li]Fixed Healing Touch in French localization (thanks Rampoche).
+[li]Fixed Chain Heal in default (US) localization.
+[/ul]
+
+[b]Healer/Nuker pi6 -- 2006.03.04[/b]
+[ul]
+[li]Updated German localization from Anita.
+[li]Added entries for new BOM,BOW,Renew ranks from AQ drops.  Thanks to beezwax for debugging.
+[li]Paladins will no longer buff when target has Blessing of Freedom.
+[li]Updated localization files with stubs.
+[li]Added German translation for Unending Breath from Zwixx.
+[li]Fixed Nuker bug which caused it to ignore delay value.
+[/ul]
+
+[b]Healer/Nuker pi5 -- 2006.02.05[/b]
+[ul]
+[li]Fixed bug that prevented autocasting of Divine Favor when whisper override was set.
+[li]Clarified that Buff keybinding calls the 'default' buffclass.
+[li]Updated german translation of Fear Ward (thanks dancekid).
+[li]Added support for Holy Shock as heal spell with help from Unchained.
+[li]Added 'Power Word: Shield' as buff (thanks csilv)
+[li]Now prevent casting of 'Fear Ward' while in Shadowform (thanks again csilv)
+[/ul]
+
+[b]Healer/Nuker pi4 -- 2006.01.20[/b]
+[ul]
+[li]add support for Shadow Ward from Abrielle.
+[li]Updated TOC to 10900.
+[li]Add divine favor to pally buff list.
+[li]will no longer remove a deselected debuff even out of battle. 
+[li]updated to new german localization-deDE.lua from Dragoner
+[/ul]
+
+[b]Healer 5.7 pi3 -- 2006.01.15[/b]
+[ul]
+[li]fixed nuker delay display for non-debuff spells
+[li]no longer will print message on whisper from out of group member.
+[li]added support [b]Unending Breath[/b], [b]Greater Blessings[/b], [b]Righteous Fury[/b].
+[li]added support for [b]Holy Shock[/b] (untested).
+[li]various other bug fixes.
+[/ul]
+
+[b]Healer 5.7 pi2 -- 2006.01.11[/b]
+[ul]
+[li]No longer tries to cast Blessing when equivalent Greater Blessing is already cast.
+[li]Fixed GUI scrollbar problem (thanks to Abrielle for debugging this one).
+[li]Support for CT_Raid pullout frame (by SaneMadman, untested by me).
+[li]added follow whisper related commands:
+[i]/healer wchelp[/i] -- prints help page for whisper commands
+[i]/healer wcsetbuffoverride [name] [buff_shortcut][/i] -- overrides buffclass and casts [buff_shortcut] on [name]
+[li]the whisper handler will now only accept whispers from group/raid.
+[li]minor whisper related bug fix and code cleanup.
+[/ul]
+
+[b]Healer 5.6/5.7[/b]
+Notes missing??
+
+[big]Patch notes history from Canidae[/big]
+
+[b]Healer 5.5[/b]
+- Fixed an issue where both healing & nuking didn't work when a priest had 'mind tap' buff (not tested).
+- Fixed an issue where paladins who set an own blessing on themselves and another buff on other paladins had their own buff overwritten by the buffs that should've gone to other paladins (not tested).
+- Some more, but i don't remember it :\
+- Added 'WhisperCast' which pilardi made. I did some changes to it:
++ it's not limited to blessings.
++ buffs will be remember when you log in/out.
+
+[b]Healer 5.4[/b]
+- All heal/buff-classes will now be stored in lowercase. This is done to prevent a fairly common error amoung new users, but unfortunatly this had a side effect on old users: if you've set up heal/buff-classes that got uppercase letters then those classes won't work.
+
+[b]Nuker 1.1[/b]
+- Fixed an issue where the addon wouldn't detect that a new dot was applied and told the user to use the spell again.
+- Like heal/buff-classes will now nukeclasses be saved in lowercase. If you've made nukeclasses with uppercase letters then those nukeclasses won't work.
+
+[b]Healer 5.3[/b]
+- Fixed the bug which caused the addon to use 'dispel magic rank 1' instead of 'dispel magic rank 2'.
+
+[b]Nuker 1.0[/b]
+- Added the possibility to 'override' a nukeclass on certain targets. See the description on how this works.
+- Fixed an issue with the 'previous' button which worked like it was 'next'.
+
+[b]Nuker 0.6[/b]
+- Fixed a bug with spells/abilities that had 'check for debuff' and a delay set not to use that spell/ability again when the delay was gone. If you've set a delay of 14 seconds on 'serpent sting' and 'check for debuff' the addon should now recast 'serpent sting' after 14 seconds even if the target got the debuff (i do recommend you use 15 seconds to get that last 'tick' of 'serpent sting').
+
+[b]Nuker 0.5[/b]
+- Fixed an issue causing spells/abilities where only the last rank is available in the spellbook are stored (common with spells that improve each rank without any mana/rage/energy cost change).
+
+[b]Nuker 0.4[/b]
+- Fixed a bug that appeared in 0.3 causing the addon to use the same spell over & over again.
+
+[b]Healer 5.2[/b]
+- Added a setting to avoid healing/buffing/debuffing when priests got 'spirit tap'.
+- Added a feature letting you see who clicked on the minimap (and then you'll see whom to kick out of the raid when someone's spamming the minimap).
+- Tried to correct the issue with the addon using rank 1 instead of rank 2 of 'dispel magic'.
+- Addon won't buff npc's anymore.
+- Made the heal priority sliders be updated when you changed the priorities on the command line.
+
+[b]Nuker 0.3[/b]
+- You can now use nuker without having a hostile target.
+- It will also be possible to use spells that require targetting (eg. aoe spells) in a nukeclass.
+- Only the top nuker bar will hog mouseclicks, so there won't be a large area where you can't click due to the nuker frame being in the way.
+- Fixed some issue causing nuker not to avoid spells that the target is immune to. Do note that targets who are temporary immune to a spell will make nuker avoid that spell until the next time you fight a such mob. This is not easily solvable.
+
+[b]Healer 5.1[/b]
+- Fixed an issue causing the addon to use 'dispel magic (rank 1)' instead of 'dispel magic (rank 2)'.
+- Made 'Inner Focus' cause the addon to use the best rank of a healing spell. Spell should still not be cancelled unless someone else heals the target (this can cause lots of overhealing, but who cares when the spell is free anyways?).
+
+[b]Nuker 0.2[/b]
+- Made the 'Check for debuff' checkbox actually change the settings instead of doing nothing :p
+- Fixed an issue where Nuker would use abilities even if the target had a debuff with the same name and the 'check for debuff' box was marked.
+- Made it more obvious and visible when a ability/spell is ready for use.
+- Made the bars that appear when you're using nuker disappear a bit more easily.
+
+[b]Healer 5.0[/b]
+- Tried to correct some issues with mousebutton 4 & mousebutton 5. Not tested as i don't have those two buttons myself. For mousebutton 4 & mousebutton 5 to work on characters in the game field you have to bind those keys in the 'keybindings'.
+- Changed slightly how mousehealing works. Now you have to hold shift down if you want to target heal with the mouseheal feature. For this to work with 'special mousekeys' (mousekeys that map to something else than 'button4' or 'button5') you have to bind those keys to the first keybinding and bind those keys while holding shift down to the 2nd keybinding (i know, this is not easy).
+- Made the addon avoid healing people who got debuff 'Deep Slumber' or 'Banish' (not tested).
+
+[b]Nuker 0.1[/b]
+- First release.
+
+[b]4.8[/b]
+- Even more localization for french clients. Soon most features should work with the french client. Huge thanks to Meretseger and jebemtimater :)
+
+[b]4.7[/b]
+- Added some french localization (huge thanks to jebemtimater who did this).
+- Fixed a typo with 'Blessing of Might' (thanks to Valzic).
+- Corrected a bit more on the german localization (thanks wendano).
+- Corrected a minor bug with 'tank mode' which could give you a error message in certain situations.
+
+[b]4.6[/b]
+- Fixed 'Detect Traps' for rogues. A big thanks to Manix for helping me out :)
+
+[b]4.5[/b]
+- Added hunter buff 'Trueshot Aura' and rogue buff 'Detect Traps'.
+- Added bars for showing duration of debuffs you're able to cast on enemy targets.
+
+[b]4.4[/b]
+- Forgot to update the title, it said '4.1'! That is outrageous, worst bug, ever!
+
+[b]4.3[/b]
+- Believe the issue with 'Dispell Magic' is solved.
+- Added 'Mana Shield' as a buff for mages.
+- Various bugfixing.
+
+[b]4.2[/b]
+- Fixed a bug in the revive method.
+
+[b]4.1[/b]
+- Fixed (or tried to fix) most of the bugs caused by the new patch. Especially druids were affected by this patch.
+- Screamerka created a feature to disable autobuffing friendly targets. This can be turned on/off in the 'buff' tab.
+- Fixed some bugs that caused newly learned spells not to appear in the healing/buffing spell lists.
+- Updated .toc version to 1800.
+
+[b]4.0[/b]
+- 'Blessing of Protection' is no longer a buff but considered to be a healing spell. It has been added to the default healclasses.
+- You can now heal people by clicking on them using special buttons on your mouse. I suggest you see the movie about healing to see how you use this feature.
+- Items that improve your healing is now considered when the addon decides which spell & rank it should use to heal someone.
+- Added a delay on the revive method to prevent the addon from reviving the same person over & over again.
+- Addon will now scale buffs so if you're buffing lower level players you won't get an 'player is too low level' error.
+- Debuffing has been dramatically improved (and made more advanced). You can now set up what order the addon should debuff different classes, and whether the addon should cure some debuffs from certain classes at all in battle (it's not really necessary to heal a warrior or rogue for a debuff that doubles the casting time of spells).
+- If you got a friendly target and are casting a 'selfbuff' the addon won't clear your target and retarget it again.
+- The addon is now capable of cooperating with other players using the same addon. This means that the addon will attempt to prevent you to heal a player someone else already is healing (and rather pick someone else).
+- The addon can now show healbars from other healers healing which will help you to time your own healings.
+- You can now chose whether you want to cast selfbuffs or buffs when you're in battle.
+- '/healer party' and '/healer raid' are now back in the slash command list.
+- If you're target healing someone and your spellbar drops down due to damage or similar the addon won't cancel the spell earlier than it should.
+- Buffs/Debuffs that affect your casting time should now not cause your spells to being cancelled too soon/late.
+- The addon will no longer heal/buff/debuff mind controlled mobs.
+- Localization files are now splitted to ease translation to other clients.
+- Settings are now saved per nick and not globally. Debuff data is stored globally.
+- People who're currently using a bandage will have a lot less priority when heling the most wounded player.
+- People who're 'recently bandages' will have a higher priority than other players as they can't bandage themselves again.
+- 'Tank mode' aka. 'Dedicated healing'. You can now set a player to dedicate your healing to.
+- The addon will no longer use 'the best spell' in a healclass when 'target healing', but rather use the best rank of the healing spell with the lowest 'percent' value in that healclass. This is done to make it clearer which spell in the healclass you'll use when you 'target heal' someone.
+- And the usual bugfixing. I've probably done a bit more, but i forgot to update my 'changelog' and are too lazy to compare this version with the previous version. Don't blame me for that, this version is like 40% larger in size than 3.3 :\
+
+[b]3.3[/b]
+- Updated .toc version.
+- When casting 'Regrowth' the addon will check at the end of spellcasting if the target already got another 'Regrowth' buff. If so, the spell will be cancelled.
+
+[b]3.2[/b]
+- I broke something while fixing the bug about autocancel not working when spamming the healbutton. My previous 'fix' could cause the next spell you cast to be cancelled, but this shouldn't happen anymore now. Not sure if i brought back the bug about spamming the healbutton, though. I'd still strongly suggest that you don't spam the healbutton, you'll run out of mana very quick :)
+
+[b]3.1[/b]
+- Fixed a bug that caused autocancel not to work when spamming the healbutton (clicking on a button more rapidly than about 2-3 times/sec).
+- Significantly improved the speed when buffing/healing a big raid (added a 'cache' for the players buffs that's always updated).
+- Fixed a bug with 'Power Word: Shield' which caused the addon to use the wrong rank when 'healing the most wounded' instead of target healing. Thanks to Gosh for pointing this one out :)
+- Fixed a debuffing issue with 'Cure Poison/Disease'. Addon could cast 'Cure Poison/Disease' on a player that already had 'Abolish Poison/Disease' if that player also had a poison/disease that the 'Abolish Poison/Disease' buff failed to remove.
+- The addon will neither no longer buff/heal/debuff when you release a movement button, only when you press a movement button down. This is done to decrease the drop in fps you may get when autobuffing a big raid.
+
+[b]3.0[/b]
+- Added scaling support on healing spells.
+- Made a GUI. A big one.
+- Buffing/Debuffing has been significantly improved.
+- Addon should now detect weapon buffs correctly.
+- Improved the autocancel feature drastically. Spells should no longer be as easily canceled.
+- Added a method for reviving party/raid members. It will revive priests/paladins/shamans first.
+- German localization should now be complete (may be some bugs).
+- When healing someone outside your party/raid the addon will only use a healing spell powerful enough to barely restore their health (no longer using the most expencive spell).
+- Made the addon stop autobuffing when the player is in battle.
+- Reversed the buff priority. The higher priority a buff in a buffclass got the earlier that buff will be casted.
+- Generally tweaked the code a bit for faster execution.
+
+[b]2.8[/b]
+- Fixed 'Power Word: Shield'. Should now work correctly as a healing spell and detect if someone either already got the buff or if someone got the debuff 'Weakened Soul'.
+- Fixed the '/healer overheal' command which didn't work.
+- Added a minimum limit for the latency in hope of the autocancel feature working even in low latency situations.
+- Tried to fix 'Chain Heal', but it's not tested.
+
+
+[b]2.7[/b]
+- Changed how the autocancel feature works. Now healing will be interrupted if 35%(changable) or more of the healing is overhealing. See also '/healer overheal'
+- Added 'Power word: Shield' as a healing spell, but this is not tested at all. Since this buff got a debuff to prevent a player to get the buff too often i had to add some more code that's not tested at all. Use with caution ;)
+- Added two new priorities, 'raid' and 'raidpet'. They work like the other prorities (player, party, pet)
+- Added 'Chain Heal'. Do not add this healing spell to a healclass with other spells as that may cause the addon not to use 'Chain Heal' at all.
+- Added more to the localization for the german client. All applaud should be directed to Hitmaster since he provided me with all the data. Cheers mate :)
+- Made the addon remember if you're healing raid or party. I encourage you to play a bit with the priority settings instead of only healing party, but it's ofcourse up to you :)
+- Since this update is less tested out and may contain more bugs than last version you can get the last version here: http://exent.net/~canidae/Healer-2.6.zip
+
+[b]2.6[/b]
+- Changed the color on the text so it's easier to see what text is from the addon and what text is from '/say'.
+- Fenjor has been kind and partially translated the addon for use on german clients. Apparently it should work for druids, mages & shamans. A huge thanks to Fenjor for this :)
+- Made the addon replace ',' with '.' so german clients shouldn't get an error (when we get the addon to work well with the german client that is).
+
+[b]2.5[/b]
+- Added 3 shaman weapon buffs ('Flametongue Weapon', 'Windfury Weapon' and 'Frostbrand Weapon'). Credit to JohnnieV for pointing this out.
+- Fixed the debuff error that sometimes appeared when you had targetted a friendly player and tried to debuff.
+- Fixed the party/raid chat (i think).
+- Added a feature to automatically cancel spellcasting if the target don't need to be healed (see: '/healer autocancel <on/off>').
+- Fixed some stuff in the code that caused the addon to be less simple to translate to the german & french client (thanks to Fenjor for pointing this out). This should be easier now, and maybe we can get this addon working for the german client soon :)
+
+[b]2.4[/b]
+- Fixed some damn debuffing & buffing bugs? Probably :)
+- Made the addon prioritize druids & priests when debuffing party/raid (not tested, assume it works =)
+- Fixed a bug causing the addon to use a less effective 'Healing over Time' spell than it should in certain situations (not really tested either ;)
+
+[b]2.3[/b]
+- Fixed the bug with paladins not being able to cast healing/buffing/debuffing when they had an aura on (the auras was considered to be a 'shapeshift', and since druids can't heal when shapeshifted the addon wouldn't attempt to heal then. This check now only applies to druids).
+- Fixed the bug with buffs that can only be casted on the player (selfbuffs).
+
+[b]2.2[/b]
+- Fixed the buff-bug (only druid buffs worked).
+- Added 'Fire Shield' as a superior buff to 'Thorns'. Addon should not attempt to cast 'Thorns' on a target that got 'Fire Shield' (not tested).
+- Added 4 more commands; '/healer healclasses', '/healer buffclasses', '/healer healclass <healclass>' and '/healer buffclass <buffclass>' so the user actually can list out the healclasses & buffclasses he or she have made.
+
+[b]2.1[/b]
+- Azure kindly fixed some bugs causing the addon not to detect most of the priests healing spells.
+- Azure also pointed out that 'Innter Fire' wasn't amoung the priests buffs, this buff is now added :)
+- All there is for this time, more of an 'emergency' update to make the addon usable to priests :p
+
+[b]2.0[/b]
+- Decided for the n'th time that i really don't like that huge list with all spells and a approximation of how much they cost & heal, and replaced it with a method that scans the spellbook looking for healing spells (and debuff spells (and buff spells)). This time i was (or think i was) successful, alas, the data about the healingspells are now actually correct, and more data is stored, so the algorithm used to determine what healing spell to use can now easily be improved if needed.
+- Made the entire addon a helluva lot harder to use, but when you get the hang of it, you'll know how to do things :)
+- Added the possibility to buff people, so the huge list with healing spells is now replaced with a huge list for buffs...
+- Made it possible to heal/buff/debuff as you move around. Healing and buffing works a bit 'ish', debuffing works sweet.
+- No longer predefined healclasses, the user will have to create his or her own healclasses, but it's recommended to use 'battle', 'instant' and 'standard', as you then can use keybindings.
+- Broke the german localization kilrogg kindly added to the last version. Need your help again mate, it will be easier this time :)
+- Spent more than 1 1/2 hour on updating the addon here, and i'm really, really tired so i'm not sure how wise it was, but i know that if i wouldn't put it out, i would just keep on improving it... Hopefully i make sense, and people get this stuff to work. I deserve a beer, or a nice looking girl... Or both... Both will do just fine right now :)
+
+[b]1.2[/b]
+- Fixed a minor typo causing the addon to sometimes show an error message when debuffing someone (paladins mostly affected, but it could happen to priests aswell)
+
+And these fixes were made entirely by kilrogg, so all credit to kilrogg for this:
+- Added localization for the german version of the game
+- Added keybindings for the macros
+Again, cheers :)
+
+[b]1.1[/b]
+- The 'magic' macro should no longer cast the instant healing spell for paladins, only 'battle' healing and 'debuff' (not tested).
+- The 'magic' macro should no longer cast the 'instant' healing on a player that already got a instant healing in place.
+- The 'debuff' macro could in certain cases end up in an endless loop. This should not happen anymore.
+- The 'debuff' macro should no longer try to debuff a hostile target.
+
+[b]1.0[/b]
+- Updated .toc-version.
+- Will no longer change your target when healing pets (new feature in wow 1.5).
+- Should no longer cast a instant healing spell on someone who already got that healing spell.
+- Fixed some minor bugs.
+- New macro 'Debuff'. Will remove 'Curse', 'Disease', 'Magic' and/or 'Poison' if the healer got the right spells. Will first heal the player/pet with most debuffs that the healer can cure, then the priority is: player, party, raid, partypet, raidpet. After this the priority of debuffs to remove is: Curse, Disease, Magic, Poison.
+- New macro: 'Magic'. Will use 'battle healing', 'instant healing' or 'debuff' depending on what seems most suited at the time. If the percent life left of the player/pet to be healed is less than a userdefined value (default 80%) the addon will use 'battle healing'. If the value is greater and less than the average value of the userdefined value and 100% the addon will use 'instant healing'. If the value is greater than the average of the userdefined value and 100% the addon will use 'debuff'.
+- Spent 45 minutes to update the description & patch notes.
+
+[b]0.5[/b]
+Added 'Lesser Healing' to the priests standard healing spells.
+
+[b]0.4[/b]
+Fixed some errors when addon is used with a class that isn't a healer.
+Made it possible to heal raid.
+Some settings are now stored.
+Made it possible to turn off the 'i'm healing' message that appeared whenever you're healing someone.
+Added an instant spell for paladins (credit to Soulkeeper).
+When targetting a friendly unit the best healing spell is used and not the healing spell that barely restores the targets health.
+
+[b]0.3[/b]
+Fixed data for the shaman class.
+
+[b]0.2[/b]
+After popular demand (as many as 0 asked me to add data for the other classes) i added data for paladin, priest and shaman using the data from thottbot. The data is bound to be incorrect, but at least the addon should work for those classes (not tested).
+That is all.

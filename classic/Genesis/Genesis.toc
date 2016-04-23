@@ -1,0 +1,20 @@
+## Interface: 11200
+## Title: Genesis
+## Notes: Healer is reborn, stronger than ever
+## Author: canidae
+## Dependencies: C
+## OptionalDeps: Broadcast
+## SavedVariables: C_update_player_data_time
+## SavedVariablesPerCharacter: Genesis_data, Genesis_profiles
+..\C\C_AKA.lua
+..\C\C_ClearTooltip.lua
+..\C\C_GetBuffData.lua
+..\C\C_GetDebuffData.lua
+..\C\C_GetSpellData.lua
+..\C\C_GetUnitID.lua
+..\C\C_Print.lua
+..\C\C_SetPlayerData.lua
+..\C\C_UnitGotBuff.lua
+..\C\C_UnitGotDebuff.lua
+..\C\C_UpdatePlayerData.lua
+Genesis.xml

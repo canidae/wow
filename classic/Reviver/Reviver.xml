@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="localization-default.lua"/>
+	<Script file="localization-deDE.lua"/>
+	<Script file="localization-frFR.lua"/>
+	<Script file="Reviver.lua"/>
+	<Frame name="Reviver">
+		<Scripts>
+			<OnEvent>
+				Reviver_OnEvent();
+			</OnEvent>
+			<OnLoad>
+				Reviver_OnLoad();
+			</OnLoad>
+			<OnUpdate>
+				Reviver_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

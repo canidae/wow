@@ -1,0 +1,42 @@
+<Bindings>
+	<Binding name="HEALER_SHOWHIDEGUI" header="HEALER">
+		if (HealerGUI:IsVisible()) then
+			HealerGUI:Hide();
+		else
+			HealerGUI:Show();
+		end
+	</Binding>
+	<Binding name="HEALER_AUTOCAST">
+		Healer_AutoCast();
+	</Binding>
+	<Binding name="HEALER_BATTLEHEAL">
+		Healer_Heal("battle");
+	</Binding>
+	<Binding name="HEALER_INSTANT">
+		Healer_Heal("instant");
+	</Binding>
+	<Binding name="HEALER_STANDARD">
+		Healer_Heal("standard");
+	</Binding>
+	<Binding name="HEALER_DEBUFF">
+		Healer_Debuff();
+	</Binding>
+	<Binding name="HEALER_BUFF">
+		Healer_Buff("default");
+	</Binding>
+	<Binding name="HEALER_REVIVE">
+		Healer_Revive();
+	</Binding>
+	<Binding name="HEALER_MOUSEKEY_1">
+		Healer_MouseSpecialClick(1);
+	</Binding>
+	<Binding name="HEALER_MOUSEKEY_2">
+		Healer_MouseSpecialClick(2);
+	</Binding>
+	<Binding name="HEALER_MOUSEKEY_3">
+		Healer_MouseSpecialClick(3);
+	</Binding>
+	<Binding name="HEALER_MOUSEKEY_4">
+		Healer_MouseSpecialClick(4);
+	</Binding>
+</Bindings>

@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<GameTooltip name="C_Tooltip" hidden="true" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnEvent>
+				this:UnregisterEvent("PLAYER_LOGIN");
+				-- hack for it to work in 1.10
+				this:SetOwner(UIParent, "ANCHOR_NONE");
+				-- hack for it to work in 1.11
+				this:SetClampedToScreen(0);
+			</OnEvent>
+			<OnLoad>
+				-- TODO:
+				-- insert obscenity in the general direction of blizzard here
+				this:RegisterEvent("PLAYER_LOGIN");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>
