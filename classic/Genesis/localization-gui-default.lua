@@ -4,7 +4,7 @@ BINDING_NAME_GENESIS_CUSTOM_1 = "Custom 1";
 BINDING_NAME_GENESIS_CUSTOM_2 = "Custom 2";
 
 -- title
-Genesis_GUI_title = "Genesis 0.51";
+Genesis_GUI_title = "Genesis 0.52";
 
 -- tab titles
 Genesis_GUI_tab_title = {"Classes", "Mouse/Keys", "Priorities", "Raid", "Settings"};
