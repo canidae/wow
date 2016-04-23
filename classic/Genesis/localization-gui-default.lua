@@ -332,7 +332,7 @@ Genesis_GUI_help = {
 	},
 	["HOTMultiply"] = {
 		["Title"] = "HOT value",
-		["Description"] = "This value determine how much healing Genesis believe a HOT will do out of combat. Since buffs only say how much the HOT will heal without heal bonus (eg. \"Rejuvenation\" buff will show 189 per tick, but it can heal for 300 per tick) you can set this value higher than 100%. If you and the healers you usually heal with got alot of +healing gear then it could be an idea to increase this value."
+		["Description"] = "This value determine how much healing Genesis believe a HOT will do out of combat. Since buffs only say how much the HOT will heal without heal bonus (eg. \"Rejuvenation\" buff will show 189 per tick, but it can heal for 300 per tick) you can set this value higher than 100%. If you and the healers you usually heal with got a lot of +healing gear then it could be an idea to increase this value."
 	},
 	["HOTMultiplyBattle"] = {
 		["Title"] = "HOT value combat",
@@ -348,10 +348,10 @@ Genesis_GUI_help = {
 	},
 	["HealPower"] = {
 		["Title"] = "Heal power",
-		["Description"] = "This is a damn fancy, but a risky feature. When this value is set to 100% you'll heal someone to 100% life (as long as you got a powerful enough spell & rank), but when the value is set to eg. 50% you'll only heal 50% of the life the player is missing. This feature is impressingly useful in raids where there are several healers. Your mana will last alot longer if you decrease this value, but too low values can be very fatal."
+		["Description"] = "This is a damn fancy, but a risky feature. When this value is set to 100% you'll heal someone to 100% life (as long as you got a powerful enough spell & rank), but when the value is set to eg. 50% you'll only heal 50% of the life the player is missing. This feature is impressingly useful in raids where there are several healers. Your mana will last a lot longer if you decrease this value, but too low values can be very fatal."
 	},
 	["UpdatePlayerDataTime"] = {
 		["Title"] = "Max update time",
-		["Description"] = "Genesis regularly check every players buffs & debuffs so it's capable of determining how long they've had these buffs. This is needed to know how much healing they'll receive from HOT. The value you specify here is how many milliseconds of a second you'll allow Genesis to use to collect this data. Increase the value for a more accurate reading, decrease it for less FPS loss. This has been tested alot in 40 man raids, and despite all the data it has to look through the methods are so optimized that the FPS drop is not even noticable."
+		["Description"] = "Genesis regularly check every players buffs & debuffs so it's capable of determining how long they've had these buffs. This is needed to know how much healing they'll receive from HOT. The value you specify here is how many milliseconds of a second you'll allow Genesis to use to collect this data. Increase the value for a more accurate reading, decrease it for less FPS loss. This has been tested a lot in 40 man raids, and despite all the data it has to look through the methods are so optimized that the FPS drop is not even noticable."
 	}
 };
