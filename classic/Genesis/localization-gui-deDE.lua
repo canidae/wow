@@ -7,9 +7,6 @@ BINDING_HEADER_GENESIS = "Genesis";
 BINDING_NAME_GENESIS_CUSTOM_1 = "Custom 1";
 BINDING_NAME_GENESIS_CUSTOM_2 = "Custom 2";
 
--- title (this is not needed to be translated)
---Genesis_GUI_title = "Genesis 0.43";
-
 -- tab titles
 Genesis_GUI_tab_title = {"Klassen", "Maus/Keys", "Priorit\195\164ten", "Raid", "Konfig"};
 
@@ -21,7 +18,6 @@ Genesis_GUI_rank = "Rang";
 Genesis_GUI_new_class = "Name der neuen Klasse";
 Genesis_GUI_okay = "Okay";
 Genesis_GUI_cancel = "Abbrechen";
-
 
 -- keys thingy
 Genesis_GUI_keys = {"Off", "None", "Alt", "Control", "Shift", "Alt + Control", "Alt + Shift", "Control + Shift"};

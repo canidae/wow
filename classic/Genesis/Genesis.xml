@@ -363,7 +363,7 @@
 						local parent = string.gsub(this:GetName(), "RankSlider$", "");
 						local spell = getglobal(parent .. "SpellText"):GetText();
 						this.variable = "Genesis_data[\"classes\"][Genesis_current_class][\"" .. spell .. "\"][\"Rank\"]";
-						this:SetMinMaxValues(1, table.getn(Genesis_spells[spell]));
+						this:SetMinMaxValues(0, table.getn(Genesis_spells[spell]));
 						this:SetValue(Genesis_data["classes"][Genesis_current_class][spell]["Rank"]);
 					</OnShow>
 				</Scripts>

@@ -14,6 +14,7 @@ Genesis_GUI_new = "New";
 Genesis_GUI_delete = "Delete";
 Genesis_GUI_percent = "Percent";
 Genesis_GUI_rank = "Rank";
+Genesis_GUI_max = "Max";
 Genesis_GUI_new_class = "Name of new class";
 Genesis_GUI_okay = "Okay";
 Genesis_GUI_cancel = "Cancel";

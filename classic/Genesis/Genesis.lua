@@ -222,7 +222,7 @@ function Genesis_ClassDropDownMenuUpdate(class)
 			getglobal("Genesis_GUIClass" .. slot .. "SpellTexture"):SetTexture(Genesis_spells[spell]["Texture"]);
 			getglobal("Genesis_GUIClass" .. slot .. "SpellText"):SetText(spell);
 			getglobal("Genesis_GUIClass" .. slot):Show();
-			getglobal("Genesis_GUIClass" .. slot .. "RankSlider"):SetMinMaxValues(1, table.getn(Genesis_spells[spell]));
+			getglobal("Genesis_GUIClass" .. slot .. "RankSlider"):SetMinMaxValues(0, table.getn(Genesis_spells[spell]));
 			getglobal("Genesis_GUIClass" .. slot .. "RankSlider"):SetValue(data["Rank"]);
 			getglobal("Genesis_GUIClass" .. slot .. "PercentSlider"):SetValue(data["Percent"]);
 		end
@@ -324,7 +324,7 @@ function Genesis_DropSpell()
 			getglobal("Genesis_GUIClass" .. counter .. "SpellTexture"):SetTexture(GetSpellTexture(Genesis_pickup_spellid, Genesis_pickup_spellbook));
 			getglobal("Genesis_GUIClass" .. counter .. "SpellText"):SetText(spell);
 			getglobal("Genesis_GUIClass" .. counter):Show();
-			getglobal("Genesis_GUIClass" .. counter .. "RankSlider"):SetMinMaxValues(1, table.getn(Genesis_spells[spell]));
+			getglobal("Genesis_GUIClass" .. counter .. "RankSlider"):SetMinMaxValues(0, table.getn(Genesis_spells[spell]));
 			PickupSpell(Genesis_pickup_spellid, Genesis_pickup_spellbook);
 			return 1;
 		end
@@ -701,7 +701,13 @@ function Genesis_Heal(unit, spell, rank, healvalue)
 	if (not Genesis_spells) then
 		Genesis_UpdateSpells();
 	end
-	if (not Genesis_spells[spell] or not Genesis_spells[spell][rank]) then
+	if (not Genesis_spells[spell]) then
+		return;
+	end
+	if (rank == 0) then
+		rank = table.getn(Genesis_spells[spell]);
+	end
+	if (not Genesis_spells[spell][rank]) then
 		return;
 	end
 	if (GetSpellCooldown(Genesis_spells[spell][rank]["ID"], BOOKTYPE_SPELL) > 0) then
@@ -1109,26 +1115,26 @@ function Genesis_MouseDropDownMenuButton_OnClick(arg1)
 	local start, stop, button = string.find(arg1:GetName(), "^Genesis_GUI(.+)DropDownMenu$");
 	button = string.lower(button);
 	local id = this:GetID();
-	local class = this:GetText();
+	local spellOrClass = this:GetText();
 	local slider = getglobal(string.gsub(arg1:GetName(), "DropDownMenu$", "") .. "RankSlider");
 	if (not Genesis_data["mouse"]) then
 		Genesis_data["mouse"] = {};
 	end
-	if (class == "none") then
-        if (not Genesis_data["mouse"][button]) then
-            Genesis_data["mouse"][button] = {};
-        end
+	if (spellOrClass == "none") then
+		if (not Genesis_data["mouse"][button]) then
+			Genesis_data["mouse"][button] = {};
+		end
 		Genesis_data["mouse"][button]["SpellOrClass"] = nil;
 		slider:Hide();
 	else
 		Genesis_data["mouse"][button] = {
-			["SpellOrClass"] = class,
+			["SpellOrClass"] = spellOrClass,
 			["Rank"] = 1
 		};
-		if (Genesis_spells[class]) then
+		if (Genesis_spells[spellOrClass]) then
 			slider.variable = "Genesis_data[\"mouse\"][" .. button .. "][\"Rank\"]";
-			slider:SetMinMaxValues(1, table.getn(Genesis_spells[class]));
-			slider:SetValue(table.getn(Genesis_spells[class]));
+			slider:SetMinMaxValues(1, table.getn(Genesis_spells[spellOrClass]));
+			slider:SetValue(table.getn(Genesis_spells[spellOrClass]));
 			slider:Show();
 		else
 			slider:Hide();
@@ -2013,7 +2019,11 @@ function Genesis_UpdateSetting()
 		elseif (string.find(this:GetName(), "Genesis_GUIHeal.+ModifierSlider")) then
 			getglobal(this:GetName() .. "High"):SetText(Genesis_GUI_keys[value]);
 		elseif (string.find(this:GetName(), "RankSlider")) then
-			getglobal(this:GetName() .. "High"):SetText(value);
+			if (value == 0) then
+				getglobal(this:GetName() .. "High"):SetText(Genesis_GUI_max);
+			else
+				getglobal(this:GetName() .. "High"):SetText(value);
+			end
 		else
 			getglobal(this:GetName() .. "High"):SetText(value * 100 .. "%");
 		end
