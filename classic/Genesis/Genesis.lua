@@ -325,6 +325,7 @@ function Genesis_DropSpell()
 			getglobal("Genesis_GUIClass" .. counter .. "SpellText"):SetText(spell);
 			getglobal("Genesis_GUIClass" .. counter):Show();
 			getglobal("Genesis_GUIClass" .. counter .. "RankSlider"):SetMinMaxValues(0, table.getn(Genesis_spells[spell]));
+			getglobal("Genesis_GUIClass" .. counter .. "RankSlider"):SetValue(0);
 			PickupSpell(Genesis_pickup_spellid, Genesis_pickup_spellbook);
 			return 1;
 		end
@@ -1435,8 +1436,8 @@ function Genesis_PickupClassSpell()
 	if (not Genesis_spells) then
 		Genesis_UpdateSpells();
 	end
-	if (not Genesis_spells[spell][rank]["ID"]) then
-		rank = table.getn(Genesis_spells[spell]) - 1;
+	if (not Genesis_spells[spell][rank] or not Genesis_spells[spell][rank]["ID"]) then
+		rank = table.getn(Genesis_spells[spell]);
 	end
 	local id = Genesis_spells[spell][rank]["ID"];
 	Genesis_pickup_percent = getglobal(parent .. "PercentSlider"):GetValue();
