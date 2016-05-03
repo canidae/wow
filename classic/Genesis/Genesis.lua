@@ -1019,7 +1019,7 @@ function Genesis_HealUsingClass(unit, class, healvalue)
 				return;
 			end
 			local rank = Genesis_data["classes"][class][spell]["Rank"];
-			if (not rank) then
+			if (not rank or rank == 0) then
 				rank = table.getn(Genesis_spells[spell]);
 			end
 			if ((not Genesis_only_instant_spells or Genesis_spells[spell][rank]["CastTime"] == 0) and Genesis_Heal(unit, spell, rank, healvalue)) then
