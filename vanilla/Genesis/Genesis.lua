@@ -1022,7 +1022,7 @@ function Genesis_HealUsingClass(unit, class, healvalue)
 			if (not rank) then
 				rank = table.getn(Genesis_spells[spell]);
 			end
-			if ((not Genesis_only_instant_spells or Genesis_spells[spell][rank]["CastTime"] == 0) and Genesis_Heal(unit, spell, rank, healvalue)) then
+			if ((not Genesis_only_instant_spells or not Genesis_spells[spell][rank] or Genesis_spells[spell][rank]["CastTime"] == 0) and Genesis_Heal(unit, spell, rank, healvalue)) then
 				-- seem to be healing
 				Genesis_only_instant_spells = nil;
 				return 1;
