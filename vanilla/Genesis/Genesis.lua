@@ -1073,16 +1073,15 @@ function Genesis_KeyClick(button)
 	elseif (UnitExists("mouseover")) then
 		unit = C_AKA("mouseover");
 	end
-	if (not unit) then
-		-- hmm, let's make it work like some people want it to work
+	if (unit and UnitIsFriend("player", unit)) then
+		Genesis_MouseHeal(unit, button);
+	else
 		local spell = Genesis_data["mouse"][button]["SpellOrClass"];
 		local rank;
 		if (Genesis_spells[spell]) then
 			rank = Genesis_data["mouse"][button]["Rank"];
 		end
 		Genesis_ActionHeal(spell, rank)
-	else
-		Genesis_MouseHeal(unit, button);
 	end
 end
 
