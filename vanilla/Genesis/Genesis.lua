@@ -876,6 +876,9 @@ function Genesis_HealMostWounded(spell, rank)
 	if (not Genesis_spells) then
 		Genesis_UpdateSpells();
 	end
+	if (rank == 0) then
+		rank = table.getn(Genesis_spells[spell]);
+	end
 	if (not ((rank and Genesis_spells[spell]) or (not rank and Genesis_data["classes"][spell]))) then
 		-- unable to find spell or class
 		return;
@@ -1133,7 +1136,7 @@ function Genesis_MouseDropDownMenuButton_OnClick(arg1)
 		};
 		if (Genesis_spells[spellOrClass]) then
 			slider.variable = "Genesis_data[\"mouse\"][" .. button .. "][\"Rank\"]";
-			slider:SetMinMaxValues(1, table.getn(Genesis_spells[spellOrClass]));
+			slider:SetMinMaxValues(0, table.getn(Genesis_spells[spellOrClass]));
 			slider:SetValue(table.getn(Genesis_spells[spellOrClass]));
 			slider:Show();
 		else
@@ -1192,7 +1195,7 @@ function Genesis_MouseDropDownMenuInitialize()
 		UIDropDownMenu_SetSelectedName(me, Genesis_data["mouse"][button]["SpellOrClass"])
 		if (Genesis_spells[Genesis_data["mouse"][button]["SpellOrClass"]]) then
 			slider.variable = "Genesis_data[\"mouse\"][" .. button .. "][\"Rank\"]";
-			slider:SetMinMaxValues(1, table.getn(Genesis_spells[Genesis_data["mouse"][button]["SpellOrClass"]]));
+			slider:SetMinMaxValues(0, table.getn(Genesis_spells[Genesis_data["mouse"][button]["SpellOrClass"]]));
 			slider:SetValue(Genesis_data["mouse"][button]["Rank"]);
 			slider:Show();
 		else
