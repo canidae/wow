@@ -1078,7 +1078,7 @@ function Genesis_KeyClick(button)
 	end
 	if (unit and UnitIsFriend("player", unit)) then
 		Genesis_MouseHeal(unit, button);
-	else
+    elseif (Genesis_data["mouse"][button]) then
 		local spell = Genesis_data["mouse"][button]["SpellOrClass"];
 		local rank;
 		if (Genesis_spells[spell]) then
@@ -1857,7 +1857,7 @@ function Genesis_UpdateHealCurrent(elapsed)
 			Genesis_GUIHealCurrentAfterText:SetText("After heal (" .. math.floor(afterhp / UnitHealthMax(unit) * 1000) / 10 .. "%)");
 			Genesis_GUIHealCurrentAfter:SetValue(afterhp);
 			local overhealpercent, overheal = Genesis_GetOverheal();
-			Genesis_GUIHealCurrentOverhealText:SetText("Overheal " .. overheal .. " (" .. math.floor(overhealpercent * 1000) / 10 .. "%)");
+			Genesis_GUIHealCurrentOverhealText:SetText("Overheal " .. overheal .. " (" .. math.floor(overhealpercent * 100) .. "%)");
 			Genesis_GUIHealCurrentOverheal:SetValue(overhealpercent);
 			if (overhealpercent > Genesis_data["max_overheal"]) then
 				-- overhealing
@@ -1909,7 +1909,7 @@ function Genesis_UpdateHealing(elapsed)
 				end
 				Genesis_healing[who][author] = nil;
 			end
-			if ((GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0) and (Genesis_data["show_healing_all"] == 1 or (Genesis_data["show_healing_me"] == 1 and who == C_my_name) or not Genesis_healing[who][author])) then
+			if ((GetNumRaidMembers() > 0) and (Genesis_data["show_healing_all"] == 1 or (Genesis_data["show_healing_me"] == 1 and who == C_my_name) or not Genesis_healing[who][author])) then
 				if (Genesis_healing[who][author] and bar) then
 					bar:SetMinMaxValues(0, moredata["CastTime"]);
 					bar:SetValue(moredata["CastTime"] - Genesis_healing[who][author]["TimeLeft"]);
