@@ -1073,8 +1073,6 @@ function Genesis_KeyClick(button)
 		unit = C_AKA("party" .. GetMouseFocus():GetID());
 	elseif (string.find(GetMouseFocus():GetName(), "Raid")) then
 		unit = (GetMouseFocus().unit or GetMouseFocus():GetParent().unit);
-	elseif (UnitExists("mouseover")) then
-		unit = C_AKA("mouseover");
 	end
 	if (unit and UnitIsFriend("player", unit)) then
 		Genesis_MouseHeal(unit, button);
