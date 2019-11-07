@@ -305,7 +305,7 @@ Genesis_GUI_help = {
 	},
 	["ShowHealingAll"] = {
 		["Title"] = "Show all healing",
-		["Description"] = "Show the healing everyone using Genesis do. Generally recommended if you're a healer."
+		["Description"] = "Show healing done by everyone using Genesis. Generally recommended if you're a healer."
 	},
 	["ShowHealingMe"] = {
 		["Title"] = "Show only healing me",
