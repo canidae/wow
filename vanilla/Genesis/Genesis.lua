@@ -1065,13 +1065,14 @@ function Genesis_KeyClick(button)
 		return;
 	end
 	local unit;
-	if (string.find(GetMouseFocus():GetName(), "Player")) then
+    local focus_name = GetMouseFocus():GetName() or "";
+	if (string.find(focus_name, "Player")) then
 		unit = "player";
-	elseif (string.find(GetMouseFocus():GetName(), "Target")) then
+	elseif (string.find(focus_name, "Target")) then
 		unit = C_AKA("target");
-	elseif (string.find(GetMouseFocus():GetName(), "Party")) then
+	elseif (string.find(focus_name, "Party")) then
 		unit = C_AKA("party" .. GetMouseFocus():GetID());
-	elseif (string.find(GetMouseFocus():GetName(), "Raid")) then
+	elseif (string.find(focus_name, "Raid")) then
 		unit = (GetMouseFocus().unit or GetMouseFocus():GetParent().unit);
 	end
 	if (unit and UnitIsFriend("player", unit)) then
