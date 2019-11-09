@@ -876,6 +876,9 @@ function Genesis_HealMostWounded(spell, rank)
 	if (not Genesis_spells) then
 		Genesis_UpdateSpells();
 	end
+	if (rank == 0) then
+		rank = table.getn(Genesis_spells[spell]);
+	end
 	if (not ((rank and Genesis_spells[spell]) or (not rank and Genesis_data["classes"][spell]))) then
 		-- unable to find spell or class
 		return;
@@ -1022,7 +1025,7 @@ function Genesis_HealUsingClass(unit, class, healvalue)
 			if (not rank or rank == 0) then
 				rank = table.getn(Genesis_spells[spell]);
 			end
-			if ((not Genesis_only_instant_spells or Genesis_spells[spell][rank]["CastTime"] == 0) and Genesis_Heal(unit, spell, rank, healvalue)) then
+			if ((not Genesis_only_instant_spells or not Genesis_spells[spell][rank] or Genesis_spells[spell][rank]["CastTime"] == 0) and Genesis_Heal(unit, spell, rank, healvalue)) then
 				-- seem to be healing
 				Genesis_only_instant_spells = nil;
 				return 1;
@@ -1070,19 +1073,16 @@ function Genesis_KeyClick(button)
 		unit = C_AKA("party" .. GetMouseFocus():GetID());
 	elseif (string.find(GetMouseFocus():GetName(), "Raid")) then
 		unit = (GetMouseFocus().unit or GetMouseFocus():GetParent().unit);
-	elseif (UnitExists("mouseover")) then
-		unit = C_AKA("mouseover");
 	end
-	if (not unit) then
-		-- hmm, let's make it work like some people want it to work
+	if (unit and UnitIsFriend("player", unit)) then
+		Genesis_MouseHeal(unit, button);
+    elseif (Genesis_data["mouse"][button]) then
 		local spell = Genesis_data["mouse"][button]["SpellOrClass"];
 		local rank;
 		if (Genesis_spells[spell]) then
 			rank = Genesis_data["mouse"][button]["Rank"];
 		end
 		Genesis_ActionHeal(spell, rank)
-	else
-		Genesis_MouseHeal(unit, button);
 	end
 end
 
@@ -1134,7 +1134,7 @@ function Genesis_MouseDropDownMenuButton_OnClick(arg1)
 		};
 		if (Genesis_spells[spellOrClass]) then
 			slider.variable = "Genesis_data[\"mouse\"][" .. button .. "][\"Rank\"]";
-			slider:SetMinMaxValues(1, table.getn(Genesis_spells[spellOrClass]));
+			slider:SetMinMaxValues(0, table.getn(Genesis_spells[spellOrClass]));
 			slider:SetValue(table.getn(Genesis_spells[spellOrClass]));
 			slider:Show();
 		else
@@ -1193,7 +1193,7 @@ function Genesis_MouseDropDownMenuInitialize()
 		UIDropDownMenu_SetSelectedName(me, Genesis_data["mouse"][button]["SpellOrClass"])
 		if (Genesis_spells[Genesis_data["mouse"][button]["SpellOrClass"]]) then
 			slider.variable = "Genesis_data[\"mouse\"][" .. button .. "][\"Rank\"]";
-			slider:SetMinMaxValues(1, table.getn(Genesis_spells[Genesis_data["mouse"][button]["SpellOrClass"]]));
+			slider:SetMinMaxValues(0, table.getn(Genesis_spells[Genesis_data["mouse"][button]["SpellOrClass"]]));
 			slider:SetValue(Genesis_data["mouse"][button]["Rank"]);
 			slider:Show();
 		else
@@ -1855,7 +1855,7 @@ function Genesis_UpdateHealCurrent(elapsed)
 			Genesis_GUIHealCurrentAfterText:SetText("After heal (" .. math.floor(afterhp / UnitHealthMax(unit) * 1000) / 10 .. "%)");
 			Genesis_GUIHealCurrentAfter:SetValue(afterhp);
 			local overhealpercent, overheal = Genesis_GetOverheal();
-			Genesis_GUIHealCurrentOverhealText:SetText("Overheal " .. overheal .. " (" .. math.floor(overhealpercent * 1000) / 10 .. "%)");
+			Genesis_GUIHealCurrentOverhealText:SetText("Overheal " .. overheal .. " (" .. math.floor(overhealpercent * 100) .. "%)");
 			Genesis_GUIHealCurrentOverheal:SetValue(overhealpercent);
 			if (overhealpercent > Genesis_data["max_overheal"]) then
 				-- overhealing
@@ -1907,7 +1907,7 @@ function Genesis_UpdateHealing(elapsed)
 				end
 				Genesis_healing[who][author] = nil;
 			end
-			if ((GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0) and (Genesis_data["show_healing_all"] == 1 or (Genesis_data["show_healing_me"] == 1 and who == C_my_name) or not Genesis_healing[who][author])) then
+			if ((GetNumRaidMembers() > 0) and (Genesis_data["show_healing_all"] == 1 or (Genesis_data["show_healing_me"] == 1 and who == C_my_name) or not Genesis_healing[who][author])) then
 				if (Genesis_healing[who][author] and bar) then
 					bar:SetMinMaxValues(0, moredata["CastTime"]);
 					bar:SetValue(moredata["CastTime"] - Genesis_healing[who][author]["TimeLeft"]);
