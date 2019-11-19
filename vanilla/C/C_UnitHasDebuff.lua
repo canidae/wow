@@ -1,5 +1,5 @@
-function C_UnitGotDebuff(unit, debuff)
-	-- figure out if this player got this debuff
+function C_UnitHasDebuff(unit, debuff)
+	-- figure out if this player has this debuff
 	local debufftexture = C_debuff_texture_map[debuff];
 	if (not debufftexture) then
 		return;

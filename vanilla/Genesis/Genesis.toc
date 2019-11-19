@@ -14,7 +14,7 @@
 ..\C\C_GetUnitID.lua
 ..\C\C_Print.lua
 ..\C\C_SetPlayerData.lua
-..\C\C_UnitGotBuff.lua
-..\C\C_UnitGotDebuff.lua
+..\C\C_UnitHasBuff.lua
+..\C\C_UnitHasDebuff.lua
 ..\C\C_UpdatePlayerData.lua
 Genesis.xml
