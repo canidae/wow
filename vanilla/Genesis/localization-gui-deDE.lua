@@ -137,7 +137,7 @@ Genesis_GUI_help = {
 	},
 	["Genesis_GUIHealTargettargetModifier"] = {
 		["Title"] = "Heal targettarget modifier",
-		["Description"] = "Hold down this button to heal the target your current target got. This setting can not be the same setting as \"Heal self modifier\". This setting have no impact on \"mouse healing\"."
+		["Description"] = "Hold down this button to heal the target of your current. This setting can not be the same setting as \"Heal self modifier\". This setting have no impact on \"mouse healing\"."
 	},
 	["Genesis_GUILeftButtonDrop"] = {
 		["Title"] = "Linke Maustaste",
