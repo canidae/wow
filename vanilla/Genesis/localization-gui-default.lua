@@ -121,7 +121,7 @@ Genesis_GUI_help = {
 	},
 	["Genesis_GUIClass%dPercentSlider"] = {
 		["Title"] = "Percent",
-		["Description"] = "Select the highest percent a player may have for this spell to be used. If there's another spell in this class with a lower max percent value then that spell will be used if a player got less percent life left than that value."
+		["Description"] = "Select the highest percent a player may have for this spell to be used. If there's another spell in this class with a lower max percent value then that spell will be used if a player has less percent life left than that value."
 	},
 	["Genesis_GUIHealSelfModifier"] = {
 		["Title"] = "Heal self modifier",
@@ -137,7 +137,7 @@ Genesis_GUI_help = {
 	},
 	["Genesis_GUIHealTargettargetModifier"] = {
 		["Title"] = "Heal targettarget modifier",
-		["Description"] = "Hold down this button to heal the target your current target got. This setting can not be the same setting as \"Heal self modifier\". This setting have no impact on \"mouse healing\"."
+		["Description"] = "Hold down this button to heal the target of your current target. This setting can not be the same setting as \"Heal self modifier\". This setting have no impact on \"mouse healing\"."
 	},
 	["Genesis_GUILeftButtonDrop"] = {
 		["Title"] = "Left button",
@@ -213,19 +213,19 @@ Genesis_GUI_help = {
 	},
 	["BOPPriority"] = {
 		["Title"] = "Blessing of Protection priority decrease",
-		["Description"] = "Set how much a players priority will decrease when the player got buff \"Blessing of Protection\"."
+		["Description"] = "Set how much a players priority will decrease when the player has buff \"Blessing of Protection\"."
 	},
 	["PWSPriority"] = {
 		["Title"] = "Power Word: Shield priority decrease",
-		["Description"] = "Set how much a players priority will decrease when the player got buff \"Power Word: Shield\". This value should always be higher than or equal to the Weakened Soul priority increase value."
+		["Description"] = "Set how much a players priority will decrease when the player has buff \"Power Word: Shield\". This value should always be higher than or equal to the Weakened Soul priority increase value."
 	},
 	["RBPriority"] = {
 		["Title"] = "Recently Bandaged priority increase",
-		["Description"] = "Set how much a players priority will increase when the player got debuff \"Recently Bandaged\"."
+		["Description"] = "Set how much a players priority will increase when the player has debuff \"Recently Bandaged\"."
 	},
 	["WSPriority"] = {
 		["Title"] = "Weakened Soul priority increase",
-		["Description"] = "Set how much a players priority will increase when the player got debuff \"Weakened Soul\". This value should always be less than or equal to the Power Word: Shield priority decrease value."
+		["Description"] = "Set how much a players priority will increase when the player has debuff \"Weakened Soul\". This value should always be less than or equal to the Power Word: Shield priority decrease value."
 	},
 	["DruidPriority"] = {
 		["Title"] = "Druid priority",
@@ -305,11 +305,11 @@ Genesis_GUI_help = {
 	},
 	["ShowHealingAll"] = {
 		["Title"] = "Show all healing",
-		["Description"] = "Show the healing everyone using Genesis do. Generally recommended if you're a healer."
+		["Description"] = "Show healing done by everyone using Genesis. Generally recommended if you're a healer."
 	},
 	["ShowHealingMe"] = {
 		["Title"] = "Show only healing me",
-		["Description"] = "Show only the healing i receive. Can be useful for non-healers who wish to know whether they got a heal coming their way or not and that way can decide whether to use a potion/bandage or not."
+		["Description"] = "Show only the healing i receive. Can be useful for non-healers who wish to know whether they have a heal coming their way or not and that way can decide whether to use a potion/bandage or not."
 	},
 	["TreatShapeshifted"] = {
 		["Title"] = "Treat shapeshifted druids as rogues/warriors",
@@ -329,11 +329,11 @@ Genesis_GUI_help = {
 	},
 	["HOTMinCancelThreshold"] = {
 		["Title"] = "HOT heal threshold",
-		["Description"] = "When a players life drops below the given percent Genesis won't concider how much HOT the player will receive. If you set this value to 100% Genesis will ignore any HOT on players. When a player drops below this value Genesis will also allow you to put a new hot on the player even if the player got the hot already."
+		["Description"] = "When a players life drops below the given percent Genesis won't concider how much HOT the player will receive. If you set this value to 100% Genesis will ignore any HOT on players. When a player drops below this value Genesis will also allow you to put a new hot on the player even if the player has the HOT already."
 	},
 	["HOTMultiply"] = {
 		["Title"] = "HOT value",
-		["Description"] = "This value determine how much healing Genesis believe a HOT will do out of combat. Since buffs only say how much the HOT will heal without heal bonus (eg. \"Rejuvenation\" buff will show 189 per tick, but it can heal for 300 per tick) you can set this value higher than 100%. If you and the healers you usually heal with got a lot of +healing gear then it could be an idea to increase this value."
+		["Description"] = "This value determine how much healing Genesis believe a HOT will do out of combat. Since buffs only say how much the HOT will heal without heal bonus (eg. \"Rejuvenation\" buff will show 189 per tick, but it can heal for 300 per tick) you can set this value higher than 100%. If you and the healers you usually heal with have a lot of +healing gear then it could be an idea to increase this value."
 	},
 	["HOTMultiplyBattle"] = {
 		["Title"] = "HOT value combat",
@@ -341,7 +341,7 @@ Genesis_GUI_help = {
 	},
 	["MaxOverheal"] = {
 		["Title"] = "Max overheal",
-		["Description"] = "How much overhealing you'll allow before the heal frame go red. The heal frame will be green as long as you won't overheal, yellow if you're about to overheal but you got global cooldown and red if you're about to overheal and don't have global cooldown."
+		["Description"] = "How much overhealing you'll allow before the heal frame go red. The heal frame will be green as long as you won't overheal, yellow if you're about to overheal but you have global cooldown and red if you're about to overheal and don't have global cooldown."
 	},
 	["MinHealThreshold"] = {
 		["Title"] = "Min heal threshold",
@@ -349,7 +349,7 @@ Genesis_GUI_help = {
 	},
 	["HealPower"] = {
 		["Title"] = "Heal power",
-		["Description"] = "This is a damn fancy, but a risky feature. When this value is set to 100% you'll heal someone to 100% life (as long as you got a powerful enough spell & rank), but when the value is set to eg. 50% you'll only heal 50% of the life the player is missing. This feature is impressingly useful in raids where there are several healers. Your mana will last a lot longer if you decrease this value, but too low values can be very fatal."
+		["Description"] = "This is a damn fancy, but a risky feature. When this value is set to 100% you'll heal someone to 100% life (as long as you have a powerful enough spell & rank), but when the value is set to eg. 50% you'll only heal 50% of the life the player is missing. This feature is impressingly useful in raids where there are several healers. Your mana will last a lot longer if you decrease this value, but too low values can be very fatal."
 	},
 	["UpdatePlayerDataTime"] = {
 		["Title"] = "Max update time",

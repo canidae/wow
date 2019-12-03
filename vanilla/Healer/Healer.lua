@@ -3483,12 +3483,12 @@ function Healer_GotBuff(person, buff)
 
 		-- If buff has super, check for that
 		if(HEALER_BUFFS and HEALER_BUFFS[buff] and HEALER_BUFFS[buff]["Super"]) then
-			local gotsuper=C_UnitGotBuff(person, HEALER_BUFFS[buff]["Super"]);
+			local gotsuper=C_UnitHasBuff(person, HEALER_BUFFS[buff]["Super"]);
 			if(gotsuper) then return gotsuper;end;
 		end
 
 		-- Check for buff
-		return C_UnitGotBuff(person, buff);
+		return C_UnitHasBuff(person, buff);
 	else
 		return Healer_GotBuff_Old(person, buff);
 	end
@@ -3573,7 +3573,7 @@ function Healer_GotDebuff(person, debuff)
 	end
 	if(not Healer_UseOldChecks) then
 		Healer_UpdatePlayerDataWrapper(person);
-		return C_UnitGotDebuff(person, debuff);
+		return C_UnitHasDebuff(person, debuff);
 	else	
 		return Healer_GotDebuff_old(person, debuff);
 	end

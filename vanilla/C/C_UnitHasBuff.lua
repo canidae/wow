@@ -1,5 +1,5 @@
-function C_UnitGotBuff(unit, buff)
-	-- figure out if this player got this buff
+function C_UnitHasBuff(unit, buff)
+	-- figure out if this player has this buff
 	local bufftexture = C_buff_texture_map[buff];
 	if (not bufftexture) then
 		return;

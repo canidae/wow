@@ -148,12 +148,12 @@ function Genesis_CanHeal(unit)
 		return;
 	end
 	for buff, one in Genesis_buff_unable_to_heal do
-		if (C_UnitGotBuff(unit, buff)) then
+		if (C_UnitHasBuff(unit, buff)) then
 			return;
 		end
 	end
 	for debuff, one in Genesis_debuff_unable_to_heal do
-		if (C_UnitGotDebuff(unit, debuff)) then
+		if (C_UnitHasDebuff(unit, debuff)) then
 			return;
 		end
 	end
@@ -353,8 +353,8 @@ function Genesis_GetHealBonus(unit, spell, rank)
 	Genesis_generic_table2["HealUp"] = 0;
 	Genesis_generic_table2["HealDown"] = 0;
 	if (spell == C_Flash_of_light or spell == C_Holy_light) then
-		local data = C_UnitGotBuff(unit, C_Blessing_of_light);
-		data = (data or C_UnitGotBuff(unit, C_Greater_blessing_of_light));
+		local data = C_UnitHasBuff(unit, C_Blessing_of_light);
+		data = (data or C_UnitHasBuff(unit, C_Greater_blessing_of_light));
 		if (data and data["Text"]) then
 			local start, stop;
 			start, stop, Genesis_generic_table[1], Genesis_generic_table[2] = string.find(data["Text"], Genesis_blessing_of_light_search);
@@ -366,7 +366,7 @@ function Genesis_GetHealBonus(unit, spell, rank)
 		end
 	end
 	for buff, search in Genesis_buff_affect_healing_search do
-		local data = C_UnitGotBuff(unit, buff);
+		local data = C_UnitHasBuff(unit, buff);
 		if (data and data["Text"]) then
 			local start, stop;
 			start, stop, Genesis_generic_table[1], Genesis_generic_table[2] = string.find(data["Text"], search);
@@ -378,7 +378,7 @@ function Genesis_GetHealBonus(unit, spell, rank)
 		end
 	end
 	for debuff, search in Genesis_debuff_affect_healing_search do
-		local data = C_UnitGotDebuff(unit, debuff);
+		local data = C_UnitHasDebuff(unit, debuff);
 		if (data and data["Text"]) then
 			local start, stop;
 			start, stop, Genesis_generic_table[1], Genesis_generic_table[2] = string.find(data["Text"], search);
@@ -390,7 +390,7 @@ function Genesis_GetHealBonus(unit, spell, rank)
 		end
 	end
 	for buff, search in Genesis_my_buff_affect_healing_search do
-		local data = C_UnitGotBuff("player", buff);
+		local data = C_UnitHasBuff("player", buff);
 		if (data and data["Text"]) then
 			local start, stop;
 			start, stop, Genesis_generic_table[1], Genesis_generic_table[2] = string.find(data["Text"], search);
@@ -409,7 +409,7 @@ function Genesis_GetHealBonus(unit, spell, rank)
 		Genesis_UpdateItemHealBonus();
 	end
 	healbonus = healbonus + Genesis_item_heal_bonus;
-	-- if we're a priest & got "spiritual guidance"
+	-- if we're a priest & have "spiritual guidance"
 	if (C_my_class == C_Priest) then
 		local crap1, crap2, crap3, crap4, crank, mrank = GetTalentInfo(2, 14);
 		local base, cur = UnitStat("player", 5);
@@ -428,7 +428,7 @@ function Genesis_GetHealingOverTime(unit)
 	Genesis_generic_table = (Genesis_generic_table or {});
 	Genesis_generic_table2 = (Genesis_generic_table2 or {});
 	for buff, duration in Genesis_hot_duration do
-		local data = C_UnitGotBuff(unit, buff);
+		local data = C_UnitHasBuff(unit, buff);
 		if (data and data["Text"]) then
 			local start, stop;
 			start, stop, Genesis_generic_table[1], Genesis_generic_table[2] = string.find(data["Text"], Genesis_hot_search);
@@ -542,7 +542,7 @@ function Genesis_GetOverheal()
 end
 
 function Genesis_GetPriority(unit)
-	-- get what priority this unit got
+	-- get what priority this unit has
 	local priority = 1;
 	if (not Genesis_RaidUnitIsChecked(unit)) then
 		-- we're in a raid and this unit is not checked for healing
@@ -583,12 +583,12 @@ function Genesis_GetPriority(unit)
 		return 0;
 	end
 	for buff, prioritychange in Genesis_data["buff_affect_priority"] do
-		if (C_UnitGotBuff(unit, buff)) then
+		if (C_UnitHasBuff(unit, buff)) then
 			priority = priority - prioritychange;
 		end
 	end
 	for debuff, prioritychange in Genesis_data["debuff_affect_priority"] do
-		if (C_UnitGotDebuff(unit, debuff)) then
+		if (C_UnitHasDebuff(unit, debuff)) then
 			priority = priority + prioritychange;
 		end
 	end
@@ -602,13 +602,13 @@ function Genesis_GetSpellHealing(unit, spell, rank)
 	end
 	local healbonus = Genesis_GetHealBonus(unit, spell, rank);
 	if (spell == C_Regrowth) then
-		-- regrowth got the healbonus splitted 50/50 on the direct heal & hot
+		-- regrowth has the healbonus splitted 50/50 on the direct heal & hot
 		healbonus = healbonus / 2;
 	end
 	if (spell == C_Swiftmend) then
 		-- swiftmend is quite unique
-		-- if a player got rejuvenation, it eats that one up
-		local data = C_UnitGotBuff(unit, C_Rejuvenation);
+		-- if a player have rejuvenation, it eats that one up
+		local data = C_UnitHasBuff(unit, C_Rejuvenation);
 		if (data) then
 			local start, stop;
 			Genesis_generic_table = (Genesis_generic_table or {});
@@ -621,7 +621,7 @@ function Genesis_GetSpellHealing(unit, spell, rank)
 			local heal = Genesis_generic_table2["Heal"] * 5 + healbonus * 12 / Genesis_bonus_instant_divide;
 			return heal, heal, heal, 0;
 		end
-		data = C_UnitGotBuff(unit, C_Regrowth);
+		data = C_UnitHasBuff(unit, C_Regrowth);
 		-- if no reju then it eats regrowth if it's on the player
 		if (data) then
 			local start, stop;
@@ -666,20 +666,20 @@ function Genesis_GetSpellHealing(unit, spell, rank)
 		hot = hot + healbonus * Genesis_hot_duration[spell] / Genesis_bonus_instant_divide;
 	end
 	heal = heal + hot;
-	if (C_my_class == C_Paladin and (spell == C_Flash_of_light or spell == C_Holy_light) and C_UnitGotBuff("player", C_Divine_favor)) then
+	if (C_my_class == C_Paladin and (spell == C_Flash_of_light or spell == C_Holy_light) and C_UnitHasBuff("player", C_Divine_favor)) then
 		-- 100% crit chance
 		heal = heal * Genesis_critical_bonus;
 		healmin = healmin * Genesis_critical_bonus;
 		healmax = healmax * Genesis_critical_bonus;
 	end
-	if (C_UnitGotBuff("player", C_Power_infusion)) then
+	if (C_UnitHasBuff("player", C_Power_infusion)) then
 		heal = heal * 1.2;
 		healmin = healmin * 1.2;
 		healmax = healmax * 1.2;
 		hot = hot * 1.2;
 	end
-	if (C_UnitGotDebuff(unit, C_Mortal_strike)) then
-		-- target got mortal strike debuff, ouch
+	if (C_UnitHasDebuff(unit, C_Mortal_strike)) then
+		-- target has mortal strike debuff, ouch
 		heal = heal * 0.5;
 		healmin = healmin * 0.5;
 		healmax = healmax * 0.5;
@@ -719,26 +719,26 @@ function Genesis_Heal(unit, spell, rank, healvalue)
 	if (not Genesis_CanHeal(unit)) then
 		return;
 	end
-	if (spell == C_Power_word_shield and C_UnitGotDebuff(unit, C_Weakened_soul)) then
+	if (spell == C_Power_word_shield and C_UnitHasDebuff(unit, C_Weakened_soul)) then
 		-- casting shield on someone with weakened soul, can't allow that
 		return;
 	end
-	if ((spell == C_Divine_shield or spell == C_Divine_protection or spell == C_Blessing_of_protection) and C_UnitGotDebuff(unit, C_Forbearance)) then
-		-- casting paladin shield on someone who got forbearance
+	if ((spell == C_Divine_shield or spell == C_Divine_protection or spell == C_Blessing_of_protection) and C_UnitHasDebuff(unit, C_Forbearance)) then
+		-- casting paladin shield on someone who have forbearance
 		return;
 	end
-	if (((spell ~= C_Greater_heal and ((spell ~= C_Regrowth and spell ~= C_Power_word_shield) or healvalue) and C_UnitGotBuff(unit, spell)) or (spell == C_Power_word_shield and C_UnitGotBuff(unit, C_Ice_barrier))) and (UnitHealth(unit) / UnitHealthMax(unit) > Genesis_data["hot_heal_threshold"] or spell == C_Renew or spell == C_Rejuvenation)) then
-		-- casting rejuvenation/renew on someone who already got it, return
-		-- will also return if we're not target healing and trying to cast regrowth on someone who got the regrowth buff
-		-- like regrowth, you may cast a new shield on someone who already got the shield if you're target healing
+	if (((spell ~= C_Greater_heal and ((spell ~= C_Regrowth and spell ~= C_Power_word_shield) or healvalue) and C_UnitHasBuff(unit, spell)) or (spell == C_Power_word_shield and C_UnitHasBuff(unit, C_Ice_barrier))) and (UnitHealth(unit) / UnitHealthMax(unit) > Genesis_data["hot_heal_threshold"] or spell == C_Renew or spell == C_Rejuvenation)) then
+		-- casting rejuvenation/renew on someone who already has it, return
+		-- will also return if we're not target healing and trying to cast regrowth on someone who has the regrowth buff
+		-- like regrowth, you may cast a new shield on someone who already have the shield if you're target healing
 		-- if we're trying to shield a mage with ice barrier then also return here
 		return;
 	end
-	if (spell == C_Swiftmend and not (C_UnitGotBuff(unit, C_Regrowth) or C_UnitGotBuff(unit, C_Rejuvenation))) then
+	if (spell == C_Swiftmend and not (C_UnitHasBuff(unit, C_Regrowth) or C_UnitHasBuff(unit, C_Rejuvenation))) then
 		-- trying to cast swiftmend on someone who don't have regrowth/rejuvenation, return
 		return;
 	end
-	if ((C_my_class == C_Druid and C_UnitGotBuff("player", C_Clearcasting)) or (C_my_class == C_Priest and C_UnitGotBuff("player", C_Inner_focus))) then
+	if ((C_my_class == C_Druid and C_UnitHasBuff("player", C_Clearcasting)) or (C_my_class == C_Priest and C_UnitHasBuff("player", C_Inner_focus))) then
 		-- clearcasting/inner focus, use highest rank
 		rank = table.getn(Genesis_spells[spell]);
 	else
@@ -755,7 +755,7 @@ function Genesis_Heal(unit, spell, rank, healvalue)
 		-- not enough mana
 		return;
 	end
-	if (healvalue and not C_UnitGotBuff("player", C_Clearcasting)) then
+	if (healvalue and not C_UnitHasBuff("player", C_Clearcasting)) then
 		-- scale down so we use the "correct" rank
 		rank = Genesis_ScaleSpell(unit, spell, rank, healvalue);
 	end
@@ -821,9 +821,9 @@ function Genesis_Heal(unit, spell, rank, healvalue)
 		end
 	end
 	local casttime = Genesis_spells[spell][rank]["CastTime"];
-	if ((C_my_class == C_Druid or C_my_class == C_Shaman) and C_UnitGotBuff("player", C_Natures_swiftness)) then
+	if ((C_my_class == C_Druid or C_my_class == C_Shaman) and C_UnitHasBuff("player", C_Natures_swiftness)) then
 		casttime = 0;
-	elseif (C_my_class == C_Druid and C_UnitGotBuff("player", C_Natures_grace) and casttime > 0) then
+	elseif (C_my_class == C_Druid and C_UnitHasBuff("player", C_Natures_grace) and casttime > 0) then
 		casttime = casttime - 0.5;
 	end
 	local heal, healmin, healmax, hot = Genesis_GetSpellHealing(unit, spell, rank);
@@ -965,7 +965,7 @@ function Genesis_HealUsingClass(unit, class, healvalue)
 	end
 	local percent = UnitHealth(unit) / UnitHealthMax(unit);
 	if (healvalue and percent > Genesis_data["min_heal_threshold"]) then
-		-- not target healing, and unit got more hp than min heal threshold
+		-- not target healing, and unit has more hp than min heal threshold
 		return;
 	end
 	local spell = 1;
@@ -981,10 +981,10 @@ function Genesis_HealUsingClass(unit, class, healvalue)
 				if (not spell or (lastpercent and data["Percent"] ~= lastpercent)) then
 					spell = curspell;
 				elseif (lastpercent and data["Percent"] == lastpercent) then
-					-- this spell got same percent as last
+					-- this spell has same percent as last
 					-- we want to use the spell that:
 					-- 1. heals enough on highest rank
-					-- 2. got shortest casttime
+					-- 2. has the shortest casttime
 					-- 3. cost least mana
 					local rank = Genesis_data["classes"][class][spell]["Rank"];
 					if (not rank) then
@@ -1065,13 +1065,14 @@ function Genesis_KeyClick(button)
 		return;
 	end
 	local unit;
-	if (string.find(GetMouseFocus():GetName(), "Player")) then
+    local focus_name = GetMouseFocus():GetName() or "";
+	if (string.find(focus_name, "Player")) then
 		unit = "player";
-	elseif (string.find(GetMouseFocus():GetName(), "Target")) then
+	elseif (string.find(focus_name, "Target")) then
 		unit = C_AKA("target");
-	elseif (string.find(GetMouseFocus():GetName(), "Party")) then
+	elseif (string.find(focus_name, "Party")) then
 		unit = C_AKA("party" .. GetMouseFocus():GetID());
-	elseif (string.find(GetMouseFocus():GetName(), "Raid")) then
+	elseif (string.find(focus_name, "Raid")) then
 		unit = (GetMouseFocus().unit or GetMouseFocus():GetParent().unit);
 	end
 	if (unit and UnitIsFriend("player", unit)) then
@@ -1308,7 +1309,7 @@ function Genesis_OnEvent()
 	elseif (event == "RAID_ROSTER_UPDATE") then
 		Genesis_SetRaidChecked();
 	elseif (event == "SPELLCAST_DELAYED" and Genesis_i_am_healing and arg1) then
-		-- our current spellcasting got delayed somehow
+		-- our current spellcasting was delayed somehow
 		local giah = Genesis_i_am_healing;
 		if (not Genesis_healing[giah] or not Genesis_healing[giah][C_my_name] or Genesis_healing[giah][C_my_name]["Complete"]) then
 			return;
@@ -1532,7 +1533,7 @@ function Genesis_Receive(author, message)
 		-- general update:
 		-- + someone started healing
 		-- + someone updated their casting time
-		-- + someone got delayed
+		-- + someone was delayed
 		-- we just update the data
 		heal = heal / 1.0;
 		hot = hot / 1.0;
@@ -1737,13 +1738,8 @@ function Genesis_SetupSettings()
 	end
 	Genesis_data["raid_priority"] = (Genesis_data["raid_priority"] or 0.6);
 	Genesis_data["safe_cancel"] = (Genesis_data["safe_cancel"] or 1);
-	if (C_my_class == C_Druid or C_my_class == C_Paladin or C_my_class == C_Priest or C_my_class == C_Shaman) then
-		Genesis_data["show_healing_all"] = (Genesis_data["show_healing_all"] or 1);
-		Genesis_data["show_healing_me"] = (Genesis_data["show_healing_me"] or 0);
-	else
-		Genesis_data["show_healing_all"] = (Genesis_data["show_healing_all"] or 0);
-		Genesis_data["show_healing_me"] = (Genesis_data["show_healing_me"] or 1);
-	end
+    Genesis_data["show_healing_all"] = (Genesis_data["show_healing_all"] or 0);
+    Genesis_data["show_healing_me"] = (Genesis_data["show_healing_me"] or 0);
 	Genesis_data["scale_spells"] = (Genesis_data["scale_spells"] or 1);
 	Genesis_data["shapeshifted_druids"] = (Genesis_data["shapeshifted_druids"] or 0);
 	Genesis_data["unchecked_priority"] = (Genesis_data["unchecked_priority"] or 0.3);
@@ -1828,7 +1824,7 @@ function Genesis_UpdateHealCurrent(elapsed)
 	local timeleft = Genesis_healing[giah][C_my_name]["TimeLeft"] - elapsed;
 	if (not unit) then
 		-- we're healing target, but changed to another target
-		-- we don't know how much hp the target currently got
+		-- we don't know how much hp the target currently have
 		-- getting blueballed, so color everything likewise
 		Genesis_GUIHealCurrentSpell:SetValue(Genesis_healing[giah][C_my_name]["CastTime"] - timeleft);
 		Genesis_GUIHealCurrentSpellBarTexture:SetVertexColor(0.0, 0.0, 1.0, 0.5);
@@ -1963,12 +1959,12 @@ function Genesis_UpdateItemHealBonus()
 		if (item and Genesis_item_heal_bonus_cache[item] and (slot == 16 or slot == 17)) then
 			local a, b, c, d, e, f = GetWeaponEnchantInfo();
 			if (slot == 16 and ((a and not Genesis_main_hand_enchant) or (not a and Genesis_main_hand_enchant))) then
-				-- main hand lost/got enchant, rescan
+				-- main hand lost/has enchant, rescan
 				Genesis_item_heal_bonus_cache[item] = nil;
 				Genesis_main_hand_enchant = a;
 			end
 			if (slot == 17 and ((d and not Genesis_off_hand_enchant) or (not d and Genesis_off_hand_enchant))) then
-				-- off hand lost/got enchant, rescan
+				-- off hand lost/has enchant, rescan
 				Genesis_item_heal_bonus_cache[item] = nil;
 				Genesis_off_hand_enchant = d;
 			end
@@ -2132,7 +2128,7 @@ function Genesis_UpdateSpells()
 			Genesis_spells[spellname][rank]["Range"] = range;
 			Genesis_spells[spellname]["Texture"] = GetSpellTexture(spellid, BOOKTYPE_SPELL);
 			-- ok, we have a slight trouble here:
-			-- if a spell got cooldown, it'll add a number to the description "cooldown remaining: x sec"
+			-- if a spell has cooldown, it'll add a number to the description "cooldown remaining: x sec"
 			-- which means we'll have to search for an extra number
 			local a = {};
 			start, stop, cooldown, a[1], a[2], a[3], a[4], a[5], a[6] = string.find(text, Genesis_heal_spells_search[spellname] .. "(%d+%.?%d*)[^%d]+");
