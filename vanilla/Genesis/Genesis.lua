@@ -166,9 +166,6 @@ function Genesis_ClassDropDownMenuButton_OnClick()
 end
 
 function Genesis_ClassDropDownMenuInitialize()
-	if (not Genesis_spells) then
-		Genesis_UpdateSpells();
-	end
 	local info;
 	if (not Genesis_data["classes"]) then
 		Genesis_data["classes"] = {};
@@ -307,9 +304,6 @@ function Genesis_DropSpell()
 		return;
 	end
 	local spell, rank = GetSpellName(Genesis_pickup_spellid, Genesis_pickup_spellbook);
-	if (not Genesis_spells) then
-		Genesis_UpdateSpells();
-	end
 	if (not Genesis_player_heal_spells[spell] or Genesis_data["classes"][Genesis_current_class][spell]) then
 		return;
 	end
@@ -597,9 +591,6 @@ end
 
 function Genesis_GetSpellHealing(unit, spell, rank)
 	-- figure out how much this spell will heal
-	if (not Genesis_spells) then
-		Genesis_UpdateSpells();
-	end
 	local healbonus = Genesis_GetHealBonus(unit, spell, rank);
 	if (spell == C_Regrowth) then
 		-- regrowth has the healbonus splitted 50/50 on the direct heal & hot
@@ -699,9 +690,6 @@ function Genesis_Heal(unit, spell, rank, healvalue)
 		end
 		return 1;
 	end
-	if (not Genesis_spells) then
-		Genesis_UpdateSpells();
-	end
 	if (not Genesis_spells[spell]) then
 		return;
 	end
@@ -772,9 +760,6 @@ function Genesis_Heal(unit, spell, rank, healvalue)
 	local checkname, checkrank = GetSpellName(Genesis_spells[spell][rank]["ID"], BOOKTYPE_SPELL);
 	local start, stop, checkrank = string.find((checkrank or ""), "(%d+)");
 	checkrank = (checkrank or 1) / 1.0;
-	if (checkname ~= spell or checkrank ~= rank) then
-		Genesis_UpdateSpells();
-	end
 	CastSpell(Genesis_spells[spell][rank]["ID"], BOOKTYPE_SPELL);
 	if (SpellCanTargetUnit(unit)) then
 		-- target our unit
@@ -872,9 +857,6 @@ function Genesis_HealMostWounded(spell, rank)
 			SpellStopCasting();
 		end
 		return 1;
-	end
-	if (not Genesis_spells) then
-		Genesis_UpdateSpells();
 	end
 	if (rank == 0) then
 		rank = table.getn(Genesis_spells[spell]);
@@ -1065,7 +1047,7 @@ function Genesis_KeyClick(button)
 		return;
 	end
 	local unit;
-    local focus_name = GetMouseFocus():GetName() or "";
+	local focus_name = GetMouseFocus():GetName() or "";
 	if (string.find(focus_name, "Player")) then
 		unit = "player";
 	elseif (string.find(focus_name, "Target")) then
@@ -1077,7 +1059,7 @@ function Genesis_KeyClick(button)
 	end
 	if (unit and UnitIsFriend("player", unit)) then
 		Genesis_MouseHeal(unit, button);
-    elseif (Genesis_data["mouse"][button]) then
+	elseif (Genesis_data["mouse"][button]) then
 		local spell = Genesis_data["mouse"][button]["SpellOrClass"];
 		local rank;
 		if (Genesis_spells[spell]) then
@@ -1146,9 +1128,6 @@ function Genesis_MouseDropDownMenuButton_OnClick(arg1)
 end
 
 function Genesis_MouseDropDownMenuInitialize()
-	if (not Genesis_spells) then
-		Genesis_UpdateSpells();
-	end
 	local dropdownmenu = getglobal(this:GetParent():GetName());
 	local info;
 	info = {
@@ -1216,9 +1195,6 @@ function Genesis_MouseHeal(unit, button)
 		return;
 	end
 	local spell = Genesis_data["mouse"][button]["SpellOrClass"];
-	if (not Genesis_spells) then
-		Genesis_UpdateSpells();
-	end
 	local healvalue;
 	if (not Genesis_IsHealModifierKeyDown("heal_max_modifier")) then
 		-- not tankhealing, set healvalue
@@ -1243,8 +1219,10 @@ function Genesis_OnEvent()
 		-- received a message from someone else
 		Genesis_Receive(arg2, arg4);
 	elseif (event == "LEARNED_SPELL_IN_TAB") then
+		Genesis_spells = nil;
 		Genesis_UpdateSpells();
 	elseif (event == "PLAYER_ENTERING_WORLD") then
+		Genesis_UpdateSpells();
 		-- we zoned somewhere, clearly we left battle
 		C_player_in_combat = nil;
 		-- and clearly we're not casting a spell
@@ -1434,9 +1412,6 @@ function Genesis_PickupClassSpell()
 	local parent = string.gsub(this:GetName(), "Spell$", "");
 	local spell = getglobal(parent .. "SpellText"):GetText();
 	local rank = getglobal(parent .. "RankSlider"):GetValue();
-	if (not Genesis_spells) then
-		Genesis_UpdateSpells();
-	end
 	if (not Genesis_spells[spell][rank] or not Genesis_spells[spell][rank]["ID"]) then
 		rank = table.getn(Genesis_spells[spell]);
 	end
@@ -1738,8 +1713,8 @@ function Genesis_SetupSettings()
 	end
 	Genesis_data["raid_priority"] = (Genesis_data["raid_priority"] or 0.6);
 	Genesis_data["safe_cancel"] = (Genesis_data["safe_cancel"] or 1);
-    Genesis_data["show_healing_all"] = (Genesis_data["show_healing_all"] or 0);
-    Genesis_data["show_healing_me"] = (Genesis_data["show_healing_me"] or 0);
+	Genesis_data["show_healing_all"] = (Genesis_data["show_healing_all"] or 0);
+	Genesis_data["show_healing_me"] = (Genesis_data["show_healing_me"] or 0);
 	Genesis_data["scale_spells"] = (Genesis_data["scale_spells"] or 1);
 	Genesis_data["shapeshifted_druids"] = (Genesis_data["shapeshifted_druids"] or 0);
 	Genesis_data["unchecked_priority"] = (Genesis_data["unchecked_priority"] or 0.3);
@@ -2068,6 +2043,9 @@ function Genesis_UpdateSetting()
 end
 
 function Genesis_UpdateSpells()
+	if (Genesis_spells) then
+		return
+	end
 	-- update the data about our healing spells
 	Genesis_party_heal_spells = {
 		[C_Chain_heal] = 0,
@@ -2169,9 +2147,6 @@ function Genesis_UseAction(slot, checkCursor, onSelf)
 		return Genesis_original_UseAction(slot, checkCursor, onSelf);
 	end
 	local spell, rank = Genesis_GetActionSpell(slot);
-	if (not Genesis_spells) then
-		Genesis_UpdateSpells();
-	end
 	if (Genesis_data["hook_shields"] == 0 and (spell == C_Power_word_shield or spell == C_Blessing_of_protection)) then
 		-- popular demand to not hook the priest shield... oh well, suckers :p
 		return Genesis_original_UseAction(slot, checkCursor, onSelf);
