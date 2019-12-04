@@ -1,8 +1,8 @@
 <Bindings>
-	<Binding name="GENESIS_CUSTOM_1" header="GENESIS">
-		Genesis_KeyClick("custombutton1");
-	</Binding>
-	<Binding name="GENESIS_CUSTOM_2">
-		Genesis_KeyClick("custombutton2");
-	</Binding>
+    <Binding name="GENESIS_CUSTOM_1" header="GENESIS">
+        Genesis_KeyClick("custombutton1");
+    </Binding>
+    <Binding name="GENESIS_CUSTOM_2">
+        Genesis_KeyClick("custombutton2");
+    </Binding>
 </Bindings>

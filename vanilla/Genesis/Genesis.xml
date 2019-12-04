@@ -1,2103 +1,2103 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
-	<Script file="localization-default.lua"/>
-	<Script file="localization-deDE.lua"/>
-	<Script file="localization-frFR.lua"/>
-	<Script file="localization-gui-default.lua"/>
-	<Script file="localization-gui-deDE.lua"/>
-	<Script file="localization-gui-frFR.lua"/>
-	<Script file="Genesis.lua"/>
-	<Frame name="Genesis" hidden="false">
-		<Scripts>
-			<OnEvent>
-				Genesis_OnEvent();
-			</OnEvent>
-			<OnLoad>
-				Genesis_OnLoad();
-			</OnLoad>
-			<OnUpdate>
-				Genesis_OnUpdate(arg1);
-			</OnUpdate>
-		</Scripts>
-	</Frame>
-	<Frame name="Genesis_GUIRaidCheckButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="90" y="14"/>
-		</Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="76" y="8"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="14" y="1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="$parentCheckButton" inherits="UICheckButtonTemplate">
-				<Size>
-					<AbsDimension x="22" y="22"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="-4" y="4"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						-- we (don't) want to heal this person
-						local parentgroup = string.gsub(this:GetName(), "Slot%dCheckButton$", "");
-						local group = getglobal(parentgroup):GetID();
-						local parentslot = string.gsub(this:GetName(), "CheckButton$", "");
-						local slot = getglobal(parentslot):GetID();
-						Genesis_data["raid"][group][slot] = (this:GetChecked() or 0);
-					</OnClick>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</CheckButton>
-		</Frames>
-	</Frame>
-	<Frame name="Genesis_GUIRaidGroupTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="90" y="80"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\RaidFrame\UI-RaidFrame-GroupOutline">
-					<Size>
-						<AbsDimension x="90" y="80"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.6640625" top="0" bottom="0.625"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentLabel">
-				<Size>
-					<AbsDimension x="84" y="14"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="0" y="14"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						-- (un)check all buttons in this group
-						local parent = string.gsub(this:GetName(), "Label$", "");
-						local group = getglobal(parent):GetID();
-						if (getglobal(parent .. "Slot1CheckButton"):GetChecked()) then
-							-- uncheck all
-							for slot = 1, 5 do
-								Genesis_data["raid"][group][slot] = 0;
-							end
-						else
-							-- check all
-							for slot = 1, 5 do
-								Genesis_data["raid"][group][slot] = 1;
-							end
-						end
-						Genesis_SetRaidChecked();
-					</OnClick>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-				<NormalFont inherits="GameFontNormalSmall"/>
-				<HighlightFont inherits="GameFontHighlightSmall"/>
-			</Button>
-			<Button name="$parentSlot1" inherits="Genesis_GUIRaidCheckButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="3" y="-3"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentSlot2" inherits="Genesis_GUIRaidCheckButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlot1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentSlot3" inherits="Genesis_GUIRaidCheckButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlot2" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentSlot4" inherits="Genesis_GUIRaidCheckButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlot3" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentSlot5" inherits="Genesis_GUIRaidCheckButtonTemplate" id="5">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSlot4" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				getglobal(this:GetName() .. "Label"):SetText(GROUP .. " " .. this:GetID());
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<StatusBar name="Genesis_GUIBarTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="192" y="14"/>
-		</Size>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString name="$parentText" inherits="GameFontDarkGraySmall" text="Genesis heal bar">
-					<Size>
-						<AbsDimension x="192" y="10"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0"/>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				this:SetFrameLevel(this:GetFrameLevel() - 1);
-				this:SetBackdropColor(0.7, 0.7, 0.7, 0.3);
-				this:SetMinMaxValues(666, 1337);
-				this:SetValue(666);
-				getglobal(this:GetName() .. "BarTexture"):SetVertexColor(0.0, 1.0, 0.0, 0.3);
-			</OnLoad>
-		</Scripts>
-		<BarTexture name="$parentBarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
-	</StatusBar>
-	<Frame name="Genesis_GUICheckButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="195" y="31"/>
-		</Size>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString name="$parentCheckButtonText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="">
-					<Size>
-						<AbsDimension x="163" y="32"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="5" y="1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="$parentCheckButton" inherits="UICheckButtonTemplate">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						Genesis_UpdateSetting();
-					</OnClick>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</CheckButton>
-		</Frames>
-		<Scripts>
-			<OnEnter>
-				Genesis_ShowTooltip();
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Frame>
-	<Frame name="Genesis_GUIClassTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="390" y="31"/>
-		</Size>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Frames>
-			<Button name="$parentSpell">
-				<Size>
-					<AbsDimension x="21" y="21"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="6" y="-5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture name="$parentTexture"/>
-						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="">
-							<Size>
-								<AbsDimension x="75" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentTexture" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="2" y="1"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnMouseDown>
-						if (not Genesis_DropSpell()) then
-							Genesis_PickupClassSpell();
-						end
-					</OnMouseDown>
-					<OnReceiveDrag>
-						if (not Genesis_DropSpell()) then
-							Genesis_PickupClassSpell();
-						end
-					</OnReceiveDrag>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Button>
-			<Slider name="$parentRankSlider" inherits="OptionsSliderTemplate">
-				<Size>
-					<AbsDimension x="92" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentSpellText" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="0" y="-3"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnValueChanged>
-						Genesis_UpdateSetting();
-					</OnValueChanged>
-					<OnLoad>
-						getglobal(this:GetName() .. "Text"):SetText();
-						getglobal(this:GetName() .. "Low"):SetText(Genesis_GUI_rank);
-						getglobal(this:GetName() .. "High"):SetText();
-						this:SetValueStep(1);
-					</OnLoad>
-					<OnShow>
-						local parent = string.gsub(this:GetName(), "RankSlider$", "");
-						local spell = getglobal(parent .. "SpellText"):GetText();
-						this.variable = "Genesis_data[\"classes\"][Genesis_current_class][\"" .. spell .. "\"][\"Rank\"]";
-						this:SetMinMaxValues(0, table.getn(Genesis_spells[spell]));
-						this:SetValue(Genesis_data["classes"][Genesis_current_class][spell]["Rank"]);
-					</OnShow>
-				</Scripts>
-			</Slider>
-			<Slider name="$parentPercentSlider" inherits="OptionsSliderTemplate">
-				<Size>
-					<AbsDimension x="185" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRankSlider" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="4" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnValueChanged>
-						Genesis_UpdateSetting();
-					</OnValueChanged>
-					<OnLoad>
-						getglobal(this:GetName() .. "Text"):SetText();
-						getglobal(this:GetName() .. "Low"):SetText(Genesis_GUI_percent);
-						getglobal(this:GetName() .. "High"):SetText();
-						this:SetMinMaxValues(0.01, 1);
-						this:SetValueStep(0.01);
-					</OnLoad>
-					<OnShow>
-						local parent = string.gsub(this:GetName(), "PercentSlider$", "");
-						local spell = getglobal(parent .. "SpellText"):GetText();
-						this.variable = "Genesis_data[\"classes\"][Genesis_current_class][\"" .. spell .. "\"][\"Percent\"]";
-						this:SetValue(Genesis_data["classes"][Genesis_current_class][spell]["Percent"]);
-					</OnShow>
-				</Scripts>
-			</Slider>
-		</Frames>
-		<Scripts>
-			<OnMouseDown>
-				if (not Genesis_DropSpell()) then
-					Genesis_PickupClassSpell();
-				end
-			</OnMouseDown>
-			<OnReceiveDrag>
-				if (not Genesis_DropSpell()) then
-					Genesis_PickupClassSpell();
-				end
-			</OnReceiveDrag>
-			<OnEnter>
-				Genesis_ShowTooltip();
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Frame>
-	<Frame name="Genesis_GUIMouseButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="390" y="35"/>
-		</Size>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="">
-					<Size>
-						<AbsDimension x="80" y="35"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="5" y="1" />
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentDropDownMenu" inherits="UIDropDownMenuTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="-3"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnShow>
-						UIDropDownMenu_Initialize(this, Genesis_MouseDropDownMenuInitialize);
-						UIDropDownMenu_SetWidth(150);
-					</OnShow>
-				</Scripts>
-			</Button>
-			<Slider name="$parentRankSlider" inherits="OptionsSliderTemplate">
-				<Size>
-					<AbsDimension x="117" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDropDownMenu" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-5" y="7"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnValueChanged>
-						Genesis_UpdateSetting();
-					</OnValueChanged>
-					<OnLoad>
-						getglobal(this:GetName() .. "Text"):SetText();
-						getglobal(this:GetName() .. "Low"):SetText(Genesis_GUI_rank);
-						getglobal(this:GetName() .. "High"):SetText();
-						this:SetMinMaxValues(1, 11);
-						this:SetValueStep(1);
-					</OnLoad>
-				</Scripts>
-			</Slider>
-		</Frames>
-	</Frame>
-	<Frame name="Genesis_GUISliderTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="195" y="31"/>
-		</Size>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Frames>
-			<Slider name="$parentSlider" inherits="OptionsSliderTemplate">
-				<Size>
-					<AbsDimension x="185" y="15"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="5" y="-2.5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnValueChanged>
-						Genesis_UpdateSetting();
-					</OnValueChanged>
-					<OnLoad>
-						getglobal(this:GetName() .. "Text"):SetText();
-						getglobal(this:GetName() .. "Low"):SetText();
-						getglobal(this:GetName() .. "High"):SetText();
-						this:SetMinMaxValues(0, 1);
-						this:SetValueStep(0.01);
-					</OnLoad>
-				</Scripts>
-			</Slider>
-		</Frames>
-		<Scripts>
-			<OnEnter>
-				Genesis_ShowTooltip();
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Frame>
-	<Button name="Genesis_GUITabButtonTemplate" inherits="TabButtonTemplate" virtual="true" frameStrata="MEDIUM">
-		<Scripts>
-			<OnClick>
-				PanelTemplates_Tab_OnClick(Genesis_GUI);
-				local id = this:GetID();
-				Genesis_GUIClasses:Hide();
-				Genesis_GUIMouseKeys:Hide();
-				Genesis_GUIPriorities:Hide();
-				Genesis_GUIRaid:Hide();
-				Genesis_GUISettings:Hide();
-				if (id == 1) then
-					Genesis_GUIClasses:Show();
-				elseif (id == 2) then
-					Genesis_GUIMouseKeys:Show();
-				elseif (id == 3) then
-					Genesis_GUIPriorities:Show();
-				elseif (id == 4) then
-					Genesis_GUIRaid:Show();
-					Genesis_SetRaidChecked();
-				elseif (id == 5) then
-					Genesis_GUISettings:Show();
-				end
-			</OnClick>
-			<OnEnter>
-				Genesis_ShowTooltip();
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnLoad>
-				getglobal(this:GetName()):SetText(Genesis_GUI_tab_title[this:GetID()]);
-				PanelTemplates_TabResize(0);
-			</OnLoad>
-		</Scripts>
-	</Button>
-	<Frame name="Genesis_GUITextBox" movable="true" parent="UIParent" enableMouse="true" hidden="true" toplevel="true">
-		<Size>
-			<AbsDimension x="192" y="96"/>
-		</Size>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontNormal" justifyH="CENTER" text="Genesis_GUI_new_class">
-					<Size>
-						<AbsDimension x="128" y="12"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-16"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<EditBox name="$parentEditBox" letters="128" historyLines="0" multiline="false" autoFocus="true" numeric="false">
-				<Size>
-					<AbsDimension x="140" y="32"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM"/>
-				</Anchors>
-				<FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
-							<Size>
-								<AbsDimension x="120" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="-8" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
-							<Size>
-								<AbsDimension x="120" y="32"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset>
-										<AbsDimension x="8" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</EditBox>
-			<Button name="$parentButtonOK" inherits="OptionsButtonTemplate" text="Genesis_GUI_okay">
-				<Size>
-					<AbsDimension x="80" y="21"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="16" y="16"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local text = Genesis_GUITextBoxEditBox:GetText();
-						if (not text or text == "") then
-							return;
-						end
-						text = string.lower(text);
-						if (text == "load" or text == "save" or text == "delete" or text == "list" or text == "none") then
-							C_Print("You may not name any heal class \"load\", \"save\", \"delete\", \"list\" or \"none\". Those names are reserved.", "|cffff0000");
-							return;
-						end
-						if (not Genesis_data["classes"]) then
-							Genesis_data["classes"] = {};
-						end
-						if (not Genesis_data["classes"][text]) then
-							Genesis_data["classes"][text] = {};
-						end
-						Genesis_ClassDropDownMenuInitialize();
-						Genesis_ClassDropDownMenuUpdate(text)
-						Genesis_GUITextBox:Hide();
-						Genesis_GUITextBoxEditBox:SetText("");
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentButtonCancel" inherits="OptionsButtonTemplate" text="Genesis_GUI_cancel">
-				<Size>
-					<AbsDimension x="80" y="21"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="16"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						Genesis_GUITextBoxEditBox:SetText("");
-						Genesis_GUITextBox:Hide();
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				tinsert(UISpecialFrames, "Destiny_GUITextBox");
-			</OnLoad>
-			<OnMouseUp>
-				if (this.isMoving) then
-					this:StopMovingOrSizing();
-					this.isMoving = false;
-				end
-			</OnMouseUp>
-			<OnMouseDown>
-				if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton")) then
-					this:StartMoving();
-					this.isMoving = true;
-				end
-			</OnMouseDown>
-			<OnHide>
-				if (this.isMoving) then
-					this:StopMovingOrSizing();
-					this.isMoving = false;
-				end
-			</OnHide>
-		</Scripts>
-	</Frame>
-	<Frame name="Genesis_GUI" inherits="OptionFrameBoxTemplate" hidden="true" parent="UIParent" enableMouse="true" movable="true" toplevel="true" frameStrata="BACKGROUND">
-		<Size>
-			<AbsDimension x="433" y="321"/>
-		</Size>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Backdrop name="GenesisGUIBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="200" y="64"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="12"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<FontString name="Genesis_GUITitle" inherits="GameFontNormal" text="Genesis_GUI_title">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="Genesis_GUI">
-							<Offset>
-								<AbsDimension x="0" y="-1" />
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="Genesis_GUICloseButton" inherits="UIPanelCloseButton" frameStrata="DIALOG">
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-3" y="-3"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentTab1" inherits="Genesis_GUITabButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="20" y="-18"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentTab2" inherits="Genesis_GUITabButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentTab3" inherits="Genesis_GUITabButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentTab4" inherits="Genesis_GUITabButtonTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentTab5" inherits="Genesis_GUITabButtonTemplate" id="5">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				tinsert(UISpecialFrames, "Genesis_GUI");
-				PanelTemplates_SetNumTabs(Genesis_GUI, 5);
-				Genesis_GUI.selectedTab = 1;
-				PanelTemplates_UpdateTabs(Genesis_GUI);
-			</OnLoad>
-			<OnMouseUp>
-				if (this.isMoving) then
-					this:StopMovingOrSizing();
-					this.isMoving = false;
-				end
-			</OnMouseUp>
-			<OnMouseDown>
-				if ((not this.isLocked or this.isLocked == 0) and arg1 == "LeftButton") then
-					this:StartMoving();
-					this.isMoving = true;
-				end
-			</OnMouseDown>
-			<OnHide>
-				if (this.isMoving) then
-					this:StopMovingOrSizing();
-					this.isMoving = false;
-				end
-				for a = 1, 15 do
-					local bar = getglobal("Genesis_GUIHealBars" .. a);
-					if (bar:GetMinMaxValues() == 666) then
-						getglobal("Genesis_GUIHealBars" .. a):Hide();
-					end
-				end
-				Genesis_GUIHealCurrent:Hide();
-			</OnHide>
-			<OnShow>
-				if (not Genesis_spellbook_checked) then
-					Genesis_UpdateSpells();
-				end
-				if (Genesis_data["show_healing_all"] or Genesis_data["show_healing_me"]) then
-					for a = 1, 15 do
-						getglobal("Genesis_GUIHealBars" .. a):SetAlpha(1.0);
-						getglobal("Genesis_GUIHealBars" .. a):Show();
-					end
-				end
-				Genesis_GUIHealCurrent:SetAlpha(1.0);
-				Genesis_GUIHealCurrent:Show();
-			</OnShow>
-		</Scripts>
-	</Frame>
-	<Frame name="Genesis_GUIClasses" parent="Genesis_GUI" hidden="false">
-		<Size>
-			<AbsDimension x="400" y="258"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="-4" y="2"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Frames>
-			<Button name="Genesis_GUIClassDropDownMenu" inherits="UIDropDownMenuTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="-10" y="-7"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnShow>
-						UIDropDownMenu_Initialize(this, Genesis_ClassDropDownMenuInitialize);
-						UIDropDownMenu_SetSelectedID(this, 1);
-						UIDropDownMenu_SetWidth(105);
-					</OnShow>
-				</Scripts>
-			</Button>
-			<Button name="Genesis_GUINewClassButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_new">
-				<Size>
-					<AbsDimension x="125" y="21"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIClassDropDownMenu" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="2"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						Genesis_GUITextBox:Show();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="Genesis_GUIDeleteClassButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_delete">
-				<Size>
-					<AbsDimension x="140" y="21"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUINewClassButton" relativePoint="RIGHT">
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						Genesis_data["classes"][Genesis_current_class] = nil;
-						Genesis_current_class = nil;
-						Genesis_ClassDropDownMenuInitialize();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Frame name="Genesis_GUIClass1" inherits="Genesis_GUIClassTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIClassDropDownMenu" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="15" y="3"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIClass2" inherits="Genesis_GUIClassTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass1" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIClass3" inherits="Genesis_GUIClassTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass2" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIClass4" inherits="Genesis_GUIClassTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass3" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIClass5" inherits="Genesis_GUIClassTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass4" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIClass6" inherits="Genesis_GUIClassTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass5" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIClass7" inherits="Genesis_GUIClassTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass6" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnEnter>
-				Genesis_ShowTooltip();
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnMouseDown>
-				Genesis_DropSpell();
-			</OnMouseDown>
-			<OnReceiveDrag>
-				Genesis_DropSpell();
-			</OnReceiveDrag>
-		</Scripts>
-	</Frame>
-	<Frame name="Genesis_GUIHealBars" parent="UIParent" hidden="false">
-		<Size>
-			<AbsDimension x="256" y="210"/>
-		</Size>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Frames>
-			<StatusBar name="$parent1" inherits="Genesis_GUIBarTemplate" movable="true" enableMouse="true">
-				<Anchors>
-					<Anchors point="TOP"/>
-				</Anchors>
-				<Scripts>
-					<OnMouseUp>
-						if (this.isMoving) then
-							this:StopMovingOrSizing();
-							this.isMoving = false;
-						end
-					</OnMouseUp>
-					<OnMouseDown>
-						if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton") and Genesis_GUI:IsVisible()) then
-							this:StartMoving();
-							this.isMoving = true;
-						end
-					</OnMouseDown>
-					<OnHide>
-						if (this.isMoving) then
-							this:StopMovingOrSizing();
-							this.isMoving = false;
-						end
-					</OnHide>
-				</Scripts>
-			</StatusBar>
-			<StatusBar name="$parent2" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent1" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent3" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent2" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent4" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent3" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent5" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent4" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent6" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent5" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent7" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent6" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent8" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent7" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent9" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent8" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent10" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent9" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent11" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent10" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent12" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent11" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent13" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent12" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent14" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent13" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parent15" inherits="Genesis_GUIBarTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parent14" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-		</Frames>
-	</Frame>
-	<Frame name="Genesis_GUIHealCurrent" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="256" y="56"/>
-		</Size>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Frames>
-			<StatusBar name="$parentSpell" inherits="Genesis_GUIBarTemplate" movable="true" enableMouse="true" hidden="false">
-				<Anchors>
-					<Anchors point="TOP"/>
-				</Anchors>
-				<Scripts>
-					<OnMouseUp>
-						if (this.isMoving) then
-							this:StopMovingOrSizing();
-							this.isMoving = false;
-						end
-					</OnMouseUp>
-					<OnMouseDown>
-						if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton") and Genesis_GUI:IsVisible()) then
-							this:StartMoving();
-							this.isMoving = true;
-						end
-					</OnMouseDown>
-					<OnHide>
-						if (this.isMoving) then
-							this:StopMovingOrSizing();
-							this.isMoving = false;
-						end
-					</OnHide>
-				</Scripts>
-			</StatusBar>
-			<StatusBar name="$parentTarget" inherits="Genesis_GUIBarTemplate" hidden="false">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentSpell" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parentAfter" inherits="Genesis_GUIBarTemplate" hidden="false">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentTarget" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-			<StatusBar name="$parentOverheal" inherits="Genesis_GUIBarTemplate" hidden="false">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentAfter" relativePoint="BOTTOM"/>
-				</Anchors>
-			</StatusBar>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				Genesis_GUIHealCurrentSpellText:SetText("Genesis heal frame");
-				Genesis_GUIHealCurrentTargetText:SetText("Genesis heal frame");
-				Genesis_GUIHealCurrentAfterText:SetText("Genesis heal frame");
-				Genesis_GUIHealCurrentOverhealText:SetText("Genesis heal frame");
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="Genesis_GUIMouseKeys" parent="Genesis_GUI" hidden="true">
-		<Size>
-			<AbsDimension x="400" y="258"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="-4" y="2"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Frames>
-			<Frame name="Genesis_GUILeftButton" inherits="Genesis_GUIMouseButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="5" y="-5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_left_button);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIRightButton" inherits="Genesis_GUIMouseButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUILeftButton" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_right_button);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIMiddleButton" inherits="Genesis_GUIMouseButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIRightButton" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_middle_button);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUICustomButton1" inherits="Genesis_GUIMouseButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIMiddleButton" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_custom_1);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUICustomButton2" inherits="Genesis_GUIMouseButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUICustomButton1" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_custom_2);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHealSelfModifier" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUICustomButton2" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-11"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_self);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_self_modifier\"]";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 8);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(1);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_self_modifier"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHealTargettargetModifier" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIHealSelfModifier" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_targettarget);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_targettarget_modifier\"]";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 8);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(1);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_targettarget_modifier"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHealEnoughModifier" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIHealSelfModifier" relativePoint="RIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_enough);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_enough_modifier\"]";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 8);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(1);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_enough_modifier"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHealMaxModifier" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIHealEnoughModifier" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_max);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_max_modifier\"]";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 8);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(1);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_max_modifier"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Frame>
-	<Frame name="Genesis_GUIPriorities" parent="Genesis_GUI" hidden="true">
-		<Size>
-			<AbsDimension x="400" y="258"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="-4" y="2"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Frames>
-			<Frame name="Genesis_GUIPlayerPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="5" y="-5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_player_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"player_priority\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["player_priority"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIPartyPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIPlayerPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_party_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"party_priority\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.3, 0.4, 0.9);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.3, 0.4, 0.9);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["party_priority"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIRaidPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIPartyPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_raid_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"raid_priority\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.7, 0.4, 0.7);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.7, 0.4, 0.7);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["raid_priority"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIPetPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIRaidPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_pet_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"pet_priority\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.9, 0.9, 0.2);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.9, 0.9, 0.2);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["pet_priority"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIBOPPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIPetPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_bop_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"buff_affect_priority\"][C_Blessing_of_protection]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.2, 0.9, 0.1);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.2, 0.9, 0.1);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["buff_affect_priority"][C_Blessing_of_protection]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIPWSPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIBOPPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_pws_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"buff_affect_priority\"][C_Power_word_shield]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.2, 0.9, 0.1);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.2, 0.9, 0.1);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["buff_affect_priority"][C_Power_word_shield]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIRBPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIPWSPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_rb_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"debuff_affect_priority\"][C_Recently_bandaged]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.9, 0.2, 0.1);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.9, 0.2, 0.1);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["debuff_affect_priority"][C_Recently_bandaged]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIWSPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIRBPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_ws_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"debuff_affect_priority\"][C_Weakened_soul]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.9, 0.2, 0.1);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.9, 0.2, 0.1);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["debuff_affect_priority"][C_Weakened_soul]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIDruidPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIPlayerPriority" relativePoint="RIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_druid_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Druid]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["DRUID"].r, RAID_CLASS_COLORS["DRUID"].g, RAID_CLASS_COLORS["DRUID"].b);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["DRUID"].r, RAID_CLASS_COLORS["DRUID"].g, RAID_CLASS_COLORS["DRUID"].b);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Druid]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHunterPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIDruidPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_hunter_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Hunter]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["HUNTER"].r, RAID_CLASS_COLORS["HUNTER"].g, RAID_CLASS_COLORS["HUNTER"].b);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["HUNTER"].r, RAID_CLASS_COLORS["HUNTER"].g, RAID_CLASS_COLORS["HUNTER"].b);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Hunter]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIMagePriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIHunterPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_mage_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Mage]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["MAGE"].r, RAID_CLASS_COLORS["MAGE"].g, RAID_CLASS_COLORS["MAGE"].b);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["MAGE"].r, RAID_CLASS_COLORS["MAGE"].g, RAID_CLASS_COLORS["MAGE"].b);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Mage]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIPaladinPriestPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIMagePriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						if (UnitFactionGroup("player") == C_Alliance) then
-							getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_paladin_priority);
-							getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Paladin]";
-							getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Paladin]);
-							getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["PALADIN"].r, RAID_CLASS_COLORS["PALADIN"].g, RAID_CLASS_COLORS["PALADIN"].b);
-							getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["PALADIN"].r, RAID_CLASS_COLORS["PALADIN"].g, RAID_CLASS_COLORS["PALADIN"].b);
-						else
-							getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_priest_priority);
-							getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Priest]";
-							getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Priest]);
-							getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["PRIEST"].r, RAID_CLASS_COLORS["PRIEST"].g, RAID_CLASS_COLORS["PRIEST"].b);
-							getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["PRIEST"].r, RAID_CLASS_COLORS["PRIEST"].g, RAID_CLASS_COLORS["PRIEST"].b);
-						end
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIPriestRoguePriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIPaladinPriestPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						if (UnitFactionGroup("player") == C_Alliance) then
-							getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_priest_priority);
-							getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Priest]";
-							getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Priest]);
-							getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["PRIEST"].r, RAID_CLASS_COLORS["PRIEST"].g, RAID_CLASS_COLORS["PRIEST"].b);
-							getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["PRIEST"].r, RAID_CLASS_COLORS["PRIEST"].g, RAID_CLASS_COLORS["PRIEST"].b);
-						else
-							getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_rogue_priority);
-							getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Rogue]";
-							getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Rogue]);
-							getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["ROGUE"].r, RAID_CLASS_COLORS["ROGUE"].g, RAID_CLASS_COLORS["ROGUE"].b);
-							getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["ROGUE"].r, RAID_CLASS_COLORS["ROGUE"].g, RAID_CLASS_COLORS["ROGUE"].b);
-						end
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIRogueShamanPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIPriestRoguePriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						if (UnitFactionGroup("player") == C_Alliance) then
-							getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_rogue_priority);
-							getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Rogue]";
-							getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Rogue]);
-							getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["ROGUE"].r, RAID_CLASS_COLORS["ROGUE"].g, RAID_CLASS_COLORS["ROGUE"].b);
-							getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["ROGUE"].r, RAID_CLASS_COLORS["ROGUE"].g, RAID_CLASS_COLORS["ROGUE"].b);
-						else
-							getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_shaman_priority);
-							getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Shaman]";
-							getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Shaman]);
-							getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["SHAMAN"].r, RAID_CLASS_COLORS["SHAMAN"].g, RAID_CLASS_COLORS["SHAMAN"].b);
-							getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["SHAMAN"].r, RAID_CLASS_COLORS["SHAMAN"].g, RAID_CLASS_COLORS["SHAMAN"].b);
-						end
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIWarlockPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIRogueShamanPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_warlock_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Warlock]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["WARLOCK"].r, RAID_CLASS_COLORS["WARLOCK"].g, RAID_CLASS_COLORS["WARLOCK"].b);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["WARLOCK"].r, RAID_CLASS_COLORS["WARLOCK"].g, RAID_CLASS_COLORS["WARLOCK"].b);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Warlock]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIWarriorPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIWarlockPriority" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_warrior_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Warrior]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["WARRIOR"].r, RAID_CLASS_COLORS["WARRIOR"].g, RAID_CLASS_COLORS["WARRIOR"].b);
-						getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["WARRIOR"].r, RAID_CLASS_COLORS["WARRIOR"].g, RAID_CLASS_COLORS["WARRIOR"].b);
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Warrior]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Frame>
-	<Frame name="Genesis_GUIRaid" parent="Genesis_GUI" hidden="true">
-		<Size>
-			<AbsDimension x="400" y="258"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="-4" y="2"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Frames>
-			<Frame name="Genesis_GUIRaidGroup1" inherits="Genesis_GUIRaidGroupTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="11" y="-17"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIRaidGroup2" inherits="Genesis_GUIRaidGroupTemplate" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="6" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIRaidGroup3" inherits="Genesis_GUIRaidGroupTemplate" id="3">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIRaidGroup1" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="-15"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIRaidGroup4" inherits="Genesis_GUIRaidGroupTemplate" id="4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="6" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIRaidGroup5" inherits="Genesis_GUIRaidGroupTemplate" id="5">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="6" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIRaidGroup6" inherits="Genesis_GUIRaidGroupTemplate" id="6">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup5" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="6" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIRaidGroup7" inherits="Genesis_GUIRaidGroupTemplate" id="7">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup4" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="6" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Frame name="Genesis_GUIRaidGroup8" inherits="Genesis_GUIRaidGroupTemplate" id="8">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup7" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="6" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<Button name="Genesis_GUIRaidCheckAllButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_check_all">
-				<Size>
-					<AbsDimension x="194" y="28"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIRaidGroup3" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-5" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						for group = 1, 8 do
-							for slot = 1, 5 do
-								Genesis_data["raid"][group][slot] = 1;
-							end
-						end
-						Genesis_SetRaidChecked();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="Genesis_GUIRaidUncheckAllButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_uncheck_all">
-				<Size>
-					<AbsDimension x="192" y="28"/>
-				</Size>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUIRaidCheckAllButton" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						for group = 1, 8 do
-							for slot = 1, 5 do
-								Genesis_data["raid"][group][slot] = 0;
-							end
-						end
-						Genesis_SetRaidChecked();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="Genesis_GUIRaidInvertCheckedButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_invert_checked">
-				<Size>
-					<AbsDimension x="192" y="28"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIRaidCheckAllButton" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnEnter>
-						Genesis_ShowTooltip();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
-					<OnClick>
-						for group = 1, 8 do
-							for slot = 1, 5 do
-								Genesis_data["raid"][group][slot] = 1 - Genesis_data["raid"][group][slot];
-							end
-						end
-						Genesis_SetRaidChecked();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Frame name="Genesis_GUIRaidUncheckedPriority" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="Genesis_GUIRaidUncheckAllButton" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_unchecked_priority);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"unchecked_priority\"]";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 1);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(0.01);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["unchecked_priority"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Frame>
-	<Frame name="Genesis_GUISettings" parent="Genesis_GUI" hidden="true">
-		<Size>
-			<AbsDimension x="400" y="258"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="-4" y="2"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-		</Backdrop>
-		<Frames>
-			<Frame name="Genesis_GUINinjaUseAction" inherits="Genesis_GUICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="5" y="-5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_hook_useaction);
-						getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"hook_useaction\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["hook_useaction"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHookShields" inherits="Genesis_GUICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUINinjaUseAction" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_hook_shields);
-						getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"hook_shields\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["hook_shields"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIUseActionHealMostWounded" inherits="Genesis_GUICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIHookShields" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_useaction_wounded);
-						getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"useaction_heal_most_wounded\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["useaction_heal_most_wounded"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIShowHealingAll" inherits="Genesis_GUICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIUseActionHealMostWounded" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_show_all);
-						getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"show_healing_all\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["show_healing_all"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIShowHealingMe" inherits="Genesis_GUICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIShowHealingAll" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_show_me);
-						getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"show_healing_me\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["show_healing_me"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUITreatShapeshiftedDruidsDifferent" inherits="Genesis_GUICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIShowHealingMe" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_shapeshifted_druids);
-						getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"shapeshifted_druids\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["shapeshifted_druids"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIScaleSpells" inherits="Genesis_GUICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUITreatShapeshiftedDruidsDifferent" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_scale_spells);
-						getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"scale_spells\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["scale_spells"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUISafeCancel" inherits="Genesis_GUICheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIScaleSpells" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_safe_cancel);
-						getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"safe_cancel\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["safe_cancel"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHOTMinCancelThreshold" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="Genesis_GUINinjaUseAction" relativePoint="RIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_hot_cancel);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"hot_heal_threshold\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["hot_heal_threshold"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHOTMultiply" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIHOTMinCancelThreshold" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_hot_value);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"hot_multiply\"]";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 4);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(0.05);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["hot_multiply"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHOTMultiplyBattle" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIHOTMultiply" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_hot_value_battle);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"hot_multiply_battle\"]";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 4);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(0.05);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["hot_multiply_battle"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIMaxOverheal" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIHOTMultiplyBattle" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_max_overheal);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"max_overheal\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["max_overheal"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIMinHealThreshold" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIMaxOverheal" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_min_heal_threshold);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"min_heal_threshold\"]";
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["min_heal_threshold"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHealPower" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIMinHealThreshold" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_power);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_power\"]";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 2);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(0.05);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_power"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIUpdatePlayerDataTime" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIHealPower" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_update_time);
-						getglobal(this:GetName() .. "Slider").variable = "C_update_player_data_time";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 100);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(1);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(C_update_player_data_time * 10);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			<Frame name="Genesis_GUIHealStrategy" inherits="Genesis_GUISliderTemplate">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="Genesis_GUIUpdatePlayerDataTime" relativePoint="BOTTOM"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_strategy);
-						getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_strategy\"]";
-						getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 3);
-						getglobal(this:GetName() .. "Slider"):SetValueStep(1);
-					</OnLoad>
-					<OnShow>
-						getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_strategy"]);
-					</OnShow>
-				</Scripts>
-			</Frame>
-		</Frames>
-	</Frame>
+    <Script file="localization-default.lua"/>
+    <Script file="localization-deDE.lua"/>
+    <Script file="localization-frFR.lua"/>
+    <Script file="localization-gui-default.lua"/>
+    <Script file="localization-gui-deDE.lua"/>
+    <Script file="localization-gui-frFR.lua"/>
+    <Script file="Genesis.lua"/>
+    <Frame name="Genesis" hidden="false">
+        <Scripts>
+            <OnEvent>
+                Genesis_OnEvent();
+            </OnEvent>
+            <OnLoad>
+                Genesis_OnLoad();
+            </OnLoad>
+            <OnUpdate>
+                Genesis_OnUpdate(arg1);
+            </OnUpdate>
+        </Scripts>
+    </Frame>
+    <Frame name="Genesis_GUIRaidCheckButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="90" y="14"/>
+        </Size>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="76" y="8"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="14" y="1"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <CheckButton name="$parentCheckButton" inherits="UICheckButtonTemplate">
+                <Size>
+                    <AbsDimension x="22" y="22"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="-4" y="4"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        -- we (don't) want to heal this person
+                        local parentgroup = string.gsub(this:GetName(), "Slot%dCheckButton$", "");
+                        local group = getglobal(parentgroup):GetID();
+                        local parentslot = string.gsub(this:GetName(), "CheckButton$", "");
+                        local slot = getglobal(parentslot):GetID();
+                        Genesis_data["raid"][group][slot] = (this:GetChecked() or 0);
+                    </OnClick>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+        </Frames>
+    </Frame>
+    <Frame name="Genesis_GUIRaidGroupTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="90" y="80"/>
+        </Size>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture file="Interface\RaidFrame\UI-RaidFrame-GroupOutline">
+                    <Size>
+                        <AbsDimension x="90" y="80"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                    </Anchors>
+                    <TexCoords left="0" right="0.6640625" top="0" bottom="0.625"/>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="$parentLabel">
+                <Size>
+                    <AbsDimension x="84" y="14"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP">
+                        <Offset>
+                            <AbsDimension x="0" y="14"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        -- (un)check all buttons in this group
+                        local parent = string.gsub(this:GetName(), "Label$", "");
+                        local group = getglobal(parent):GetID();
+                        if (getglobal(parent .. "Slot1CheckButton"):GetChecked()) then
+                            -- uncheck all
+                            for slot = 1, 5 do
+                                Genesis_data["raid"][group][slot] = 0;
+                            end
+                        else
+                            -- check all
+                            for slot = 1, 5 do
+                                Genesis_data["raid"][group][slot] = 1;
+                            end
+                        end
+                        Genesis_SetRaidChecked();
+                    </OnClick>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                </Scripts>
+                <NormalFont inherits="GameFontNormalSmall"/>
+                <HighlightFont inherits="GameFontHighlightSmall"/>
+            </Button>
+            <Button name="$parentSlot1" inherits="Genesis_GUIRaidCheckButtonTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="3" y="-3"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentSlot2" inherits="Genesis_GUIRaidCheckButtonTemplate" id="2">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentSlot1" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-1"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentSlot3" inherits="Genesis_GUIRaidCheckButtonTemplate" id="3">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentSlot2" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-1"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentSlot4" inherits="Genesis_GUIRaidCheckButtonTemplate" id="4">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentSlot3" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-1"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentSlot5" inherits="Genesis_GUIRaidCheckButtonTemplate" id="5">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentSlot4" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-1"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                getglobal(this:GetName() .. "Label"):SetText(GROUP .. " " .. this:GetID());
+            </OnLoad>
+        </Scripts>
+    </Frame>
+    <StatusBar name="Genesis_GUIBarTemplate" virtual="true" hidden="true">
+        <Size>
+            <AbsDimension x="192" y="14"/>
+        </Size>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parentText" inherits="GameFontDarkGraySmall" text="Genesis heal bar">
+                    <Size>
+                        <AbsDimension x="192" y="10"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                    </Anchors>
+                    <Color r="1.0" g="1.0" b="1.0"/>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                this:SetFrameLevel(this:GetFrameLevel() - 1);
+                this:SetBackdropColor(0.7, 0.7, 0.7, 0.3);
+                this:SetMinMaxValues(666, 1337);
+                this:SetValue(666);
+                getglobal(this:GetName() .. "BarTexture"):SetVertexColor(0.0, 1.0, 0.0, 0.3);
+            </OnLoad>
+        </Scripts>
+        <BarTexture name="$parentBarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+    </StatusBar>
+    <Frame name="Genesis_GUICheckButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="195" y="31"/>
+        </Size>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parentCheckButtonText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="">
+                    <Size>
+                        <AbsDimension x="163" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="5" y="1"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <CheckButton name="$parentCheckButton" inherits="UICheckButtonTemplate">
+                <Size>
+                    <AbsDimension x="32" y="32"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Genesis_UpdateSetting();
+                    </OnClick>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+        </Frames>
+        <Scripts>
+            <OnEnter>
+                Genesis_ShowTooltip();
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+        </Scripts>
+    </Frame>
+    <Frame name="Genesis_GUIClassTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="390" y="31"/>
+        </Size>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Frames>
+            <Button name="$parentSpell">
+                <Size>
+                    <AbsDimension x="21" y="21"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="6" y="-5"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BORDER">
+                        <Texture name="$parentTexture"/>
+                        <FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="">
+                            <Size>
+                                <AbsDimension x="75" y="32"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentTexture" relativePoint="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="2" y="1"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnMouseDown>
+                        if (not Genesis_DropSpell()) then
+                            Genesis_PickupClassSpell();
+                        end
+                    </OnMouseDown>
+                    <OnReceiveDrag>
+                        if (not Genesis_DropSpell()) then
+                            Genesis_PickupClassSpell();
+                        end
+                    </OnReceiveDrag>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                </Scripts>
+            </Button>
+            <Slider name="$parentRankSlider" inherits="OptionsSliderTemplate">
+                <Size>
+                    <AbsDimension x="92" y="15"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$parentSpellText" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="-3"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnValueChanged>
+                        Genesis_UpdateSetting();
+                    </OnValueChanged>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "Text"):SetText();
+                        getglobal(this:GetName() .. "Low"):SetText(Genesis_GUI_rank);
+                        getglobal(this:GetName() .. "High"):SetText();
+                        this:SetValueStep(1);
+                    </OnLoad>
+                    <OnShow>
+                        local parent = string.gsub(this:GetName(), "RankSlider$", "");
+                        local spell = getglobal(parent .. "SpellText"):GetText();
+                        this.variable = "Genesis_data[\"classes\"][Genesis_current_class][\"" .. spell .. "\"][\"Rank\"]";
+                        this:SetMinMaxValues(0, table.getn(Genesis_spells[spell]));
+                        this:SetValue(Genesis_data["classes"][Genesis_current_class][spell]["Rank"]);
+                    </OnShow>
+                </Scripts>
+            </Slider>
+            <Slider name="$parentPercentSlider" inherits="OptionsSliderTemplate">
+                <Size>
+                    <AbsDimension x="185" y="15"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentRankSlider" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="4" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnValueChanged>
+                        Genesis_UpdateSetting();
+                    </OnValueChanged>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "Text"):SetText();
+                        getglobal(this:GetName() .. "Low"):SetText(Genesis_GUI_percent);
+                        getglobal(this:GetName() .. "High"):SetText();
+                        this:SetMinMaxValues(0.01, 1);
+                        this:SetValueStep(0.01);
+                    </OnLoad>
+                    <OnShow>
+                        local parent = string.gsub(this:GetName(), "PercentSlider$", "");
+                        local spell = getglobal(parent .. "SpellText"):GetText();
+                        this.variable = "Genesis_data[\"classes\"][Genesis_current_class][\"" .. spell .. "\"][\"Percent\"]";
+                        this:SetValue(Genesis_data["classes"][Genesis_current_class][spell]["Percent"]);
+                    </OnShow>
+                </Scripts>
+            </Slider>
+        </Frames>
+        <Scripts>
+            <OnMouseDown>
+                if (not Genesis_DropSpell()) then
+                    Genesis_PickupClassSpell();
+                end
+            </OnMouseDown>
+            <OnReceiveDrag>
+                if (not Genesis_DropSpell()) then
+                    Genesis_PickupClassSpell();
+                end
+            </OnReceiveDrag>
+            <OnEnter>
+                Genesis_ShowTooltip();
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+        </Scripts>
+    </Frame>
+    <Frame name="Genesis_GUIMouseButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="390" y="35"/>
+        </Size>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="">
+                    <Size>
+                        <AbsDimension x="80" y="35"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="5" y="1" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="$parentDropDownMenu" inherits="UIDropDownMenuTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-15" y="-3"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnShow>
+                        UIDropDownMenu_Initialize(this, Genesis_MouseDropDownMenuInitialize);
+                        UIDropDownMenu_SetWidth(150);
+                    </OnShow>
+                </Scripts>
+            </Button>
+            <Slider name="$parentRankSlider" inherits="OptionsSliderTemplate">
+                <Size>
+                    <AbsDimension x="117" y="15"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentDropDownMenu" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-5" y="7"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnValueChanged>
+                        Genesis_UpdateSetting();
+                    </OnValueChanged>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "Text"):SetText();
+                        getglobal(this:GetName() .. "Low"):SetText(Genesis_GUI_rank);
+                        getglobal(this:GetName() .. "High"):SetText();
+                        this:SetMinMaxValues(1, 11);
+                        this:SetValueStep(1);
+                    </OnLoad>
+                </Scripts>
+            </Slider>
+        </Frames>
+    </Frame>
+    <Frame name="Genesis_GUISliderTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="195" y="31"/>
+        </Size>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Frames>
+            <Slider name="$parentSlider" inherits="OptionsSliderTemplate">
+                <Size>
+                    <AbsDimension x="185" y="15"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="5" y="-2.5"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnValueChanged>
+                        Genesis_UpdateSetting();
+                    </OnValueChanged>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "Text"):SetText();
+                        getglobal(this:GetName() .. "Low"):SetText();
+                        getglobal(this:GetName() .. "High"):SetText();
+                        this:SetMinMaxValues(0, 1);
+                        this:SetValueStep(0.01);
+                    </OnLoad>
+                </Scripts>
+            </Slider>
+        </Frames>
+        <Scripts>
+            <OnEnter>
+                Genesis_ShowTooltip();
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+        </Scripts>
+    </Frame>
+    <Button name="Genesis_GUITabButtonTemplate" inherits="TabButtonTemplate" virtual="true" frameStrata="MEDIUM">
+        <Scripts>
+            <OnClick>
+                PanelTemplates_Tab_OnClick(Genesis_GUI);
+                local id = this:GetID();
+                Genesis_GUIClasses:Hide();
+                Genesis_GUIMouseKeys:Hide();
+                Genesis_GUIPriorities:Hide();
+                Genesis_GUIRaid:Hide();
+                Genesis_GUISettings:Hide();
+                if (id == 1) then
+                    Genesis_GUIClasses:Show();
+                elseif (id == 2) then
+                    Genesis_GUIMouseKeys:Show();
+                elseif (id == 3) then
+                    Genesis_GUIPriorities:Show();
+                elseif (id == 4) then
+                    Genesis_GUIRaid:Show();
+                    Genesis_SetRaidChecked();
+                elseif (id == 5) then
+                    Genesis_GUISettings:Show();
+                end
+            </OnClick>
+            <OnEnter>
+                Genesis_ShowTooltip();
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+            <OnLoad>
+                getglobal(this:GetName()):SetText(Genesis_GUI_tab_title[this:GetID()]);
+                PanelTemplates_TabResize(0);
+            </OnLoad>
+        </Scripts>
+    </Button>
+    <Frame name="Genesis_GUITextBox" movable="true" parent="UIParent" enableMouse="true" hidden="true" toplevel="true">
+        <Size>
+            <AbsDimension x="192" y="96"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentText" inherits="GameFontNormal" justifyH="CENTER" text="Genesis_GUI_new_class">
+                    <Size>
+                        <AbsDimension x="128" y="12"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <EditBox name="$parentEditBox" letters="128" historyLines="0" multiline="false" autoFocus="true" numeric="false">
+                <Size>
+                    <AbsDimension x="140" y="32"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM"/>
+                </Anchors>
+                <FontString name="$parentText" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text=""/>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+                            <Size>
+                                <AbsDimension x="120" y="32"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="-8" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+                            <Size>
+                                <AbsDimension x="120" y="32"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="8" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </EditBox>
+            <Button name="$parentButtonOK" inherits="OptionsButtonTemplate" text="Genesis_GUI_okay">
+                <Size>
+                    <AbsDimension x="80" y="21"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="16" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        local text = Genesis_GUITextBoxEditBox:GetText();
+                        if (not text or text == "") then
+                            return;
+                        end
+                        text = string.lower(text);
+                        if (text == "load" or text == "save" or text == "delete" or text == "list" or text == "none") then
+                            C_Print("You may not name any heal class \"load\", \"save\", \"delete\", \"list\" or \"none\". Those names are reserved.", "|cffff0000");
+                            return;
+                        end
+                        if (not Genesis_data["classes"]) then
+                            Genesis_data["classes"] = {};
+                        end
+                        if (not Genesis_data["classes"][text]) then
+                            Genesis_data["classes"][text] = {};
+                        end
+                        Genesis_ClassDropDownMenuInitialize();
+                        Genesis_ClassDropDownMenuUpdate(text)
+                        Genesis_GUITextBox:Hide();
+                        Genesis_GUITextBoxEditBox:SetText("");
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parentButtonCancel" inherits="OptionsButtonTemplate" text="Genesis_GUI_cancel">
+                <Size>
+                    <AbsDimension x="80" y="21"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Genesis_GUITextBoxEditBox:SetText("");
+                        Genesis_GUITextBox:Hide();
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                tinsert(UISpecialFrames, "Destiny_GUITextBox");
+            </OnLoad>
+            <OnMouseUp>
+                if (this.isMoving) then
+                    this:StopMovingOrSizing();
+                    this.isMoving = false;
+                end
+            </OnMouseUp>
+            <OnMouseDown>
+                if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton")) then
+                    this:StartMoving();
+                    this.isMoving = true;
+                end
+            </OnMouseDown>
+            <OnHide>
+                if (this.isMoving) then
+                    this:StopMovingOrSizing();
+                    this.isMoving = false;
+                end
+            </OnHide>
+        </Scripts>
+    </Frame>
+    <Frame name="Genesis_GUI" inherits="OptionFrameBoxTemplate" hidden="true" parent="UIParent" enableMouse="true" movable="true" toplevel="true" frameStrata="BACKGROUND">
+        <Size>
+            <AbsDimension x="433" y="321"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Backdrop name="GenesisGUIBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+                    <Size>
+                        <AbsDimension x="200" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="12"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <FontString name="Genesis_GUITitle" inherits="GameFontNormal" text="Genesis_GUI_title">
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="Genesis_GUI">
+                            <Offset>
+                                <AbsDimension x="0" y="-1" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="Genesis_GUICloseButton" inherits="UIPanelCloseButton" frameStrata="DIALOG">
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-3" y="-3"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentTab1" inherits="Genesis_GUITabButtonTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="20" y="-18"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentTab2" inherits="Genesis_GUITabButtonTemplate" id="2">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="5" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentTab3" inherits="Genesis_GUITabButtonTemplate" id="3">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="5" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentTab4" inherits="Genesis_GUITabButtonTemplate" id="4">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="5" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentTab5" inherits="Genesis_GUITabButtonTemplate" id="5">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentTab4" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="5" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                tinsert(UISpecialFrames, "Genesis_GUI");
+                PanelTemplates_SetNumTabs(Genesis_GUI, 5);
+                Genesis_GUI.selectedTab = 1;
+                PanelTemplates_UpdateTabs(Genesis_GUI);
+            </OnLoad>
+            <OnMouseUp>
+                if (this.isMoving) then
+                    this:StopMovingOrSizing();
+                    this.isMoving = false;
+                end
+            </OnMouseUp>
+            <OnMouseDown>
+                if ((not this.isLocked or this.isLocked == 0) and arg1 == "LeftButton") then
+                    this:StartMoving();
+                    this.isMoving = true;
+                end
+            </OnMouseDown>
+            <OnHide>
+                if (this.isMoving) then
+                    this:StopMovingOrSizing();
+                    this.isMoving = false;
+                end
+                for a = 1, 15 do
+                    local bar = getglobal("Genesis_GUIHealBars" .. a);
+                    if (bar:GetMinMaxValues() == 666) then
+                        getglobal("Genesis_GUIHealBars" .. a):Hide();
+                    end
+                end
+                Genesis_GUIHealCurrent:Hide();
+            </OnHide>
+            <OnShow>
+                if (not Genesis_spellbook_checked) then
+                    Genesis_UpdateSpells();
+                end
+                if (Genesis_data["show_healing_all"] or Genesis_data["show_healing_me"]) then
+                    for a = 1, 15 do
+                        getglobal("Genesis_GUIHealBars" .. a):SetAlpha(1.0);
+                        getglobal("Genesis_GUIHealBars" .. a):Show();
+                    end
+                end
+                Genesis_GUIHealCurrent:SetAlpha(1.0);
+                Genesis_GUIHealCurrent:Show();
+            </OnShow>
+        </Scripts>
+    </Frame>
+    <Frame name="Genesis_GUIClasses" parent="Genesis_GUI" hidden="false">
+        <Size>
+            <AbsDimension x="400" y="258"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                    <AbsDimension x="-4" y="2"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Frames>
+            <Button name="Genesis_GUIClassDropDownMenu" inherits="UIDropDownMenuTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="-10" y="-7"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnShow>
+                        UIDropDownMenu_Initialize(this, Genesis_ClassDropDownMenuInitialize);
+                        UIDropDownMenu_SetSelectedID(this, 1);
+                        UIDropDownMenu_SetWidth(105);
+                    </OnShow>
+                </Scripts>
+            </Button>
+            <Button name="Genesis_GUINewClassButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_new">
+                <Size>
+                    <AbsDimension x="125" y="21"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIClassDropDownMenu" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-15" y="2"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnClick>
+                        Genesis_GUITextBox:Show();
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="Genesis_GUIDeleteClassButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_delete">
+                <Size>
+                    <AbsDimension x="140" y="21"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUINewClassButton" relativePoint="RIGHT">
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnClick>
+                        Genesis_data["classes"][Genesis_current_class] = nil;
+                        Genesis_current_class = nil;
+                        Genesis_ClassDropDownMenuInitialize();
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Frame name="Genesis_GUIClass1" inherits="Genesis_GUIClassTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIClassDropDownMenu" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="15" y="3"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIClass2" inherits="Genesis_GUIClassTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass1" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIClass3" inherits="Genesis_GUIClassTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass2" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIClass4" inherits="Genesis_GUIClassTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass3" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIClass5" inherits="Genesis_GUIClassTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass4" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIClass6" inherits="Genesis_GUIClassTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass5" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIClass7" inherits="Genesis_GUIClassTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIClass6" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnEnter>
+                Genesis_ShowTooltip();
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+            <OnMouseDown>
+                Genesis_DropSpell();
+            </OnMouseDown>
+            <OnReceiveDrag>
+                Genesis_DropSpell();
+            </OnReceiveDrag>
+        </Scripts>
+    </Frame>
+    <Frame name="Genesis_GUIHealBars" parent="UIParent" hidden="false">
+        <Size>
+            <AbsDimension x="256" y="210"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Frames>
+            <StatusBar name="$parent1" inherits="Genesis_GUIBarTemplate" movable="true" enableMouse="true">
+                <Anchors>
+                    <Anchors point="TOP"/>
+                </Anchors>
+                <Scripts>
+                    <OnMouseUp>
+                        if (this.isMoving) then
+                            this:StopMovingOrSizing();
+                            this.isMoving = false;
+                        end
+                    </OnMouseUp>
+                    <OnMouseDown>
+                        if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton") and Genesis_GUI:IsVisible()) then
+                            this:StartMoving();
+                            this.isMoving = true;
+                        end
+                    </OnMouseDown>
+                    <OnHide>
+                        if (this.isMoving) then
+                            this:StopMovingOrSizing();
+                            this.isMoving = false;
+                        end
+                    </OnHide>
+                </Scripts>
+            </StatusBar>
+            <StatusBar name="$parent2" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent1" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent3" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent2" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent4" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent3" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent5" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent4" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent6" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent5" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent7" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent6" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent8" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent7" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent9" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent8" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent10" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent9" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent11" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent10" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent12" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent11" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent13" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent12" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent14" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent13" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parent15" inherits="Genesis_GUIBarTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent14" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+        </Frames>
+    </Frame>
+    <Frame name="Genesis_GUIHealCurrent" parent="UIParent" hidden="true">
+        <Size>
+            <AbsDimension x="256" y="56"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Frames>
+            <StatusBar name="$parentSpell" inherits="Genesis_GUIBarTemplate" movable="true" enableMouse="true" hidden="false">
+                <Anchors>
+                    <Anchors point="TOP"/>
+                </Anchors>
+                <Scripts>
+                    <OnMouseUp>
+                        if (this.isMoving) then
+                            this:StopMovingOrSizing();
+                            this.isMoving = false;
+                        end
+                    </OnMouseUp>
+                    <OnMouseDown>
+                        if (((not this.isLocked) or (this.isLocked == 0)) and (arg1 == "LeftButton") and Genesis_GUI:IsVisible()) then
+                            this:StartMoving();
+                            this.isMoving = true;
+                        end
+                    </OnMouseDown>
+                    <OnHide>
+                        if (this.isMoving) then
+                            this:StopMovingOrSizing();
+                            this.isMoving = false;
+                        end
+                    </OnHide>
+                </Scripts>
+            </StatusBar>
+            <StatusBar name="$parentTarget" inherits="Genesis_GUIBarTemplate" hidden="false">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parentSpell" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parentAfter" inherits="Genesis_GUIBarTemplate" hidden="false">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parentTarget" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+            <StatusBar name="$parentOverheal" inherits="Genesis_GUIBarTemplate" hidden="false">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parentAfter" relativePoint="BOTTOM"/>
+                </Anchors>
+            </StatusBar>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                Genesis_GUIHealCurrentSpellText:SetText("Genesis heal frame");
+                Genesis_GUIHealCurrentTargetText:SetText("Genesis heal frame");
+                Genesis_GUIHealCurrentAfterText:SetText("Genesis heal frame");
+                Genesis_GUIHealCurrentOverhealText:SetText("Genesis heal frame");
+            </OnLoad>
+        </Scripts>
+    </Frame>
+    <Frame name="Genesis_GUIMouseKeys" parent="Genesis_GUI" hidden="true">
+        <Size>
+            <AbsDimension x="400" y="258"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                    <AbsDimension x="-4" y="2"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Frames>
+            <Frame name="Genesis_GUILeftButton" inherits="Genesis_GUIMouseButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="5" y="-5"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_left_button);
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIRightButton" inherits="Genesis_GUIMouseButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUILeftButton" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_right_button);
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIMiddleButton" inherits="Genesis_GUIMouseButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIRightButton" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_middle_button);
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUICustomButton1" inherits="Genesis_GUIMouseButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIMiddleButton" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_custom_1);
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUICustomButton2" inherits="Genesis_GUIMouseButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUICustomButton1" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "Text"):SetText(Genesis_GUI_custom_2);
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHealSelfModifier" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUICustomButton2" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-11"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_self);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_self_modifier\"]";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 8);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(1);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_self_modifier"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHealTargettargetModifier" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIHealSelfModifier" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_targettarget);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_targettarget_modifier\"]";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 8);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(1);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_targettarget_modifier"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHealEnoughModifier" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIHealSelfModifier" relativePoint="RIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_enough);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_enough_modifier\"]";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 8);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(1);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_enough_modifier"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHealMaxModifier" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIHealEnoughModifier" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_max);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_max_modifier\"]";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 8);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(1);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_max_modifier"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+        </Frames>
+    </Frame>
+    <Frame name="Genesis_GUIPriorities" parent="Genesis_GUI" hidden="true">
+        <Size>
+            <AbsDimension x="400" y="258"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                    <AbsDimension x="-4" y="2"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Frames>
+            <Frame name="Genesis_GUIPlayerPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="5" y="-5"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_player_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"player_priority\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["player_priority"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIPartyPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIPlayerPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_party_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"party_priority\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.3, 0.4, 0.9);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.3, 0.4, 0.9);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["party_priority"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIRaidPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIPartyPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_raid_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"raid_priority\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.7, 0.4, 0.7);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.7, 0.4, 0.7);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["raid_priority"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIPetPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIRaidPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_pet_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"pet_priority\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.9, 0.9, 0.2);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.9, 0.9, 0.2);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["pet_priority"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIBOPPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIPetPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_bop_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"buff_affect_priority\"][C_Blessing_of_protection]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.2, 0.9, 0.1);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.2, 0.9, 0.1);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["buff_affect_priority"][C_Blessing_of_protection]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIPWSPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIBOPPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_pws_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"buff_affect_priority\"][C_Power_word_shield]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.2, 0.9, 0.1);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.2, 0.9, 0.1);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["buff_affect_priority"][C_Power_word_shield]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIRBPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIPWSPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_rb_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"debuff_affect_priority\"][C_Recently_bandaged]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.9, 0.2, 0.1);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.9, 0.2, 0.1);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["debuff_affect_priority"][C_Recently_bandaged]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIWSPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIRBPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_ws_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"debuff_affect_priority\"][C_Weakened_soul]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(0.9, 0.2, 0.1);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(0.9, 0.2, 0.1);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["debuff_affect_priority"][C_Weakened_soul]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIDruidPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIPlayerPriority" relativePoint="RIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_druid_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Druid]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["DRUID"].r, RAID_CLASS_COLORS["DRUID"].g, RAID_CLASS_COLORS["DRUID"].b);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["DRUID"].r, RAID_CLASS_COLORS["DRUID"].g, RAID_CLASS_COLORS["DRUID"].b);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Druid]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHunterPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIDruidPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_hunter_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Hunter]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["HUNTER"].r, RAID_CLASS_COLORS["HUNTER"].g, RAID_CLASS_COLORS["HUNTER"].b);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["HUNTER"].r, RAID_CLASS_COLORS["HUNTER"].g, RAID_CLASS_COLORS["HUNTER"].b);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Hunter]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIMagePriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIHunterPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_mage_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Mage]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["MAGE"].r, RAID_CLASS_COLORS["MAGE"].g, RAID_CLASS_COLORS["MAGE"].b);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["MAGE"].r, RAID_CLASS_COLORS["MAGE"].g, RAID_CLASS_COLORS["MAGE"].b);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Mage]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIPaladinPriestPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIMagePriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnShow>
+                        if (UnitFactionGroup("player") == C_Alliance) then
+                            getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_paladin_priority);
+                            getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Paladin]";
+                            getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Paladin]);
+                            getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["PALADIN"].r, RAID_CLASS_COLORS["PALADIN"].g, RAID_CLASS_COLORS["PALADIN"].b);
+                            getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["PALADIN"].r, RAID_CLASS_COLORS["PALADIN"].g, RAID_CLASS_COLORS["PALADIN"].b);
+                        else
+                            getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_priest_priority);
+                            getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Priest]";
+                            getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Priest]);
+                            getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["PRIEST"].r, RAID_CLASS_COLORS["PRIEST"].g, RAID_CLASS_COLORS["PRIEST"].b);
+                            getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["PRIEST"].r, RAID_CLASS_COLORS["PRIEST"].g, RAID_CLASS_COLORS["PRIEST"].b);
+                        end
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIPriestRoguePriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIPaladinPriestPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnShow>
+                        if (UnitFactionGroup("player") == C_Alliance) then
+                            getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_priest_priority);
+                            getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Priest]";
+                            getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Priest]);
+                            getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["PRIEST"].r, RAID_CLASS_COLORS["PRIEST"].g, RAID_CLASS_COLORS["PRIEST"].b);
+                            getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["PRIEST"].r, RAID_CLASS_COLORS["PRIEST"].g, RAID_CLASS_COLORS["PRIEST"].b);
+                        else
+                            getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_rogue_priority);
+                            getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Rogue]";
+                            getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Rogue]);
+                            getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["ROGUE"].r, RAID_CLASS_COLORS["ROGUE"].g, RAID_CLASS_COLORS["ROGUE"].b);
+                            getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["ROGUE"].r, RAID_CLASS_COLORS["ROGUE"].g, RAID_CLASS_COLORS["ROGUE"].b);
+                        end
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIRogueShamanPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIPriestRoguePriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnShow>
+                        if (UnitFactionGroup("player") == C_Alliance) then
+                            getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_rogue_priority);
+                            getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Rogue]";
+                            getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Rogue]);
+                            getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["ROGUE"].r, RAID_CLASS_COLORS["ROGUE"].g, RAID_CLASS_COLORS["ROGUE"].b);
+                            getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["ROGUE"].r, RAID_CLASS_COLORS["ROGUE"].g, RAID_CLASS_COLORS["ROGUE"].b);
+                        else
+                            getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_shaman_priority);
+                            getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Shaman]";
+                            getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Shaman]);
+                            getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["SHAMAN"].r, RAID_CLASS_COLORS["SHAMAN"].g, RAID_CLASS_COLORS["SHAMAN"].b);
+                            getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["SHAMAN"].r, RAID_CLASS_COLORS["SHAMAN"].g, RAID_CLASS_COLORS["SHAMAN"].b);
+                        end
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIWarlockPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIRogueShamanPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_warlock_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Warlock]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["WARLOCK"].r, RAID_CLASS_COLORS["WARLOCK"].g, RAID_CLASS_COLORS["WARLOCK"].b);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["WARLOCK"].r, RAID_CLASS_COLORS["WARLOCK"].g, RAID_CLASS_COLORS["WARLOCK"].b);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Warlock]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIWarriorPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIWarlockPriority" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_warrior_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"class_priority\"][C_Warrior]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "SliderLow"):SetVertexColor(RAID_CLASS_COLORS["WARRIOR"].r, RAID_CLASS_COLORS["WARRIOR"].g, RAID_CLASS_COLORS["WARRIOR"].b);
+                        getglobal(this:GetName() .. "SliderHigh"):SetVertexColor(RAID_CLASS_COLORS["WARRIOR"].r, RAID_CLASS_COLORS["WARRIOR"].g, RAID_CLASS_COLORS["WARRIOR"].b);
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["class_priority"][C_Warrior]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+        </Frames>
+    </Frame>
+    <Frame name="Genesis_GUIRaid" parent="Genesis_GUI" hidden="true">
+        <Size>
+            <AbsDimension x="400" y="258"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                    <AbsDimension x="-4" y="2"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Frames>
+            <Frame name="Genesis_GUIRaidGroup1" inherits="Genesis_GUIRaidGroupTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="11" y="-17"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIRaidGroup2" inherits="Genesis_GUIRaidGroupTemplate" id="2">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="6" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIRaidGroup3" inherits="Genesis_GUIRaidGroupTemplate" id="3">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIRaidGroup1" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="-15"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIRaidGroup4" inherits="Genesis_GUIRaidGroupTemplate" id="4">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup3" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="6" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIRaidGroup5" inherits="Genesis_GUIRaidGroupTemplate" id="5">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup2" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="6" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIRaidGroup6" inherits="Genesis_GUIRaidGroupTemplate" id="6">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup5" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="6" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIRaidGroup7" inherits="Genesis_GUIRaidGroupTemplate" id="7">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup4" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="6" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="Genesis_GUIRaidGroup8" inherits="Genesis_GUIRaidGroupTemplate" id="8">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIRaidGroup7" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="6" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Button name="Genesis_GUIRaidCheckAllButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_check_all">
+                <Size>
+                    <AbsDimension x="194" y="28"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIRaidGroup3" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="-5" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnClick>
+                        for group = 1, 8 do
+                            for slot = 1, 5 do
+                                Genesis_data["raid"][group][slot] = 1;
+                            end
+                        end
+                        Genesis_SetRaidChecked();
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="Genesis_GUIRaidUncheckAllButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_uncheck_all">
+                <Size>
+                    <AbsDimension x="192" y="28"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUIRaidCheckAllButton" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnClick>
+                        for group = 1, 8 do
+                            for slot = 1, 5 do
+                                Genesis_data["raid"][group][slot] = 0;
+                            end
+                        end
+                        Genesis_SetRaidChecked();
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="Genesis_GUIRaidInvertCheckedButton" inherits="OptionsButtonTemplate" text="Genesis_GUI_invert_checked">
+                <Size>
+                    <AbsDimension x="192" y="28"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIRaidCheckAllButton" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Genesis_ShowTooltip();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnClick>
+                        for group = 1, 8 do
+                            for slot = 1, 5 do
+                                Genesis_data["raid"][group][slot] = 1 - Genesis_data["raid"][group][slot];
+                            end
+                        end
+                        Genesis_SetRaidChecked();
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Frame name="Genesis_GUIRaidUncheckedPriority" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="Genesis_GUIRaidUncheckAllButton" relativePoint="BOTTOMLEFT"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_unchecked_priority);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"unchecked_priority\"]";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 1);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(0.01);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["unchecked_priority"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+        </Frames>
+    </Frame>
+    <Frame name="Genesis_GUISettings" parent="Genesis_GUI" hidden="true">
+        <Size>
+            <AbsDimension x="400" y="258"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="Genesis_GUITab1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                    <AbsDimension x="-4" y="2"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <Frames>
+            <Frame name="Genesis_GUINinjaUseAction" inherits="Genesis_GUICheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="5" y="-5"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_hook_useaction);
+                        getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"hook_useaction\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["hook_useaction"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHookShields" inherits="Genesis_GUICheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUINinjaUseAction" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_hook_shields);
+                        getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"hook_shields\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["hook_shields"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIUseActionHealMostWounded" inherits="Genesis_GUICheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIHookShields" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_useaction_wounded);
+                        getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"useaction_heal_most_wounded\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["useaction_heal_most_wounded"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIShowHealingAll" inherits="Genesis_GUICheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIUseActionHealMostWounded" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_show_all);
+                        getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"show_healing_all\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["show_healing_all"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIShowHealingMe" inherits="Genesis_GUICheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIShowHealingAll" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_show_me);
+                        getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"show_healing_me\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["show_healing_me"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUITreatShapeshiftedDruidsDifferent" inherits="Genesis_GUICheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIShowHealingMe" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_shapeshifted_druids);
+                        getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"shapeshifted_druids\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["shapeshifted_druids"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIScaleSpells" inherits="Genesis_GUICheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUITreatShapeshiftedDruidsDifferent" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_scale_spells);
+                        getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"scale_spells\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["scale_spells"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUISafeCancel" inherits="Genesis_GUICheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIScaleSpells" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "CheckButtonText"):SetText(Genesis_GUI_safe_cancel);
+                        getglobal(this:GetName() .. "CheckButton").variable = "Genesis_data[\"safe_cancel\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "CheckButton"):SetChecked(Genesis_data["safe_cancel"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHOTMinCancelThreshold" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Genesis_GUINinjaUseAction" relativePoint="RIGHT"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_hot_cancel);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"hot_heal_threshold\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["hot_heal_threshold"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHOTMultiply" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIHOTMinCancelThreshold" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_hot_value);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"hot_multiply\"]";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 4);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(0.05);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["hot_multiply"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHOTMultiplyBattle" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIHOTMultiply" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_hot_value_battle);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"hot_multiply_battle\"]";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 4);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(0.05);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["hot_multiply_battle"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIMaxOverheal" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIHOTMultiplyBattle" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_max_overheal);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"max_overheal\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["max_overheal"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIMinHealThreshold" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIMaxOverheal" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_min_heal_threshold);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"min_heal_threshold\"]";
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["min_heal_threshold"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHealPower" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIMinHealThreshold" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_power);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_power\"]";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(0, 2);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(0.05);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_power"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIUpdatePlayerDataTime" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIHealPower" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_update_time);
+                        getglobal(this:GetName() .. "Slider").variable = "C_update_player_data_time";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 100);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(1);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(C_update_player_data_time * 10);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+            <Frame name="Genesis_GUIHealStrategy" inherits="Genesis_GUISliderTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Genesis_GUIUpdatePlayerDataTime" relativePoint="BOTTOM"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(this:GetName() .. "SliderLow"):SetText(Genesis_GUI_heal_strategy);
+                        getglobal(this:GetName() .. "Slider").variable = "Genesis_data[\"heal_strategy\"]";
+                        getglobal(this:GetName() .. "Slider"):SetMinMaxValues(1, 3);
+                        getglobal(this:GetName() .. "Slider"):SetValueStep(1);
+                    </OnLoad>
+                    <OnShow>
+                        getglobal(this:GetName() .. "Slider"):SetValue(Genesis_data["heal_strategy"]);
+                    </OnShow>
+                </Scripts>
+            </Frame>
+        </Frames>
+    </Frame>
 </Ui>
