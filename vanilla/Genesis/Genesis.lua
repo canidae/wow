@@ -304,7 +304,7 @@ function Genesis_DropSpell()
         return;
     end
     local spell, rank = GetSpellName(Genesis_pickup_spellid, Genesis_pickup_spellbook);
-    if (not Genesis_player_heal_spells[spell] or Genesis_data["classes"][Genesis_current_class][spell]) then
+    if (not Genesis_unit_healing_spells[spell] or Genesis_data["classes"][Genesis_current_class][spell]) then
         return;
     end
     start, stop, rank = string.find((rank or ""), "(%d+)");
@@ -1155,7 +1155,7 @@ function Genesis_MouseDropDownMenuInitialize()
         UIDropDownMenu_AddButton(info);
     end
     for spell, data in Genesis_spells do
-        if (Genesis_player_heal_spells[spell]) then
+        if (Genesis_unit_healing_spells[spell]) then
             info = {
                 ["text"] = spell,
                 ["func"] = Genesis_MouseDropDownMenuButton_OnClick,
@@ -2047,13 +2047,13 @@ function Genesis_UpdateSpells()
         return
     end
     -- update the data about our healing spells
-    Genesis_party_heal_spells = {
+    Genesis_party_healing_spells = {
         [C_Chain_heal] = 0,
         [C_Holy_nova] = 0,
         [C_Prayer_of_healing] = 0,
         [C_Tranquility] = 0
     };
-    Genesis_player_heal_spells = {
+    Genesis_unit_healing_spells = {
         [C_Blessing_of_protection] = 0,
         [C_Flash_heal] = 0,
         [C_Flash_of_light] = 0,
@@ -2083,7 +2083,7 @@ function Genesis_UpdateSpells()
             else
                 rank = table.getn(Genesis_spells[spellname]) + 1;
             end
-            if (Genesis_party_heal_spells[spellname]) then
+            if (Genesis_party_healing_spells[spellname]) then
                 Genesis_party_heal_spell = spellname;
             end
             Genesis_spells[spellname][rank] = (Genesis_spells[spellname][rank] or {});
@@ -2119,19 +2119,19 @@ function Genesis_UpdateSpells()
                     Genesis_spells[spellname][rank][value] = a[index] / 1.0;
                 end
             end
-            if (Genesis_player_heal_spells[spellname]) then
-                Genesis_player_heal_spells[spellname] = 1;
+            if (Genesis_unit_healing_spells[spellname]) then
+                Genesis_unit_healing_spells[spellname] = 1;
             end
         end
         spellid = spellid + 1;
         spellname = GetSpellName(spellid, BOOKTYPE_SPELL);
     end
     -- clean up a bit
-    Genesis_party_heal_spells = nil;
-    for spell, value in Genesis_player_heal_spells do
+    Genesis_party_healing_spells = nil;
+    for spell, value in Genesis_unit_healing_spells do
         if (value == 0) then
             -- player don't have spell, remove it
-            Genesis_player_heal_spells[spell] = nil;
+            Genesis_unit_healing_spells[spell] = nil;
         end
     end
 end
@@ -2152,7 +2152,7 @@ function Genesis_UseAction(slot, checkCursor, onSelf)
         return Genesis_original_UseAction(slot, checkCursor, onSelf);
     end
     -- let's see if it's a healing spell in this slot
-    if (not Genesis_player_heal_spells[spell]) then
+    if (not Genesis_unit_healing_spells[spell]) then
         -- it isn't, just run the original UseAction
         return Genesis_original_UseAction(slot, checkCursor, onSelf);
     end
