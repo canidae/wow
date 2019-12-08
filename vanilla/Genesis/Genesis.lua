@@ -2047,12 +2047,6 @@ function Genesis_UpdateSpells()
         return
     end
     -- update the data about our healing spells
-    Genesis_party_healing_spells = {
-        [C_Chain_heal] = 0,
-        [C_Holy_nova] = 0,
-        [C_Prayer_of_healing] = 0,
-        [C_Tranquility] = 0
-    };
     Genesis_unit_healing_spells = {
         [C_Blessing_of_protection] = 0,
         [C_Flash_heal] = 0,
@@ -2082,9 +2076,6 @@ function Genesis_UpdateSpells()
                 rank = 1;
             else
                 rank = table.getn(Genesis_spells[spellname]) + 1;
-            end
-            if (Genesis_party_healing_spells[spellname]) then
-                Genesis_party_heal_spell = spellname;
             end
             Genesis_spells[spellname][rank] = (Genesis_spells[spellname][rank] or {});
             Genesis_spells[spellname][rank]["ID"] = spellid;
@@ -2127,7 +2118,6 @@ function Genesis_UpdateSpells()
         spellname = GetSpellName(spellid, BOOKTYPE_SPELL);
     end
     -- clean up a bit
-    Genesis_party_healing_spells = nil;
     for spell, value in Genesis_unit_healing_spells do
         if (value == 0) then
             -- player don't have spell, remove it
